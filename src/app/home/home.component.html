@@ -1,0 +1,6 @@
+<div class="text-center">
+    <h2>Welcome to Asksphere</h2>
+    <p *ngIf="user">Hello, {{ user.username }}!</p>
+    <p *ngIf="!user">Please log in or sign up.</p>
+    <button *ngIf="user" class="btn btn-danger" (click)="logout()">Logout</button>
+  </div>
