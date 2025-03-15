@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AskSphere - Home</title>
+    <link rel="icon" href="asksphere-logo.png"> <!-- Replace with actual logo path -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .hero { background-color: #f8f9fa; padding: 60px 0; text-align: center; }
+        .feature-item { margin-bottom: 30px; }
+        .org-logos img { width: 100px; margin: 0 15px; }
+        .cta-btn { background-color: #007bff; color: white; }
+        .cta-btn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="asksphere-logo.png" alt="AskSphere Logo" height="30"> AskSphere
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#pages">Pages</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#blog">Blog</a></li>
+                </ul>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+                <div class="dropdown ms-2">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="user-avatar.png" alt="User" height="30" class="rounded-circle"> Arden Smith
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="display-4">Join the world's biggest Q&A network!</h1>
+            <p class="lead">AskSphere is a unique and awesome template, you can replace this with just a simple text.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <button class="btn cta-btn">For developers</button>
+                <button class="btn btn-outline-primary">Browse questions</button>
+            </div>
+            <div class="row mt-4 text-center">
+                <div class="col"><p>80M visitors</p></div>
+                <div class="col"><p>26M answered questions</p></div>
+                <div class="col"><p>14.7s new question time</p></div>
+                <div class="col"><p>40B+ customer help</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 feature-item">
+                    <img src="find-questions-icon.png" alt="Find Questions" class="img-fluid mb-3">
+                    <h3>Find the best answer to your technical question</h3>
+                    <p>Help others thrive</p>
+                    <button class="btn btn-primary">Browse questions</button>
+                </div>
+                <div class="col-md-6 feature-item">
+                    <img src="private-space-icon.png" alt="Private Space" class="img-fluid mb-3">
+                    <h3>Want a private space for your technical knowledge?</h3>
+                    <p>Create a team</p>
+                    <button class="btn btn-warning">Try for free</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Organizations Section -->
+    <section class="bg-light py-5">
+        <div class="container text-center">
+            <h2>Thousands of organizations use AskSphere Teams</h2>
+            <div class="org-logos d-flex justify-content-center">
+                <img src="goldline-logo.png" alt="Goldline">
+                <img src="utopia-logo.png" alt="Utopia">
+                <img src="circle-logo.png" alt="Circle">
+                <img src="hexa-logo.png" alt="Hexa">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>Company</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">About</a></li>
+                        <li><a href="#" class="text-white">Careers</a></li>
+                        <li><a href="#" class="text-white">Advertising</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Legal Stuff</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-white">Terms of Service</a></li>
+                        <li><a href="#" class="text-white">Cookie Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Help</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Knowledge Base</a></li>
+                        <li><a href="#" class="text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Connect with us</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Facebook</a></li>
+                        <li><a href="#" class="text-white">Twitter</a></li>
+                        <li><a href="#" class="text-white">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <img src="asksphere-logo.png" alt="AskSphere Logo" height="30">
+                <p class="mb-0">&copy; 2025 AskSphere</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

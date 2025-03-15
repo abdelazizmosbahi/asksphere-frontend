@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q&A Forum Page</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 10px 0;
+        }
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .header .search-bar {
+            max-width: 500px;
+        }
+        .main-content {
+            margin-top: 20px;
+        }
+        .question-section {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #e5e5e5;
+            border-radius: 5px;
+        }
+        .question-section h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .question-meta {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .answer-section {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #e5e5e5;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .answer-meta {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .sidebar {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #e5e5e5;
+            border-radius: 5px;
+        }
+        .sidebar h5 {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .footer {
+            background-color: #212529;
+            color: #fff;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: #fff;
+        }
+        .code-block {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="logo">DisLab</div>
+            <div class="search-bar">
+                <input type="text" class="form-control" placeholder="Type your search...">
+            </div>
+            <div>
+                <a href="#" class="btn btn-outline-primary me-2">Log In</a>
+                <a href="#" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <div class="row">
+            <!-- Main Question and Answer Section -->
+            <div class="col-md-8">
+                <!-- Question Section -->
+                <div class="question-section">
+                    <h1>Unable to get the data attribute from button element in jQuery</h1>
+                    <div class="question-meta d-flex justify-content-between">
+                        <span>Asked 1 year ago</span>
+                        <span>Active 1 day ago</span>
+                        <span>Viewed 999 times</span>
+                    </div>
+                    <hr>
+                    <p>I'm trying to get the data attribute from a button element using jQuery, but I'm not getting the expected result. Here's my code:</p>
+                    <div class="code-block">
+                        <!-- <pre>
+$('#like').on('click', function() {
+    var like = $(this).data('like');
+    console.log(like);
+});
+                        </pre> -->
+                    </div>
+                    <p>Then I tried to get like:</p>
+                    <div class="code-block">
+                        <pre>
+&lt;button id="like" data-like="123"&gt;Like&lt;/button&gt;
+                        </pre>
+                    </div>
+                    <p>But it doesn't work. What am I missing?</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="User Avatar">
+                        <div>
+                            <strong>John Doe</strong><br>
+                            <small class="text-muted">Asked 1 year ago</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Answer Section -->
+                <div class="answer-section">
+                    <h3>1 Answer</h3>
+                    <hr>
+                    <p>Since you're using jQuery, make sure to refer to the button correctly. Here's the corrected version:</p>
+                    <div class="code-block">
+                        <!-- <pre>
+$('#like').on('click', function() {
+    var like = $(this).attr('data-like');
+    console.log(like);
+});
+                        </pre> -->
+                    </div>
+                    <p>Alternatively, you can also use:</p>
+                    <div class="code-block">
+                        <!-- <pre>
+$('#like').on('click', function() {
+    var like = $(this).data('like');
+    console.log(like);
+});
+                        </pre> -->
+                    </div>
+                    <p>Both methods should work fine with your button:</p>
+                    <div class="code-block">
+                        <pre>
+&lt;button id="like" data-like="123"&gt;Like&lt;/button&gt;
+                        </pre>
+                    </div>
+                    <div class="d-flex align-items-center mt-3">
+                        <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="User Avatar">
+                        <div>
+                            <strong>Jane Smith</strong><br>
+                            <small class="text-muted">Answered 1 year ago</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Your Answer Section -->
+                <div class="answer-section mt-4">
+                    <h3>Your Answer</h3>
+                    <form>
+                        <div class="mb-3">
+                            <textarea class="form-control" rows="5" placeholder="Write your answer here..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post Answer</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-md-4">
+                <div class="sidebar">
+                    <h5>Love this site?</h5>
+                    <p>Get the weekly newsletter, stay updated, and more!</p>
+                    <a href="#" class="btn btn-primary">Sign up for the newsletter</a>
+                </div>
+                <div class="sidebar mt-4">
+                    <h5>Related Questions</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">How to get data attribute in jQuery?</a></li>
+                        <li><a href="#">jQuery click event not firing?</a></li>
+                        <li><a href="#">How to use data attributes in HTML?</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar mt-4">
+                    <h5>Trending Tags</h5>
+                    <div>
+                        <span class="badge bg-light text-dark me-1">javascript</span>
+                        <span class="badge bg-light text-dark me-1">jquery</span>
+                        <span class="badge bg-light text-dark me-1">html</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>Company</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Advertising</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Legal</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Help</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Knowledge Base</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Connect with Us</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <small>&copy; 2025 DisLab Inc.</small>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

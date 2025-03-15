@@ -12,22 +12,19 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   signup(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { username, password }, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/register`, { username, password });
   }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { username, password }, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/login`, { username, password });
   }
 
-  logout(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/logout`, { withCredentials: true });
+  // Remove logout and getCurrentUser since they’re no longer needed
+  logout(): void {
+    localStorage.removeItem('user');
   }
 
-  getCurrentUser(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/api/users/me`, { withCredentials: true });
-  }
-
-  isLoggedIn(): Observable<any> {
-    return this.getCurrentUser(); // Check if user is logged in by hitting a protected route
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('user');
   }
 }

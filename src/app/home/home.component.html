@@ -1,6 +1,158 @@
-<div class="text-center">
-    <h2>Welcome to Asksphere</h2>
-    <p *ngIf="user">Hello, {{ user.username }}!</p>
-    <p *ngIf="!user">Please log in or sign up.</p>
-    <button *ngIf="user" class="btn btn-danger" (click)="logout()">Logout</button>
+<!-- Add these in index.html or component head -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<div class="container-fluid p-0">
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" [routerLink]="['/']" style="color: #007bff;">
+        <i class="bi bi-chat-left-text"></i> AskSphere
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" [routerLink]="['/']">Home</a>
+        <a class="nav-link" href="#">Pages</a>
+        <a class="nav-link" href="#">Blog</a>
+        <div class="input-group me-2" style="width: 300px;">
+          <input type="text" class="form-control" placeholder="Type your search words..." [(ngModel)]="searchQuery" (ngSubmit)="onSearch()">
+          <button class="btn btn-outline-secondary" type="button" (click)="onSearch()">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle"></i> Account
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="accountDropdown">
+            <li><h6 class="dropdown-header">{{ username }}</h6></li>
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item text-danger" (click)="logout()">Logout</a></li>
+          </ul>
+        </div>
+        
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header Section -->
+  <div class="bg-light text-center py-5">
+    <h1 class="fw-bold" style="color: #1e3a8a;">The Social Q&A Community</h1>
+    <p class="text-muted mb-4">The question and answer site designed to help people, to help each other: To ask, to learn, to share, to grow.</p>
+    <button class="btn btn-primary me-2" [routerLink]="['/signup']">Join the community</button>
+    <button class="btn btn-outline-primary" [routerLink]="['/ask-question']">Ask a Question</button>
   </div>
+
+  <!-- Main Content -->
+  <div class="container py-4">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-2">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/']"><i class="bi bi-house-door me-2"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active text-primary" [routerLink]="['/questions']"><i class="bi bi-question-circle me-2"></i> Questions</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-tags me-2"></i> Tags</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-people me-2"></i> Users</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-award me-2"></i> Badges</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-list-ul me-2"></i> Categories</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-briefcase me-2"></i> Jobs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-building me-2"></i> Companies</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Question List -->
+      <div class="col-md-7">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5>All Questions <span class="text-muted">(23,287 questions)</span></h5>
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              Newest
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Newest</a></li>
+              <li><a class="dropdown-item" href="#">Oldest</a></li>
+              <li><a class="dropdown-item" href="#">Most Voted</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="question-item border-bottom py-3" *ngFor="let question of questions">
+          <div class="d-flex">
+            <div class="stats me-3 text-center">
+              <div class="mb-2">
+                <span class="d-block">{{ question.votes }}</span>
+                <small class="text-muted">votes</small>
+              </div>
+              <div class="mb-2">
+                <span class="d-block {{ question.answers > 0 ? 'text-success' : '' }}">{{ question.answers }}</span>
+                <small class="text-muted">answers</small>
+              </div>
+              <div>
+                <span class="d-block">{{ question.views }}</span>
+                <small class="text-muted">views</small>
+              </div>
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="mb-1">
+                <a [routerLink]="['/question', question.id]" class="text-primary text-decoration-none">{{ question.title }}</a>
+              </h6>
+              <p class="text-muted small mb-1">
+                {{ question.description | slice:0:100 }}...
+              </p>
+              <div class="d-flex justify-content-between">
+                <div>
+                  <span class="badge bg-light text-dark me-1" *ngFor="let tag of question.tags">{{ tag }}</span>
+                </div>
+                <div class="text-muted small">
+                  <img src="https://via.placeholder.com/20" alt="User Avatar" class="rounded-circle me-1" style="width: 20px; height: 20px;">
+                  {{ question.user }} • {{ question.time }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Questions -->
+      <div class="col-md-3">
+        <h6 class="mb-3">Related Questions</h6>
+        <div class="related-question mb-3" *ngFor="let related of relatedQuestions">
+          <a [routerLink]="['/question', related.id]" class="text-primary text-decoration-none">{{ related.title }}</a>
+          <p class="text-muted small mb-0">{{ related.time }} • by {{ related.user }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .nav-link { color: #6c757d; }
+  .nav-link:hover { color: #007bff; }
+  .nav-link.active { font-weight: bold; }
+  .stats { width: 80px; }
+  .stats span { font-size: 1.2rem; font-weight: bold; }
+  .badge { font-size: 0.75rem; }
+  .question-item:hover { background-color: #f8f9fa; }
+</style>
+
+<script>
+  $(document).ready(() => {
+    $('.question-item').hide().fadeIn(500);
+  });
+</script>

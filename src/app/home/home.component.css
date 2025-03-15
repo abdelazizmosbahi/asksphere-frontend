@@ -1,0 +1,8 @@
+/* Add this to home.component.css */
+.account-button {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between icon and username */
+  }
+
+  
