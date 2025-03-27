@@ -11,20 +11,19 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  signup(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { username, password });
+  signup(signupData: { username: string; email: string; password: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, signupData, { withCredentials: true });
   }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { username, password });
+    return this.http.post(`${this.apiUrl}/login`, { username, password }, { withCredentials: true });
   }
 
-  // Remove logout and getCurrentUser since they’re no longer needed
-  logout(): void {
-    localStorage.removeItem('user');
+  logout(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/logout`, { withCredentials: true });
   }
 
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('user');
+  isLoggedIn(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/users/me`, { withCredentials: true });
   }
 }

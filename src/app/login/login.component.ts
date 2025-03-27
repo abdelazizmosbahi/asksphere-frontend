@@ -13,6 +13,7 @@ export class LoginComponent implements OnInit {
   password: string = '';
   error: string = '';
   showPassword: boolean = false;
+  loading: boolean = false; // Added loading state
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -36,13 +37,15 @@ export class LoginComponent implements OnInit {
   }
 
   onLogin() {
+    this.loading = true;
+    this.error = '';
     this.authService.login(this.username, this.password).subscribe({
-      next: (response) => {
-        console.log('Login successful:', response);
-        localStorage.setItem('user', JSON.stringify(response.user));
+      next: () => {
+        this.loading = false;
         this.router.navigate(['/']);
       },
       error: (err) => {
+        this.loading = false;
         this.error = err.error.message || 'Login failed';
       }
     });

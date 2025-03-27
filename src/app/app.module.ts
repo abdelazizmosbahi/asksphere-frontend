@@ -7,9 +7,12 @@ import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { HomeComponent } from './home/home.component';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FilterPipe } from './filter.pipe';
 @NgModule({
-  declarations: [AppComponent, LoginComponent, SignupComponent, HomeComponent],
-  imports: [BrowserModule, HttpClientModule, AppRoutingModule, FormsModule],
+  declarations: [AppComponent, LoginComponent, SignupComponent, HomeComponent, FilterPipe],
+  imports: [BrowserModule, HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, BrowserAnimationsModule],
   providers: [],
   bootstrap: [AppComponent]
 })

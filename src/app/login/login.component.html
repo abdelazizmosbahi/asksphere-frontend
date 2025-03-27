@@ -74,7 +74,9 @@
           <button 
             type="submit" 
             class="btn btn-primary w-100 py-2 fw-semibold animate__button" 
-            style="background-color: #007bff; border: none;">
+            style="background-color: #007bff; border: none;"
+            [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
             Log in <i class="bi bi-arrow-right"></i>
           </button>
           <p class="text-danger text-center mt-3 animate__error" *ngIf="error">{{ error }}</p>
