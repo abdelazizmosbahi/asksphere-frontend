@@ -1,6 +1,5 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable, forkJoin, of } from 'rxjs';
@@ -22,11 +21,13 @@ interface Question {
 declare const $: any; // Declare jQuery to avoid TypeScript errors
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  selector: 'app-community',
+  templateUrl: './community.component.html',
+  styleUrls: ['./community.component.css']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class CommunityComponent implements OnInit, AfterViewInit {
+  communityId: number | null = null;
+  communityName: string = '';
   user: any = null;
   username: string = '';
   searchQuery: string = '';
@@ -39,18 +40,28 @@ export class HomeComponent implements OnInit, AfterViewInit {
   userMap: Map<string, string> = new Map();
 
   constructor(
-    private authService: AuthService,
+    private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
     private toastr: ToastrService
   ) {}
 
   ngOnInit() {
-    this.loadUser();
-    this.loadCommunities();
-    this.loadQuestions();
-    this.loadBadges();
-    this.loadRecommendedQuestions();
+    // Get the community ID from the route
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      this.communityId = id ? +id : null;
+      if (!this.communityId) {
+        this.toastr.error('Invalid community ID', 'Error');
+        this.router.navigate(['/']);
+        return;
+      }
+      this.loadUser();
+      this.loadCommunities();
+      this.loadQuestions();
+      this.loadBadges();
+      this.loadRecommendedQuestions();
+    });
   }
 
   ngAfterViewInit() {
@@ -83,6 +94,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
         response.forEach((community: any) => {
           this.communityMap.set(community.idCommunity, community.name);
         });
+        // Set the community name for the current community
+        this.communityName = this.communityMap.get(this.communityId!) || 'Unknown';
       },
       error: (err: any) => {
         this.toastr.error('Error fetching communities', 'Error');
@@ -95,7 +108,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.http.get(`${environment.apiUrl}/member_communities`, { withCredentials: true }).subscribe({
       next: (response: any) => {
         this.joinedCommunities = new Set(response.map((mc: any) => mc.communityId));
-        console.log('Joined Communities in Home:', this.joinedCommunities); // Add logging
+        console.log('Joined Communities in Community:', this.joinedCommunities);
       },
       error: (err: any) => {
         this.toastr.error('Error fetching joined communities', 'Error');
@@ -118,7 +131,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
             this.fetchUsernames(memberIds).subscribe({
               next: () => {
                 this.questions = response
-                  .filter((question: Question) => this.joinedCommunities.has(question.communityId))
+                  .filter((question: Question) => question.communityId === this.communityId) // Filter by communityId
                   .map((question: Question) => ({
                     id: question._id,
                     title: question.title,
@@ -179,12 +192,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
   loadRecommendedQuestions() {
     this.http.get(`${environment.apiUrl}/recommended_questions`, { withCredentials: true }).subscribe({
       next: (response: any) => {
-        this.relatedQuestions = response.map((q: any) => ({
-          id: q._id,
-          title: q.title,
-          user: q.user,
-          time: this.formatTime(q.dateCreated)
-        }));
+        this.relatedQuestions = response
+          .filter((q: any) => q.communityId === this.communityId) // Filter recommended questions by communityId
+          .map((q: any) => ({
+            id: q._id,
+            title: q.title,
+            user: q.user,
+            time: this.formatTime(q.dateCreated)
+          }));
       },
       error: (err: any) => {
         this.toastr.error('Error fetching recommended questions', 'Error');
@@ -249,34 +264,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  joinCommunity(communityId: number) {
-    this.http.post(`${environment.apiUrl}/communities/join`, { communityId }, { withCredentials: true }).subscribe({
-      next: (response: any) => {
-        console.log('Join Community Response:', response);
-        this.loadJoinedCommunities(); // Reload joined communities
-        this.loadQuestions();
-        this.toastr.success(`Joined ${this.getCommunityName(communityId)} community`, 'Success');
-      },
-      error: (err: any) => {
-        this.toastr.error('Error joining community', 'Error');
-        console.error('Error joining community:', err);
-      }
-    });
-  }
-  
-  leaveCommunity(communityId: number) {
-    this.http.post(`${environment.apiUrl}/communities/leave`, { communityId }, { withCredentials: true }).subscribe({
-      next: () => {
-        this.loadJoinedCommunities(); // Reload joined communities
-        this.loadQuestions();
-        this.toastr.success(`Left ${this.getCommunityName(communityId)} community`, 'Success');
-      },
-      error: (err: any) => {
-        this.toastr.error('Error leaving community', 'Error');
-        console.error('Error leaving community:', err);
-      }
-    });
-  }
   getCommunityName(communityId: number): string {
     return this.communityMap.get(communityId) || 'Unknown';
   }
@@ -311,7 +298,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   logout() {
     this.http.get(`${environment.apiUrl}/logout`, { withCredentials: true }).subscribe({
       next: () => {
-        this.authService.logout();
         this.user = null;
         this.username = '';
         this.toastr.success('Logged out successfully', 'Success');

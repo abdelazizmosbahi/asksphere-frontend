@@ -15,6 +15,7 @@ import { RevisionsComponent } from './revisions/revisions.component';
 import { RecoverComponent } from './recover/recover.component';
 import { ListComponent } from './list/list.component';
 import { BadgesComponent } from './badges/badges.component';
+import { CommunityComponent } from './community/community.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -26,12 +27,15 @@ const routes: Routes = [
   { path: 'referrels', component: ReferralsComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'question', component: QuestionComponent },
+  { path: 'question/:id', component: QdetailsComponent },
   { path: 'qdetails', component: QdetailsComponent },
   { path: 'about', component: AboutComponent },
   { path: 'revisions', component: RevisionsComponent },
   {path: 'recover', component:RecoverComponent},
   {path: 'list', component:ListComponent},
-  {path: 'badges', component:BadgesComponent}
+  {path: 'badges', component:BadgesComponent},
+  { path: 'community/:id', component: CommunityComponent }, // Add the new route
+  { path: '**', redirectTo: '' }
 
 
 ];

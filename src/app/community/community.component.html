@@ -37,38 +37,8 @@
 
   <!-- Header Section -->
   <div class="bg-light text-center py-5">
-    <h1 class="fw-bold" style="color: #1e3a8a;">The Social Q&A Community</h1>
-    <p class="text-muted mb-4">The question and answer site designed to help people, to help each other: To ask, to learn, to share, to grow.</p>
-  </div>
-
-  <!-- Communities Section -->
-  <div class="container py-4">
-    <h3 class="mb-4">Explore Communities</h3>
-    <div class="row">
-      <div class="col-md-3 col-sm-6 mb-3" *ngFor="let community of communities">
-        <div class="card shadow-sm" [ngClass]="{'clickable': joinedCommunities.has(community.id)}" [routerLink]="joinedCommunities.has(community.id) ? ['/community', community.id] : null">
-          <div class="card-body text-center py-2">
-            <i class="bi {{ community.icon }} mb-2" style="font-size: 1.5rem; color: #007bff;"></i>
-            <h6 class="card-title mb-2">{{ community.name }}</h6>
-            <div class="d-flex justify-content-center gap-2">
-              <button 
-                class="btn btn-sm btn-primary" 
-                (click)="joinCommunity(community.id); $event.stopPropagation()" 
-                [disabled]="joinedCommunities.has(community.id)"
-                *ngIf="!joinedCommunities.has(community.id)">
-                Join
-              </button>
-              <button 
-                class="btn btn-sm btn-outline-danger" 
-                (click)="leaveCommunity(community.id); $event.stopPropagation()" 
-                *ngIf="joinedCommunities.has(community.id)">
-                Leave
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <h1 class="fw-bold" style="color: #1e3a8a;">{{ communityName }} Q&A</h1>
+    <p class="text-muted mb-4">Ask, learn, share, and grow within the {{ communityName }} community.</p>
   </div>
 
   <!-- Main Content -->
@@ -105,7 +75,7 @@
       <!-- Question List -->
       <div class="col-md-7">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5>All Questions <span class="text-muted">({{ questions.length }} questions)</span></h5>
+          <h5>{{ communityName }} Questions <span class="text-muted">({{ questions.length }} questions)</span></h5>
           <div class="dropdown">
             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
               Newest
@@ -167,7 +137,7 @@
 
       <!-- Recommended Questions -->
       <div class="col-md-3">
-        <h6 class="mb-3">Recommended Questions</h6>
+        <h6 class="mb-3">Recommended Questions in {{ communityName }}</h6>
         <div class="related-question mb-3" *ngFor="let related of relatedQuestions">
           <a [routerLink]="['/question', related.id]" class="text-primary text-decoration-none">{{ related.title }}</a>
           <p class="text-muted small mb-0">{{ related.time }} • by {{ related.user }}</p>
