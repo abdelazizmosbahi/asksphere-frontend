@@ -27,13 +27,14 @@ const routes: Routes = [
   { path: 'referrels', component: ReferralsComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'question', component: QuestionComponent },
+  { path: 'questions', component: QuestionComponent }, // Add route for QuestionComponent
   { path: 'question/:id', component: QdetailsComponent },
   { path: 'qdetails', component: QdetailsComponent },
   { path: 'about', component: AboutComponent },
   { path: 'revisions', component: RevisionsComponent },
   {path: 'recover', component:RecoverComponent},
   {path: 'list', component:ListComponent},
-  {path: 'badges', component:BadgesComponent},
+  { path: 'badges', component: BadgesComponent },
   { path: 'community/:id', component: CommunityComponent }, // Add the new route
   { path: '**', redirectTo: '' }
 

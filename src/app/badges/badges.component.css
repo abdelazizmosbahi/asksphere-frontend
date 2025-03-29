@@ -1,0 +1,67 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .navbar-brand img {
+    width: 30px;
+  }
+  
+  .badge-section {
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .badge-card {
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .badge-card:last-child {
+    border-bottom: none;
+  }
+  
+  .badge-card .badge {
+    font-size: 1rem;
+    margin-right: 5px;
+  }
+  
+  .badge-card .badge-gold {
+    background-color: #FFD700;
+    color: #000;
+  }
+  
+  .badge-card .badge-silver {
+    background-color: #C0C0C0;
+    color: #000;
+  }
+  
+  .badge-card .badge-bronze {
+    background-color: #CD7F32;
+    color: #000;
+  }
+  
+  .pagination {
+    justify-content: center;
+  }
+  
+  .footer {
+    background-color: #212529;
+    color: white;
+    padding: 40px 0;
+  }
+  
+  .footer a {
+    color: #adb5bd;
+    text-decoration: none;
+  }
+  
+  .footer a:hover {
+    color: white;
+  }

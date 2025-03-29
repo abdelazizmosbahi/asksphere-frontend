@@ -13,8 +13,29 @@ import { FilterPipe } from './filter.pipe';
 import { QdetailsComponent } from './qdetails/qdetails.component';
 import { ToastrModule } from 'ngx-toastr';
 import { CommunityComponent } from './community/community.component';
+import { QuestionComponent } from './question/question.component';
+import { Routes } from '@angular/router';
+import { ProfileComponent } from './profile/profile.component'; // Import ProfileComponent
+import { BadgesComponent } from './badges/badges.component';
+const routes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'community/:id', component: CommunityComponent },
+  { path: 'question/:id', component: QdetailsComponent },
+  { path: 'questions', component: QuestionComponent },
+  { path: 'profile', component: ProfileComponent },
+  { path: '**', redirectTo: '' }
+];
 @NgModule({
-  declarations: [AppComponent, LoginComponent, SignupComponent, HomeComponent, FilterPipe, QdetailsComponent, CommunityComponent],
+  declarations: [AppComponent,
+    LoginComponent,
+    SignupComponent,
+    HomeComponent,
+    FilterPipe,
+    QuestionComponent,
+    QdetailsComponent,
+    CommunityComponent,
+    BadgesComponent,
+    ProfileComponent],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, BrowserAnimationsModule, ToastrModule.forRoot({ // Configure Toastr
     timeOut: 3000,
     positionClass: 'toast-top-right',

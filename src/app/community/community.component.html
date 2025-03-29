@@ -4,6 +4,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <div class="container-fluid p-0">
+  <!-- Fixed "Ask Question" Button -->
+  <div class="fixed-ask-button">
+    <button class="btn btn-primary" (click)="navigateToAskQuestion()" *ngIf="isMember">
+      <i class="bi bi-plus-circle me-1"></i> Ask Question
+    </button>
+  </div>
+
   <!-- Header -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
@@ -41,106 +48,116 @@
     <p class="text-muted mb-4">Ask, learn, share, and grow within the {{ communityName }} community.</p>
   </div>
 
-  <!-- Main Content -->
+  <!-- Conditional Content -->
   <div class="container py-4">
-    <div class="row">
-      <!-- Sidebar -->
-      <div class="col-md-2">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/']"><i class="bi bi-house-door me-2"></i> Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active text-primary" [routerLink]="['/questions']"><i class="bi bi-question-circle me-2"></i> Questions</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/communities']"><i class="bi bi-people me-2"></i> Communities</a>
-            <ul class="nav flex-column ms-3" *ngIf="joinedCommunities.size > 0">
-              <li class="nav-item" *ngFor="let communityId of joinedCommunities">
-                <a class="nav-link small" [routerLink]="['/community', communityId]">
-                  {{ getCommunityName(communityId) }}
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/badges']"><i class="bi bi-award me-2"></i> Badges ({{ userBadges.length }})</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/profile']"><i class="bi bi-person me-2"></i> Profile</a>
-          </li>
-        </ul>
-      </div>
+    <!-- If the user is not a member, show the "Join to View" message -->
+    <div *ngIf="!isMember" class="text-center">
+      <h3>Join {{ communityName }} to View Q&A</h3>
+      <p class="text-muted mb-4">You need to be a member of this community to view its questions and answers.</p>
+      <button class="btn btn-primary" (click)="joinCommunity()">Join {{ communityName }}</button>
+    </div>
 
-      <!-- Question List -->
-      <div class="col-md-7">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5>{{ communityName }} Questions <span class="text-muted">({{ questions.length }} questions)</span></h5>
-          <div class="dropdown">
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-              Newest
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Newest</a></li>
-              <li><a class="dropdown-item" href="#">Oldest</a></li>
-              <li><a class="dropdown-item" href="#">Most Voted</a></li>
-            </ul>
-          </div>
+    <!-- If the user is a member, show the Q&A content -->
+    <div *ngIf="isMember">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/']"><i class="bi bi-house-door me-2"></i> Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active text-primary" [routerLink]="['/questions']"><i class="bi bi-question-circle me-2"></i> Questions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/communities']"><i class="bi bi-people me-2"></i> Communities</a>
+              <ul class="nav flex-column ms-3" *ngIf="joinedCommunities.size > 0">
+                <li class="nav-item" *ngFor="let communityId of joinedCommunities">
+                  <a class="nav-link small" [routerLink]="['/community', communityId]">
+                    {{ getCommunityName(communityId) }}
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/badges']"><i class="bi bi-award me-2"></i> Badges ({{ userBadges.length }})</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/profile']"><i class="bi bi-person me-2"></i> Profile</a>
+            </li>
+          </ul>
         </div>
-        <div class="question-item border-bottom py-3" *ngFor="let question of questions" [routerLink]="['/question', question.id]" (click)="incrementViews(question.id)">
-          <div class="d-flex">
-            <div class="stats me-3 text-center">
-              <div class="mb-2">
-                <div class="d-flex align-items-center">
-                  <button class="btn btn-sm btn-outline-success me-1" (click)="voteQuestion(question.id, 1); $event.stopPropagation()">
-                    <i class="bi bi-arrow-up"></i>
-                  </button>
-                  <span class="d-block mx-1">{{ question.votes }}</span>
-                  <button class="btn btn-sm btn-outline-danger ms-1" (click)="voteQuestion(question.id, -1); $event.stopPropagation()">
-                    <i class="bi bi-arrow-down"></i>
-                  </button>
-                </div>
-                <small class="text-muted">votes</small>
-              </div>
-              <div class="mb-2">
-                <span class="d-block {{ question.answers > 0 ? 'text-success' : '' }}">{{ question.answers }}</span>
-                <small class="text-muted">answers</small>
-              </div>
-              <div>
-                <span class="d-block">{{ question.views }}</span>
-                <small class="text-muted">views</small>
-              </div>
+
+        <!-- Question List -->
+        <div class="col-md-7">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>{{ communityName }} Questions <span class="text-muted">({{ questions.length }} questions)</span></h5>
+            <div class="dropdown">
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                Newest
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Newest</a></li>
+                <li><a class="dropdown-item" href="#">Oldest</a></li>
+                <li><a class="dropdown-item" href="#">Most Voted</a></li>
+              </ul>
             </div>
-            <div class="flex-grow-1">
-              <h6 class="mb-1 text-muted">
-                {{ question.tags[0] }} <!-- Display the community name -->
-              </h6>
-              <h6 class="mb-1">
-                <a class="text-primary text-decoration-none">{{ question.title }}</a>
-              </h6>
-              <p class="text-muted mb-1">
-                {{ question.description }} <!-- Show full content -->
-              </p>
-              <div class="d-flex justify-content-between">
+          </div>
+          <div class="question-item border-bottom py-3" *ngFor="let question of questions" [routerLink]="['/question', question.id]" (click)="incrementViews(question.id)">
+            <div class="d-flex">
+              <div class="stats me-3 text-center">
+                <div class="mb-2">
+                  <div class="d-flex align-items-center">
+                    <button class="btn btn-sm btn-outline-success me-1" (click)="voteQuestion(question.id, 1); $event.stopPropagation()">
+                      <i class="bi bi-arrow-up"></i>
+                    </button>
+                    <span class="d-block mx-1">{{ question.votes }}</span>
+                    <button class="btn btn-sm btn-outline-danger ms-1" (click)="voteQuestion(question.id, -1); $event.stopPropagation()">
+                      <i class="bi bi-arrow-down"></i>
+                    </button>
+                  </div>
+                  <small class="text-muted">votes</small>
+                </div>
+                <div class="mb-2">
+                  <span class="d-block {{ question.answers > 0 ? 'text-success' : '' }}">{{ question.answers }}</span>
+                  <small class="text-muted">answers</small>
+                </div>
                 <div>
-                  <span class="badge bg-light text-dark me-1" *ngFor="let tag of question.tags.slice(1)">{{ tag }}</span> <!-- Skip the community name in tags -->
+                  <span class="d-block">{{ question.views }}</span>
+                  <small class="text-muted">views</small>
                 </div>
-                <div class="text-muted small">
-                  <img src="https://via.placeholder.com/20" alt="User Avatar" class="rounded-circle me-1" style="width: 20px; height: 20px;">
-                  {{ question.user }} • {{ question.time }}
+              </div>
+              <div class="flex-grow-1">
+                <h6 class="mb-1 text-muted">
+                  {{ question.tags[0] }} <!-- Display the community name -->
+                </h6>
+                <h6 class="mb-1">
+                  <a class="text-primary text-decoration-none">{{ question.title }}</a>
+                </h6>
+                <p class="text-muted mb-1">
+                  {{ question.description }} <!-- Show full content -->
+                </p>
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <span class="badge bg-light text-dark me-1" *ngFor="let tag of question.tags.slice(1)">{{ tag }}</span> <!-- Skip the community name in tags -->
+                  </div>
+                  <div class="text-muted small">
+                    <img src="https://via.placeholder.com/20" alt="User Avatar" class="rounded-circle me-1" style="width: 20px; height: 20px;">
+                    {{ question.user }} • {{ question.time }}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Recommended Questions -->
-      <div class="col-md-3">
-        <h6 class="mb-3">Recommended Questions in {{ communityName }}</h6>
-        <div class="related-question mb-3" *ngFor="let related of relatedQuestions">
-          <a [routerLink]="['/question', related.id]" class="text-primary text-decoration-none">{{ related.title }}</a>
-          <p class="text-muted small mb-0">{{ related.time }} • by {{ related.user }}</p>
+        <!-- Recommended Questions -->
+        <div class="col-md-3">
+          <h6 class="mb-3">Recommended Questions in {{ communityName }}</h6>
+          <div class="related-question mb-3" *ngFor="let related of relatedQuestions">
+            <a [routerLink]="['/question', related.id]" class="text-primary text-decoration-none">{{ related.title }}</a>
+            <p class="text-muted small mb-0">{{ related.time }} • by {{ related.user }}</p>
+          </div>
         </div>
       </div>
     </div>

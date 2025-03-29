@@ -1,0 +1,13 @@
+.profile-header {
+    background-color: #f8f9fa;
+    padding: 20px;
+  }
+  
+  .position-relative {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .position-absolute {
+    position: absolute;
+  }

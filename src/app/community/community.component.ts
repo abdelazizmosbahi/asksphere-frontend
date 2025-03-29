@@ -18,7 +18,7 @@ interface Question {
   answers: number;
 }
 
-declare const $: any; // Declare jQuery to avoid TypeScript errors
+declare const $: any;
 
 @Component({
   selector: 'app-community',
@@ -38,6 +38,7 @@ export class CommunityComponent implements OnInit, AfterViewInit {
   userBadges: any[] = [];
   communityMap: Map<number, string> = new Map();
   userMap: Map<string, string> = new Map();
+  isMember: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,7 +48,6 @@ export class CommunityComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    // Get the community ID from the route
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       this.communityId = id ? +id : null;
@@ -58,15 +58,13 @@ export class CommunityComponent implements OnInit, AfterViewInit {
       }
       this.loadUser();
       this.loadCommunities();
-      this.loadQuestions();
-      this.loadBadges();
-      this.loadRecommendedQuestions();
     });
   }
 
   ngAfterViewInit() {
-    // Fade in question items
-    $('.question-item').hide().fadeIn(500);
+    if (this.isMember) {
+      $('.question-item').hide().fadeIn(500);
+    }
   }
 
   loadUser() {
@@ -94,7 +92,6 @@ export class CommunityComponent implements OnInit, AfterViewInit {
         response.forEach((community: any) => {
           this.communityMap.set(community.idCommunity, community.name);
         });
-        // Set the community name for the current community
         this.communityName = this.communityMap.get(this.communityId!) || 'Unknown';
       },
       error: (err: any) => {
@@ -108,7 +105,12 @@ export class CommunityComponent implements OnInit, AfterViewInit {
     this.http.get(`${environment.apiUrl}/member_communities`, { withCredentials: true }).subscribe({
       next: (response: any) => {
         this.joinedCommunities = new Set(response.map((mc: any) => mc.communityId));
-        console.log('Joined Communities in Community:', this.joinedCommunities);
+        this.isMember = this.joinedCommunities.has(this.communityId!);
+        if (this.isMember) {
+          this.loadQuestions();
+          this.loadBadges();
+          this.loadRecommendedQuestions();
+        }
       },
       error: (err: any) => {
         this.toastr.error('Error fetching joined communities', 'Error');
@@ -131,7 +133,7 @@ export class CommunityComponent implements OnInit, AfterViewInit {
             this.fetchUsernames(memberIds).subscribe({
               next: () => {
                 this.questions = response
-                  .filter((question: Question) => question.communityId === this.communityId) // Filter by communityId
+                  .filter((question: Question) => question.communityId === this.communityId)
                   .map((question: Question) => ({
                     id: question._id,
                     title: question.title,
@@ -193,7 +195,7 @@ export class CommunityComponent implements OnInit, AfterViewInit {
     this.http.get(`${environment.apiUrl}/recommended_questions`, { withCredentials: true }).subscribe({
       next: (response: any) => {
         this.relatedQuestions = response
-          .filter((q: any) => q.communityId === this.communityId) // Filter recommended questions by communityId
+          .filter((q: any) => q.communityId === this.communityId)
           .map((q: any) => ({
             id: q._id,
             title: q.title,
@@ -262,6 +264,28 @@ export class CommunityComponent implements OnInit, AfterViewInit {
         console.error('Error incrementing views:', err);
       }
     });
+  }
+
+  joinCommunity() {
+    if (!this.communityId) return;
+    this.http.post(`${environment.apiUrl}/communities/join`, { communityId: this.communityId }, { withCredentials: true }).subscribe({
+      next: (response: any) => {
+        console.log('Join Community Response:', response);
+        this.loadJoinedCommunities();
+        this.toastr.success(`Joined ${this.communityName} community`, 'Success');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      },
+      error: (err: any) => {
+        this.toastr.error('Error joining community', 'Error');
+        console.error('Error joining community:', err);
+      }
+    });
+  }
+
+  navigateToAskQuestion() {
+    this.router.navigate(['/questions'], { queryParams: { communityId: this.communityId } });
   }
 
   getCommunityName(communityId: number): string {
