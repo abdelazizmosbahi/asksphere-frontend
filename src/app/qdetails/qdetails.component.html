@@ -1,93 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Q&A Forum Page</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .header {
-            background-color: #fff;
-            border-bottom: 1px solid #e5e5e5;
-            padding: 10px 0;
-        }
-        .header .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #007bff;
-        }
-        .header .search-bar {
-            max-width: 500px;
-        }
-        .main-content {
-            margin-top: 20px;
-        }
-        .question-section {
-            background-color: #fff;
-            padding: 20px;
-            border: 1px solid #e5e5e5;
-            border-radius: 5px;
-        }
-        .question-section h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .question-meta {
-            font-size: 14px;
-            color: #6c757d;
-        }
-        .answer-section {
-            background-color: #fff;
-            padding: 20px;
-            border: 1px solid #e5e5e5;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-        .answer-meta {
-            font-size: 14px;
-            color: #6c757d;
-        }
-        .sidebar {
-            background-color: #fff;
-            padding: 20px;
-            border: 1px solid #e5e5e5;
-            border-radius: 5px;
-        }
-        .sidebar h5 {
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        .footer {
-            background-color: #212529;
-            color: #fff;
-            padding: 40px 0;
-            margin-top: 40px;
-        }
-        .footer a {
-            color: #adb5bd;
-            text-decoration: none;
-        }
-        .footer a:hover {
-            color: #fff;
-        }
-        .code-block {
-            background-color: #f1f1f1;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
-        }
-    </style>
-</head>
-<body>
+<!-- Show loading spinner while data is being fetched -->
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p class="text-muted">Loading question...</p>
+</div>
+
+<!-- Main content, shown only when loading is complete -->
+<div *ngIf="!loading">
   <!-- Header -->
-<header class="header">
+  <header class="header">
     <div class="container d-flex align-items-center justify-content-between">
       <div class="logo">AskSphere</div>
       <div class="search-bar">
@@ -108,92 +30,95 @@
       </div>
     </div>
   </header>
-  
+
   <!-- Main Content -->
   <div class="container main-content">
     <div class="row">
       <!-- Main Question and Answer Section -->
       <div class="col-md-8">
-       <!-- Question Section -->
-<div class="question-section mb-4">
-    <h1>{{ question?.title }}</h1>
-    <div class="d-flex align-items-center mb-3">
-      <div class="vote-section me-3">
-        <button class="vote-btn vote-up" (click)="voteQuestion(1)">
-          <i class="bi bi-arrow-up"></i>
-        </button>
-        <span class="vote-count">{{ question?.votes }}</span>
-        <button class="vote-btn vote-down" (click)="voteQuestion(-1)">
-          <i class="bi bi-arrow-down"></i>
-        </button>
-      </div>
-      <div class="flex-grow-1">
-        <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="User Avatar">
-        <div class="d-inline-block">
-          <strong>{{ question?.user }}</strong><br>
-          <small class="text-muted">Asked {{ question?.time }}</small>
-        </div>
-      </div>
-      <div *ngIf="question?.memberId === userId">
-        <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal('question', question.id)" [disabled]="isDeletingQuestion">
-          <span *ngIf="isDeletingQuestion" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-          Delete
-        </button>
-      </div>
-    </div>
-    <p>{{ question?.content }}</p>
-    <p class="question-meta">
-      <span class="badge bg-secondary me-2">{{ communityName }}</span>
-      <span class="text-muted">{{ question?.views }} views</span>
-    </p>
-  </div>
-  
-<!-- Answer Section -->
-<div class="answer-section" *ngIf="answers.length > 0">
-    <h3>{{ answers.length }} Answer{{ answers.length === 1 ? '' : 's' }}</h3>
-    <hr>
-    <div class="answer mb-4" *ngFor="let answer of answers">
-      <div *ngIf="editingAnswerId !== answer.id">
-        <p>{{ answer.content }}</p>
-        <div class="d-flex align-items-center mt-3">
-          <div class="vote-section me-3">
-            <button class="vote-btn vote-up" [ngClass]="{'active': answer.userVote === 1}" (click)="voteAnswer(answer.id, 1)" [disabled]="isVotingAnswer.get(answer.id)">
-              <span *ngIf="isVotingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-              <i class="bi bi-arrow-up"></i>
-            </button>
-            <span class="vote-count">{{ answer.votes }}</span>
-            <button class="vote-btn vote-down" [ngClass]="{'active': answer.userVote === -1}" (click)="voteAnswer(answer.id, -1)" [disabled]="isVotingAnswer.get(answer.id)">
-              <span *ngIf="isVotingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-              <i class="bi bi-arrow-down"></i>
-            </button>
-          </div>
-          <div class="flex-grow-1">
-            <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="User Avatar">
-            <div class="d-inline-block">
-              <strong>{{ answer.user }}</strong><br>
-              <small class="text-muted">{{ getAnswerTimestampLabel(answer) }} {{ getAnswerTimestamp(answer) }}</small>
+        <!-- Question Section -->
+        <div class="question-section mb-4">
+          <h1>{{ question?.title }}</h1>
+          <div class="d-flex align-items-center mb-3">
+            <div class="vote-section me-3">
+              <button class="vote-btn vote-up" (click)="voteQuestion(1)">
+                <i class="bi bi-arrow-up"></i>
+              </button>
+              <span class="vote-count">{{ question?.votes }}</span>
+              <button class="vote-btn vote-down" (click)="voteQuestion(-1)">
+                <i class="bi bi-arrow-down"></i>
+              </button>
+            </div>
+            <div class="flex-grow-1">
+              <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="User Avatar">
+              <div class="d-inline-block">
+                <strong>{{ question?.user }}</strong><br>
+                <small class="text-muted">Asked {{ question?.time }}</small>
+              </div>
+            </div>
+            <div *ngIf="question?.memberId === userId">
+              <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal('question', question.id)" [disabled]="isDeletingQuestion">
+                <span *ngIf="isDeletingQuestion" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                Delete
+              </button>
             </div>
           </div>
-          <div *ngIf="answer.memberId === userId">
-            <button class="btn btn-sm btn-outline-primary me-2" (click)="startEditingAnswer(answer)">Edit</button>
-            <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal('answer', answer.id)" [disabled]="isDeletingAnswer.get(answer.id)">
-              <span *ngIf="isDeletingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-              Delete
-            </button>
+          <p>{{ question?.content }}</p>
+          <p class="question-meta">
+            <span class="badge bg-secondary me-2">{{ communityName }}</span>
+            <span class="text-muted">{{ question?.views }} views</span>
+          </p>
+        </div>
+
+        <!-- Answer Section -->
+        <div class="answer-section" *ngIf="answers.length > 0">
+          <h3>{{ answers.length }} Answer{{ answers.length === 1 ? '' : 's' }}</h3>
+          <hr>
+          <div class="answer mb-4" *ngFor="let answer of answers" [id]="'answer-' + answer.id">
+            <div *ngIf="editingAnswerId !== answer.id">
+              <p>{{ answer.content }}</p>
+              <div class="d-flex align-items-center mt-3">
+                <div class="vote-section me-3">
+                  <button class="vote-btn vote-up" [ngClass]="{'active': answer.userVote === 1}" (click)="voteAnswer(answer.id, 1)" [disabled]="isVotingAnswer.get(answer.id)">
+                    <span *ngIf="isVotingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    <i class="bi bi-arrow-up"></i>
+                  </button>
+                  <span class="vote-count">{{ answer.votes }}</span>
+                  <button class="vote-btn vote-down" [ngClass]="{'active': answer.userVote === -1}" (click)="voteAnswer(answer.id, -1)" [disabled]="isVotingAnswer.get(answer.id)">
+                    <span *ngIf="isVotingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    <i class="bi bi-arrow-down"></i>
+                  </button>
+                </div>
+                <div class="flex-grow-1">
+                  <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="User Avatar">
+                  <div class="d-inline-block">
+                    <strong>{{ answer.user }}</strong><br>
+                    <small class="text-muted">
+                      {{ getAnswerTimestampLabel(answer) }} {{ getAnswerTimestamp(answer) }}
+                      <span *ngIf="highlightedAnswerId === answer.id && !viewedAnswers.has(answer.id)" class="badge bg-primary ms-2">New</span>
+                    </small>
+                  </div>
+                </div>
+                <div *ngIf="answer.memberId === userId">
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="startEditingAnswer(answer)">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal('answer', answer.id)" [disabled]="isDeletingAnswer.get(answer.id)">
+                    <span *ngIf="isDeletingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="editingAnswerId === answer.id">
+              <textarea [(ngModel)]="editedAnswerContent" class="form-control mb-2" rows="3"></textarea>
+              <button class="btn btn-sm btn-primary me-2" (click)="updateAnswer(answer.id)" [disabled]="isUpdatingAnswer.get(answer.id)">
+                <span *ngIf="isUpdatingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                Save
+              </button>
+              <button class="btn btn-sm btn-secondary" (click)="cancelEditingAnswer()">Cancel</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div *ngIf="editingAnswerId === answer.id">
-        <textarea [(ngModel)]="editedAnswerContent" class="form-control mb-2" rows="3"></textarea>
-        <button class="btn btn-sm btn-primary me-2" (click)="updateAnswer(answer.id)" [disabled]="isUpdatingAnswer.get(answer.id)">
-          <span *ngIf="isUpdatingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-          Save
-        </button>
-        <button class="btn btn-sm btn-secondary" (click)="cancelEditingAnswer()">Cancel</button>
-      </div>
-    </div>
-  </div>
-  
+
         <!-- Your Answer Section -->
         <div class="answer-section mt-4">
           <h3>Your Answer</h3>
@@ -227,7 +152,7 @@
           </form>
         </div>
       </div>
-  
+
       <!-- Sidebar -->
       <div class="col-md-4">
         <div class="sidebar">
@@ -252,7 +177,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Delete Confirmation Modal -->
   <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -274,7 +199,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Success Modal for Answer Posting -->
   <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -289,7 +214,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
@@ -331,131 +256,4 @@
       </div>
     </div>
   </footer>
-  
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f8f9fa;
-    }
-    .header {
-      background-color: #fff;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 10px 0;
-    }
-    .header .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: #007bff;
-    }
-    .header .search-bar {
-      max-width: 500px;
-    }
-    .main-content {
-      margin-top: 20px;
-    }
-    .question-section {
-      background-color: #fff;
-      padding: 20px;
-      border: 1px solid #e5e5e5;
-      border-radius: 5px;
-    }
-    .question-section h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    .question-meta {
-      font-size: 14px;
-      color: #6c757d;
-    }
-    .answer-section {
-      background-color: #fff;
-      padding: 20px;
-      border: 1px solid #e5e5e5;
-      border-radius: 5px;
-      margin-top: 20px;
-    }
-    .answer-meta {
-      font-size: 14px;
-      color: #6c757d;
-    }
-    .sidebar {
-      background-color: #fff;
-      padding: 20px;
-      border: 1px solid #e5e5e5;
-      border-radius: 5px;
-    }
-    .sidebar h5 {
-      font-size: 16px;
-      margin-bottom: 15px;
-    }
-    .footer {
-      background-color: #212529;
-      color: #fff;
-      padding: 40px 0;
-      margin-top: 40px;
-    }
-    .footer a {
-      color: #adb5bd;
-      text-decoration: none;
-    }
-    .footer a:hover {
-      color: #fff;
-    }
-    .code-block {
-      background-color: #f1f1f1;
-      padding: 10px;
-      border-radius: 5px;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 14px;
-    }
-    .border-success {
-      border-color: #28a745 !important;
-      border-width: 2px !important;
-    }
-    .border-danger {
-      border-color: #dc3545 !important;
-      border-width: 2px !important;
-    }
-    .vote-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-right: 15px;
-    }
-    .vote-btn {
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 5px;
-      transition: color 0.2s;
-    }
-    .vote-up {
-      color: #28a745;
-    }
-    .vote-up:hover {
-      color: #218838;
-    }
-    .vote-up.active {
-      color: #155724; /* Darker green when active */
-    }
-    .vote-down {
-      color: #dc3545;
-    }
-    .vote-down:hover {
-      color: #c82333;
-    }
-    .vote-down.active {
-      color: #a71d2a; /* Darker red when active */
-    }
-    .vote-count {
-      font-size: 18px;
-      font-weight: bold;
-      color: #333;
-      margin: 5px 0;
-    }
-  </style>
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>

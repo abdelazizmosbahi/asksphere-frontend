@@ -1,0 +1,151 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+  }
+  
+  .header {
+    background-color: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 10px 0;
+  }
+  
+  .header .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+  }
+  
+  .header .search-bar {
+    max-width: 500px;
+  }
+  
+  .main-content {
+    margin-top: 20px;
+  }
+  
+  .question-section {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+  }
+  
+  .question-section h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .question-meta {
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  .answer-section {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+  
+  .answer-meta {
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  .sidebar {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+  }
+  
+  .sidebar h5 {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .footer {
+    background-color: #212529;
+    color: #fff;
+    padding: 40px 0;
+    margin-top: 40px;
+  }
+  
+  .footer a {
+    color: #adb5bd;
+    text-decoration: none;
+  }
+  
+  .footer a:hover {
+    color: #fff;
+  }
+  
+  .code-block {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+  }
+  
+  .border-success {
+    border-color: #28a745 !important;
+    border-width: 2px !important;
+  }
+  
+  .border-danger {
+    border-color: #dc3545 !important;
+    border-width: 2px !important;
+  }
+  
+  .vote-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 15px;
+  }
+  
+  .vote-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s;
+  }
+  
+  .vote-up {
+    color: #28a745;
+  }
+  
+  .vote-up:hover {
+    color: #218838;
+  }
+  
+  .vote-up.active {
+    color: #155724;
+  }
+  
+  .vote-down {
+    color: #dc3545;
+  }
+  
+  .vote-down:hover {
+    color: #c82333;
+  }
+  
+  .vote-down.active {
+    color: #a71d2a;
+  }
+  
+  .vote-count {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 5px 0;
+  }
+  
+  .answer {
+    transition: opacity 0.5s ease;
+  }

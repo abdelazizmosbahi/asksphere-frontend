@@ -35,7 +35,7 @@
   <section class="container mt-4">
     <div class="profile-header d-flex align-items-center p-4 bg-light rounded">
       <div class="position-relative">
-        <img [src]="avatar" alt="{{ username }}" class="rounded-circle me-4" height="100"> <!-- Added me-4 for spacing -->
+        <img [src]="avatar" alt="{{ username }}" class="rounded-circle me-4" height="100">
         <button class="btn btn-sm btn-primary position-absolute bottom-0 end-0" data-bs-toggle="modal" data-bs-target="#editAvatarModal">
           <i class="bi bi-pencil"></i>
         </button>
@@ -55,6 +55,15 @@
             {{ email }}
             <button class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
               <i class="bi bi-pencil"></i>
+            </button>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-3"><strong>Password:</strong></div>
+          <div class="col-md-9">
+            ********
+            <button class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+              <i class="bi bi-pencil"></i> Change
             </button>
           </div>
         </div>
@@ -86,11 +95,11 @@
           <form>
             <div class="mb-3">
               <label for="editUsername" class="form-label">Username</label>
-              <input type="text" class="form-control" id="editUsername" [value]="username">
+              <input type="text" class="form-control" id="editUsername" [(ngModel)]="editUsername" name="editUsername">
             </div>
             <div class="mb-3">
               <label for="editEmail" class="form-label">Email</label>
-              <input type="email" class="form-control" id="editEmail" [value]="email">
+              <input type="email" class="form-control" id="editEmail" [(ngModel)]="editEmail" name="editEmail">
             </div>
           </form>
         </div>
@@ -122,6 +131,56 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" (click)="uploadAvatar()">Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="currentPassword" class="form-label">Current Password</label>
+              <input type="password" class="form-control" id="currentPassword" [(ngModel)]="currentPassword" name="currentPassword">
+            </div>
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="newPassword" [(ngModel)]="newPassword" name="newPassword">
+            </div>
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm New Password</label>
+              <input type="password" class="form-control" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" (click)="changePassword()">Change Password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="successModalLabel">Success</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>{{ successMessage }} Page will refresh in {{ countdown }} seconds.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="reloadPage()">Close</button>
         </div>
       </div>
     </div>

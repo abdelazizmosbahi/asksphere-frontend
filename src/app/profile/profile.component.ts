@@ -41,6 +41,18 @@ export class ProfileComponent implements OnInit {
   restrictionLevel: number = 0;
   searchQuery: string = '';
   selectedAvatar: File | null = null;
+  
+  // Form fields
+  currentPassword: string = '';
+  newPassword: string = '';
+  confirmPassword: string = '';
+  editUsername: string = '';
+  editEmail: string = '';
+
+  // Countdown
+  countdown: number = 3;
+  countdownInterval: any;
+  successMessage: string = '';
 
   constructor(
     private http: HttpClient,
@@ -63,7 +75,9 @@ export class ProfileComponent implements OnInit {
         this.status = response.status;
         this.restrictionLevel = response.restrictionLevel;
         const dateJoined = new Date(response.dateJoined);
-        this.dateJoined = `Joined in ${dateJoined.toISOString().split('T')[0]}`; // Format as "Joined in YYYY-MM-DD"
+        this.dateJoined = `Joined in ${dateJoined.toISOString().split('T')[0]}`;
+        this.editUsername = this.username;
+        this.editEmail = this.email;
       },
       error: () => {
         this.toastr.error('Please log in to view your profile', 'Error');
@@ -97,7 +111,8 @@ export class ProfileComponent implements OnInit {
       next: (response: AvatarResponse) => {
         this.avatar = response.avatar;
         this.selectedAvatar = null;
-        this.toastr.success('Avatar updated successfully', 'Success');
+        this.successMessage = 'Avatar updated successfully';
+        this.showSuccessModal();
         const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('editAvatarModal'));
         modal.hide();
       },
@@ -109,16 +124,22 @@ export class ProfileComponent implements OnInit {
   }
 
   updateProfile() {
-    const emailInput = (document.getElementById('editEmail') as HTMLInputElement).value;
-    const usernameInput = (document.getElementById('editUsername') as HTMLInputElement).value;
+    if (!this.editUsername || !this.editEmail) {
+      this.toastr.error('Username and email are required', 'Error');
+      return;
+    }
 
-    const updateData = { email: emailInput, username: usernameInput };
+    const updateData = { 
+      email: this.editEmail, 
+      username: this.editUsername 
+    };
 
     this.http.put<UpdateProfileResponse>(`${environment.apiUrl}/profile`, updateData, { withCredentials: true }).subscribe({
       next: (response: UpdateProfileResponse) => {
-        this.email = emailInput;
-        this.username = response.username; // Update username from response
-        this.toastr.success(response.message, 'Success');
+        this.email = this.editEmail;
+        this.username = response.username;
+        this.successMessage = response.message;
+        this.showSuccessModal();
         const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
         modal.hide();
       },
@@ -127,6 +148,64 @@ export class ProfileComponent implements OnInit {
         console.error('Error updating profile:', err);
       }
     });
+  }
+
+  changePassword() {
+    if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
+      this.toastr.error('All password fields are required', 'Error');
+      return;
+    }
+
+    if (this.newPassword !== this.confirmPassword) {
+      this.toastr.error('New passwords do not match', 'Error');
+      return;
+    }
+
+    if (this.newPassword.length < 8) {
+      this.toastr.error('Password must be at least 8 characters long', 'Error');
+      return;
+    }
+
+    const passwordData = {
+      current_password: this.currentPassword,
+      password: this.newPassword,
+      confirm_password: this.confirmPassword
+    };
+
+    this.http.put(`${environment.apiUrl}/password`, passwordData, { withCredentials: true }).subscribe({
+      next: () => {
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.confirmPassword = '';
+        this.successMessage = 'Password changed successfully';
+        this.showSuccessModal();
+        const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
+        modal.hide();
+      },
+      error: (err) => {
+        this.toastr.error(err.error.message || 'Error changing password', 'Error');
+        console.error('Error changing password:', err);
+      }
+    });
+  }
+
+  showSuccessModal() {
+    this.countdown = 3;
+    const successModal = new (window as any).bootstrap.Modal(document.getElementById('successModal'));
+    successModal.show();
+    
+    this.countdownInterval = setInterval(() => {
+      this.countdown--;
+      if (this.countdown <= 0) {
+        clearInterval(this.countdownInterval);
+        this.reloadPage();
+      }
+    }, 1000);
+  }
+
+  reloadPage() {
+    clearInterval(this.countdownInterval);
+    window.location.reload();
   }
 
   onSearch() {

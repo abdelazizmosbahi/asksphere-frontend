@@ -17,12 +17,16 @@ import { QuestionComponent } from './question/question.component';
 import { Routes } from '@angular/router';
 import { ProfileComponent } from './profile/profile.component'; // Import ProfileComponent
 import { BadgesComponent } from './badges/badges.component';
+import { NotificationsComponent } from './notifications/notifications.component';
+import { NotificationService } from './notification.service';
+import { CommonModule } from '@angular/common';
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'community/:id', component: CommunityComponent },
   { path: 'question/:id', component: QdetailsComponent },
   { path: 'questions', component: QuestionComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'notifications', component: NotificationsComponent },
   { path: '**', redirectTo: '' }
 ];
 @NgModule({
@@ -35,8 +39,9 @@ const routes: Routes = [
     QdetailsComponent,
     CommunityComponent,
     BadgesComponent,
-    ProfileComponent],
-  imports: [BrowserModule, HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, BrowserAnimationsModule, ToastrModule.forRoot({ // Configure Toastr
+    ProfileComponent,
+    NotificationsComponent],
+  imports: [BrowserModule, HttpClientModule, AppRoutingModule, CommonModule,FormsModule, ReactiveFormsModule, BrowserAnimationsModule, ToastrModule.forRoot({ // Configure Toastr
     timeOut: 3000,
     positionClass: 'toast-top-right',
     preventDuplicates: true,
