@@ -4,194 +4,228 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <div class="container-fluid p-0">
-  <!-- Header -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold" [routerLink]="['/']" style="color: #007bff;">
-        <i class="bi bi-chat-left-text"></i> AskSphere
-      </a>
+      <button class="btn btn-outline-primary me-2 sidebar-toggle" (click)="toggleSidebar()">
+        <i class="bi" [ngClass]="{'bi-list': !sidebarCollapsed, 'bi-x': sidebarCollapsed}"></i>
+      </button>
+      <h4 class="fw-bold m-0" style="color: #007bff;">
+        <i class="bi bi-chat-left-text me-2"></i> AskSphere
+      </h4>
       <div class="navbar-nav ms-auto">
-        <a class="nav-link" [routerLink]="['/']">Home</a>
         <div class="input-group me-2" style="width: 300px;">
           <input type="text" class="form-control" placeholder="Type your search words..." [(ngModel)]="searchQuery" (ngSubmit)="onSearch()">
           <button class="btn btn-outline-secondary" type="button" (click)="onSearch()">
             <i class="bi bi-search"></i>
           </button>
         </div>
-        <div class="dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img [src]="avatar" alt="User Avatar" height="30" class="rounded-circle me-1"> {{ username }}
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" [routerLink]="['/profile']">Profile</a></li>
-            <li><a class="dropdown-item text-danger" (click)="logout()">Logout</a></li>
-          </ul>
-        </div>
+        <button class="btn btn-outline-danger" type="button" (click)="logout()" title="Logout">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
       </div>
     </div>
   </nav>
 
-  <!-- Profile Section -->
-  <section class="container mt-4">
-    <div class="profile-header d-flex align-items-center p-4 bg-light rounded">
-      <div class="position-relative">
-        <img [src]="avatar" alt="{{ username }}" class="rounded-circle me-4" height="100">
-        <button class="btn btn-sm btn-primary position-absolute bottom-0 end-0" data-bs-toggle="modal" data-bs-target="#editAvatarModal">
-          <i class="bi bi-pencil"></i>
-        </button>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar-fixed" [ngClass]="{'collapsed': sidebarCollapsed}">
+      <div class="sidebar-header p-3 border-bottom">
+        <h4 class="fw-bold m-0" style="color: #007bff;">
+          <i class="bi bi-chat-left-text me-2"></i>  
+        </h4>
       </div>
-      <div>
-        <h1>{{ username }}</h1>
-        <p>{{ dateJoined }}</p>
-      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/']"><i class="bi bi-house-door me-2"></i> Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/questions']"><i class="bi bi-question-circle me-2"></i> Questions</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/communities']"><i class="bi bi-people me-2"></i> Communities</a>
+          <ul class="nav flex-column ms-3" *ngIf="joinedCommunities.size > 0">
+            <li class="nav-item" *ngFor="let communityId of joinedCommunities">
+              <a class="nav-link small" [routerLink]="['/community', communityId]">
+                {{ getCommunityName(communityId) }}
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/badges']"><i class="bi bi-award me-2"></i> Badges ({{ userBadges.length }})</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active text-primary" [routerLink]="['/profile']"><i class="bi bi-person me-2"></i> Profile</a>
+        </li>
+      </ul>
     </div>
 
-    <div class="card mt-4">
-      <div class="card-body">
-        <h2>Profile Information</h2>
-        <div class="row mb-2">
-          <div class="col-md-3"><strong>Email:</strong></div>
-          <div class="col-md-9">
-            {{ email }}
-            <button class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+    <!-- Main Content Area -->
+    <div class="flex-grow-1 main-content" [ngClass]="{'expanded': !sidebarCollapsed}">
+      <!-- Profile Section -->
+      <section class="container mt-4">
+        <div class="profile-header d-flex align-items-center p-4 bg-light rounded">
+          <div class="position-relative">
+            <img [src]="avatar" alt="{{ username }}" class="rounded-circle me-4" height="100">
+            <button class="btn btn-sm btn-primary position-absolute bottom-0 end-0" data-bs-toggle="modal" data-bs-target="#editAvatarModal">
               <i class="bi bi-pencil"></i>
             </button>
           </div>
-        </div>
-        <div class="row mb-2">
-          <div class="col-md-3"><strong>Password:</strong></div>
-          <div class="col-md-9">
-            ********
-            <button class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-              <i class="bi bi-pencil"></i> Change
-            </button>
+          <div>
+            <h1>{{ username }}</h1>
+            <p>{{ dateJoined }}</p>
           </div>
         </div>
-        <div class="row mb-2">
-          <div class="col-md-3"><strong>Reputation:</strong></div>
-          <div class="col-md-9">{{ reputation }}</div>
-        </div>
-        <div class="row mb-2">
-          <div class="col-md-3"><strong>Status:</strong></div>
-          <div class="col-md-9">{{ status }}</div>
-        </div>
-        <div class="row mb-2">
-          <div class="col-md-3"><strong>Restriction Level:</strong></div>
-          <div class="col-md-9">{{ restrictionLevel }}</div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Edit Profile Modal -->
-  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="mb-3">
-              <label for="editUsername" class="form-label">Username</label>
-              <input type="text" class="form-control" id="editUsername" [(ngModel)]="editUsername" name="editUsername">
+        <div class="card mt-4">
+          <div class="card-body">
+            <h2>Profile Information</h2>
+            <div class="row mb-2">
+              <div class="col-md-3"><strong>Email:</strong></div>
+              <div class="col-md-9">
+                {{ email }}
+                <button class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="editEmail" class="form-label">Email</label>
-              <input type="email" class="form-control" id="editEmail" [(ngModel)]="editEmail" name="editEmail">
+            <div class="row mb-2">
+              <div class="col-md-3"><strong>Password:</strong></div>
+              <div class="col-md-9">
+                ********
+                <button class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                  <i class="bi bi-pencil"></i> Change
+                </button>
+              </div>
             </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" (click)="updateProfile()">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Edit Avatar Modal -->
-  <div class="modal fade" id="editAvatarModal" tabindex="-1" aria-labelledby="editAvatarModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editAvatarModalLabel">Change Avatar</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="avatarInput" class="form-label">Upload New Avatar</label>
-            <input type="file" class="form-control" id="avatarInput" accept="image/png,image/jpeg,image/gif" (change)="onAvatarSelected($event)">
+            <div class="row mb-2">
+              <div class="col-md-3"><strong>Reputation:</strong></div>
+              <div class="col-md-9">{{ reputation }}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-md-3"><strong>Status:</strong></div>
+              <div class="col-md-9">{{ status }}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-md-3"><strong>Restriction Level:</strong></div>
+              <div class="col-md-9">{{ restrictionLevel }}</div>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <!-- Edit Profile Modal -->
+      <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3">
+                  <label for="editUsername" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="editUsername" [(ngModel)]="editUsername" name="editUsername">
+                </div>
+                <div class="mb-3">
+                  <label for="editEmail" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="editEmail" [(ngModel)]="editEmail" name="editEmail">
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" (click)="updateProfile()">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Avatar Modal -->
+      <div class="modal fade" id="editAvatarModal" tabindex="-1" aria-labelledby="editAvatarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editAvatarModalLabel">Change Avatar</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="avatarInput" class="form-label">Upload New Avatar</label>
+                <input type="file" class="form-control" id="avatarInput" accept="image/png,image/jpeg,image/gif" (change)="onAvatarSelected($event)">
+              </div>
+              <div class="text-center">
+                <img [src]="avatar" alt="Avatar Preview" class="rounded-circle" height="100">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" (click)="uploadAvatar()">Upload</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Change Password Modal -->
+      <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3">
+                  <label for="currentPassword" class="form-label">Current Password</label>
+                  <input type="password" class="form-control" id="currentPassword" [(ngModel)]="currentPassword" name="currentPassword">
+                </div>
+                <div class="mb-3">
+                  <label for="newPassword" class="form-label">New Password</label>
+                  <input type="password" class="form-control" id="newPassword" [(ngModel)]="newPassword" name="newPassword">
+                </div>
+                <div class="mb-3">
+                  <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                  <input type="password" class="form-control" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword">
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" (click)="changePassword()">Change Password</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Modal -->
+      <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+              <h5 class="modal-title" id="successModalLabel">Success</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>{{ successMessage }} Page will refresh in {{ countdown }} seconds.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="reloadPage()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="bg-dark text-white py-4 mt-4">
+        <div class="container">
           <div class="text-center">
-            <img [src]="avatar" alt="Avatar Preview" class="rounded-circle" height="100">
+            <p class="mb-0">© 2025 AskSphere</p>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" (click)="uploadAvatar()">Upload</button>
-        </div>
-      </div>
+      </footer>
     </div>
   </div>
-
-  <!-- Change Password Modal -->
-  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="mb-3">
-              <label for="currentPassword" class="form-label">Current Password</label>
-              <input type="password" class="form-control" id="currentPassword" [(ngModel)]="currentPassword" name="currentPassword">
-            </div>
-            <div class="mb-3">
-              <label for="newPassword" class="form-label">New Password</label>
-              <input type="password" class="form-control" id="newPassword" [(ngModel)]="newPassword" name="newPassword">
-            </div>
-            <div class="mb-3">
-              <label for="confirmPassword" class="form-label">Confirm New Password</label>
-              <input type="password" class="form-control" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword">
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" (click)="changePassword()">Change Password</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Success Modal -->
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header bg-success text-white">
-          <h5 class="modal-title" id="successModalLabel">Success</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>{{ successMessage }} Page will refresh in {{ countdown }} seconds.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="reloadPage()">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-white py-4 mt-4">
-    <div class="container">
-      <div class="text-center">
-        <p class="mb-0">© 2025 AskSphere</p>
-      </div>
-    </div>
-  </footer>
 </div>

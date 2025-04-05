@@ -17,6 +17,19 @@ export class NotificationsComponent implements OnInit {
   badges: any[] = [];
   loading: boolean = true;
 
+  communityId: number | null = null;
+  communityName: string = '';
+  searchQuery: string = '';
+  communities: any[] = [];
+  joinedCommunities: Set<number> = new Set();
+  questions: any[] = [];
+  relatedQuestions: any[] = [];
+  userBadges: any[] = [];
+  communityMap: Map<number, string> = new Map();
+  userMap: Map<string, string> = new Map();
+  isMember: boolean = false;
+
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -24,6 +37,11 @@ export class NotificationsComponent implements OnInit {
     private authService: AuthService
   ) {}
 
+  sidebarCollapsed = false;
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
   ngOnInit(): void {
     this.authService.isLoggedIn().subscribe({
       next: (response: any) => {
@@ -153,5 +171,14 @@ export class NotificationsComponent implements OnInit {
         this.router.navigate(['/login']);
       }
     });
+  }
+  onSearch() {
+    if (this.searchQuery.trim()) {
+      this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });
+    }
+  }
+  
+  getCommunityName(communityId: number): string {
+    return this.communityMap.get(communityId) || 'Unknown';
   }
 }

@@ -45,6 +45,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private toastr: ToastrService
   ) {}
 
+  sidebarCollapsed = false;
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
+
   ngOnInit() {
     this.loadUser();
     this.loadCommunities();

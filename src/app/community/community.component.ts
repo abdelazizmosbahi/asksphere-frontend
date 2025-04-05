@@ -46,6 +46,11 @@ export class CommunityComponent implements OnInit, AfterViewInit {
     private http: HttpClient,
     private toastr: ToastrService
   ) {}
+  sidebarCollapsed = false;
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {

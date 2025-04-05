@@ -41,6 +41,18 @@ export class ProfileComponent implements OnInit {
   restrictionLevel: number = 0;
   searchQuery: string = '';
   selectedAvatar: File | null = null;
+
+  communityId: number | null = null;
+  communityName: string = '';
+  communities: any[] = [];
+  joinedCommunities: Set<number> = new Set();
+  questions: any[] = [];
+  relatedQuestions: any[] = [];
+  userBadges: any[] = [];
+  communityMap: Map<number, string> = new Map();
+  userMap: Map<string, string> = new Map();
+  isMember: boolean = false;
+
   
   // Form fields
   currentPassword: string = '';
@@ -226,5 +238,16 @@ export class ProfileComponent implements OnInit {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  
+  getCommunityName(communityId: number): string {
+    return this.communityMap.get(communityId) || 'Unknown';
+  }
+  
+  sidebarCollapsed = false;
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 }

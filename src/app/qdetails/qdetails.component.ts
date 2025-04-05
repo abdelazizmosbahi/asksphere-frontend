@@ -61,6 +61,17 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
   viewedAnswers: Set<string> = new Set();
   loading: boolean = true; // Add loading state
 
+  communityId: number | null = null;
+  user: any = null;
+  searchQuery: string = '';
+  communities: any[] = [];
+  joinedCommunities: Set<number> = new Set();
+  questions: any[] = [];
+  userBadges: any[] = [];
+  communityMap: Map<number, string> = new Map();
+  isMember: boolean = false;
+
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -625,5 +636,23 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+
+  
+  getCommunityName(communityId: number): string {
+    return this.communityMap.get(communityId) || 'Unknown';
+  }
+  
+  sidebarCollapsed = false;
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
+  
+  onSearch() {
+    if (this.searchQuery.trim()) {
+      this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });
+    }
   }
 }

@@ -33,12 +33,30 @@ export class BadgesComponent implements OnInit {
   pageSize: number = 20;
   totalBadges: number = 0;
 
+  communityId: number | null = null;
+  communityName: string = '';
+  username: string = '';
+  communities: any[] = [];
+  joinedCommunities: Set<number> = new Set();
+  questions: any[] = [];
+  relatedQuestions: any[] = [];
+  userBadges: any[] = [];
+  communityMap: Map<number, string> = new Map();
+  userMap: Map<string, string> = new Map();
+  isMember: boolean = false;
+
+
   constructor(
     private http: HttpClient,
     private router: Router,
     private toastr: ToastrService
   ) {}
 
+  sidebarCollapsed = false;
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
   ngOnInit() {
     this.loadUser();
     this.loadBadges();
@@ -159,5 +177,11 @@ export class BadgesComponent implements OnInit {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+
+  
+  getCommunityName(communityId: number): string {
+    return this.communityMap.get(communityId) || 'Unknown';
   }
 }
