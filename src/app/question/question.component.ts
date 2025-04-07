@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, Observable, of } from 'rxjs';
@@ -20,6 +20,16 @@ export class QuestionComponent implements OnInit {
   isContentRelevant: boolean = false;
   validationError: string | null = null;
   contentSubject: Subject<string> = new Subject<string>();
+
+  user: any = null;
+  searchQuery: string = '';
+  communities: any[] = [];
+  joinedCommunities: Set<number> = new Set();
+  questions: any[] = [];
+  userBadges: any[] = [];
+  communityMap: Map<number, string> = new Map();
+  isMember: boolean = false;
+  sidebarCollapsed = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,15 +73,27 @@ export class QuestionComponent implements OnInit {
         this.isContentRelevant = false;
         this.validationError = null;
         form.resetForm();
+
         // Show the success modal
-        const successModal = new (window as any).bootstrap.Modal(document.getElementById('successModal'));
+        const successModalElement = document.getElementById('successModal');
+        const successModal = new (window as any).bootstrap.Modal(successModalElement);
         successModal.show();
-        // Redirect to the community page after 2 seconds
+
+        // Hide the modal and navigate after 2 seconds
         setTimeout(() => {
-          this.router.navigate([`/community/${this.communityId}`]);
+          successModal.hide(); // Explicitly hide the modal
+          // Remove the backdrop manually if it persists
+          const backdrop = document.querySelector('.modal-backdrop');
+          if (backdrop) {
+            backdrop.remove();
+          }
+          document.body.classList.remove('modal-open'); // Reset body class
+          this.router.navigate([`/community/${this.communityId}`]).then(() => {
+            console.log('Navigation to community page completed');
+          });
         }, 2000);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         this.isPosting = false;
         this.toastr.error(err.error.message || 'Error posting question', 'Error');
         console.error('Error posting question:', err);
@@ -132,5 +154,33 @@ export class QuestionComponent implements OnInit {
 
   onContentChange(content: string) {
     this.contentSubject.next(content);
+  }
+
+  getCommunityName(communityId: number): string {
+    return this.communityMap.get(communityId) || 'Unknown';
+  }
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
+
+  onSearch() {
+    if (this.searchQuery.trim()) {
+      this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });
+    }
+  }
+
+  logout() {
+    this.http.get(`${environment.apiUrl}/logout`, { withCredentials: true }).subscribe({
+      next: () => {
+        this.toastr.success('Logged out successfully', 'Success');
+        this.router.navigate(['/login']);
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Error logging out:', err);
+        this.toastr.error('Error logging out', 'Error');
+        this.router.navigate(['/login']);
+      }
+    });
   }
 }

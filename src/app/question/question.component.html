@@ -4,200 +4,230 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <div class="container-fluid p-0">
-  <!-- Header -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold" [routerLink]="['/']" style="color: #007bff;">
-        <i class="bi bi-chat-left-text"></i> AskSphere
-      </a>
+      <button class="btn btn-outline-primary me-2 sidebar-toggle" (click)="toggleSidebar()">
+        <i class="bi" [ngClass]="{'bi-list': !sidebarCollapsed, 'bi-x': sidebarCollapsed}"></i>
+      </button>
+      <h4 class="fw-bold m-0" style="color: #007bff;">
+        <i class="bi bi-chat-left-text me-2"></i> AskSphere
+      </h4>
       <div class="navbar-nav ms-auto">
-        <a class="nav-link" [routerLink]="['/']">Home</a>
-        <a class="nav-link" href="#">Pages</a>
-        <a class="nav-link" href="#">Blog</a>
         <div class="input-group me-2" style="width: 300px;">
-          <input type="text" class="form-control" placeholder="Type your search words...">
-          <button class="btn btn-outline-secondary" type="button">
+          <input type="text" class="form-control" placeholder="Type your search words..." [(ngModel)]="searchQuery" (ngSubmit)="onSearch()">
+          <button class="btn btn-outline-secondary" type="button" (click)="onSearch()">
             <i class="bi bi-search"></i>
           </button>
         </div>
-        <div class="dropdown">
-          <button class="btn btn-primary dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-person-circle"></i> Account
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="accountDropdown">
-            <li><h6 class="dropdown-header">User</h6></li>
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
-            <li><a class="dropdown-item text-danger" href="#">Logout</a></li>
-          </ul>
-        </div>
+        <button class="btn btn-outline-danger" type="button" (click)="logout()" title="Logout">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
       </div>
     </div>
   </nav>
 
-  <!-- Ask a Question Section -->
-  <section class="container mt-4">
-    <h1 class="mb-4">Ask a public question</h1>
-
-    <div class="row">
-      <div class="col-md-8">
-        <div class="card p-4">
-          <form #questionForm="ngForm" (ngSubmit)="questionForm.valid && postQuestion(questionForm)">
-            <!-- Question Title -->
-            <div class="mb-3">
-              <label for="questionTitle" class="form-label">Question Title</label>
-              <input
-                type="text"
-                class="form-control"
-                id="questionTitle"
-                name="title"
-                [(ngModel)]="title"
-                required
-                placeholder="Be specific and imagine you're asking a question to another person e.g. Is there an R function for finding the index of an element in a vector?"
-              >
-              <div *ngIf="questionForm.controls['title']?.invalid && (questionForm.controls['title']?.dirty || questionForm.controls['title']?.touched)" class="text-danger">
-                <small *ngIf="questionForm.controls['title']?.errors?.['required']">Question title is required.</small>
-              </div>
-            </div>
-
-            <!-- Question Details -->
-            <div class="mb-3 position-relative">
-              <label for="questionDetails" class="form-label">Details</label>
-              <textarea
-                id="questionDetails"
-                name="content"
-                [(ngModel)]="content"
-                (ngModelChange)="onContentChange($event)"
-                class="form-control"
-                [ngClass]="{'border-success': isContentRelevant && !isValidating, 'border-danger': !isContentRelevant && !isValidating}"
-                rows="5"
-                placeholder="Include all the information someone would need to answer your question"
-                required
-              ></textarea>
-              <div *ngIf="isValidating" class="position-absolute top-0 end-0 p-2">
-                <span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>
-              </div>
-              <div *ngIf="questionForm.controls['content']?.invalid && (questionForm.controls['content']?.dirty || questionForm.controls['content']?.touched)" class="text-danger">
-                <small *ngIf="questionForm.controls['content']?.errors?.['required']">Question content is required.</small>
-              </div>
-              <div *ngIf="!isContentRelevant && validationError && !isValidating" class="text-danger">
-                <small>{{ validationError }}</small>
-              </div>
-            </div>
-
-            <!-- Privacy Policy Checkbox -->
-            <div class="form-check mb-3">
-              <input type="checkbox" class="form-check-input" id="privacyPolicy" name="privacyPolicy" ngModel required>
-              <label class="form-check-label" for="privacyPolicy">By asking your question, you agree to the Privacy Policy.</label>
-              <div *ngIf="questionForm.controls['privacyPolicy']?.invalid && (questionForm.controls['privacyPolicy']?.dirty || questionForm.controls['privacyPolicy']?.touched)" class="text-danger">
-                <small>You must agree to the Privacy Policy.</small>
-              </div>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary" [disabled]="questionForm.invalid || !isContentRelevant || isPosting">
-              <span *ngIf="isPosting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-              Publish your question
-            </button>
-          </form>
-        </div>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar-fixed" [ngClass]="{'collapsed': sidebarCollapsed}">
+      <div class="sidebar-header p-3 border-bottom">
+        <h4 class="fw-bold m-0" style="color: #007bff;">
+          <i class="bi bi-chat-left-text me-2"></i>  
+        </h4>
       </div>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/']"><i class="bi bi-house-door me-2"></i> Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active text-primary" [routerLink]="['/questions']"><i class="bi bi-question-circle me-2"></i> Questions</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/communities']"><i class="bi bi-people me-2"></i> Communities</a>
+          <ul class="nav flex-column ms-3" *ngIf="joinedCommunities.size > 0">
+            <li class="nav-item" *ngFor="let communityId of joinedCommunities">
+              <a class="nav-link small" [routerLink]="['/community', communityId]">
+                {{ getCommunityName(communityId) }}
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/badges']"><i class="bi bi-award me-2"></i> Badges ({{ userBadges.length }})</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/profile']"><i class="bi bi-person me-2"></i> Profile</a>
+        </li>
+      </ul>
+    </div>
 
-      <!-- Sidebar with Tips -->
-      <div class="col-md-4">
-        <div class="card mb-4">
-          <div class="card-body">
-            <h2>Step 1: Draft your question</h2>
-            <p>The community is here to help you with specific coding, algorithm, or language problems. Avoid asking opinion-based questions.</p>
-            <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#summarize">Summarize the problem</button>
-            <div id="summarize" class="collapse">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item">Summarize about your goal</li>
-                <li class="list-group-item">Describe expected and actual results</li>
-                <li class="list-group-item">Include any error messages</li>
-              </ul>
+    <!-- Main Content Area -->
+    <div class="flex-grow-1 main-content" [ngClass]="{'expanded': !sidebarCollapsed}">
+      <!-- Ask a Question Section -->
+      <section class="container mt-4">
+        <h1 class="mb-4">Ask a public question</h1>
+
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card p-4">
+              <form #questionForm="ngForm" (ngSubmit)="questionForm.valid && postQuestion(questionForm)">
+                <!-- Question Title -->
+                <div class="mb-3">
+                  <label for="questionTitle" class="form-label">Question Title</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="questionTitle"
+                    name="title"
+                    [(ngModel)]="title"
+                    required
+                    placeholder="Be specific and imagine you're asking a question to another person e.g. Is there an R function for finding the index of an element in a vector?"
+                  >
+                  <div *ngIf="questionForm.controls['title']?.invalid && (questionForm.controls['title']?.dirty || questionForm.controls['title']?.touched)" class="text-danger">
+                    <small *ngIf="questionForm.controls['title']?.errors?.['required']">Question title is required.</small>
+                  </div>
+                </div>
+
+                <!-- Question Details -->
+                <div class="mb-3 position-relative">
+                  <label for="questionDetails" class="form-label">Details</label>
+                  <textarea
+                    id="questionDetails"
+                    name="content"
+                    [(ngModel)]="content"
+                    (ngModelChange)="onContentChange($event)"
+                    class="form-control"
+                    [ngClass]="{'border-success': isContentRelevant && !isValidating, 'border-danger': !isContentRelevant && !isValidating}"
+                    rows="5"
+                    placeholder="Include all the information someone would need to answer your question"
+                    required
+                  ></textarea>
+                  <div *ngIf="isValidating" class="position-absolute top-0 end-0 p-2">
+                    <span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>
+                  </div>
+                  <div *ngIf="questionForm.controls['content']?.invalid && (questionForm.controls['content']?.dirty || questionForm.controls['content']?.touched)" class="text-danger">
+                    <small *ngIf="questionForm.controls['content']?.errors?.['required']">Question content is required.</small>
+                  </div>
+                  <div *ngIf="!isContentRelevant && validationError && !isValidating" class="text-danger">
+                    <small>{{ validationError }}</small>
+                  </div>
+                </div>
+
+                <!-- Privacy Policy Checkbox -->
+                <div class="form-check mb-3">
+                  <input type="checkbox" class="form-check-input" id="privacyPolicy" name="privacyPolicy" ngModel required>
+                  <label class="form-check-label" for="privacyPolicy">By asking your question, you agree to the Privacy Policy.</label>
+                  <div *ngIf="questionForm.controls['privacyPolicy']?.invalid && (questionForm.controls['privacyPolicy']?.dirty || questionForm.controls['privacyPolicy']?.touched)" class="text-danger">
+                    <small>You must agree to the Privacy Policy.</small>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" [disabled]="questionForm.invalid || !isContentRelevant || isPosting">
+                  <span *ngIf="isPosting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Publish your question
+                </button>
+              </form>
             </div>
-            <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#describe">Describe what you've tried</button>
-            <div id="describe" class="collapse">
-              <p class="p-2">Add details about your attempts.</p>
+          </div>
+
+          <!-- Sidebar with Tips -->
+          <div class="col-md-4">
+            <div class="card mb-4">
+              <div class="card-body">
+                <h2>Step 1: Draft your question</h2>
+                <p>The community is here to help you with specific coding, algorithm, or language problems. Avoid asking opinion-based questions.</p>
+                <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#summarize">Summarize the problem</button>
+                <div id="summarize" class="collapse">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Summarize about your goal</li>
+                    <li class="list-group-item">Describe expected and actual results</li>
+                    <li class="list-group-item">Include any error messages</li>
+                  </ul>
+                </div>
+                <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#describe">Describe what you've tried</button>
+                <div id="describe" class="collapse">
+                  <p class="p-2">Add details about your attempts.</p>
+                </div>
+                <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#showCode">Show some code</button>
+                <div id="showCode" class="collapse">
+                  <p class="p-2">Include relevant code snippets.</p>
+                </div>
+                <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#nonProgramming">Have a non-programming question?</button>
+                <div id="nonProgramming" class="collapse">
+                  <p class="p-2">Please specify your non-programming query.</p>
+                </div>
+                <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#helpfulLinks">More helpful links</button>
+                <div id="helpfulLinks" class="collapse">
+                  <p class="p-2">Check out our resources.</p>
+                </div>
+              </div>
             </div>
-            <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#showCode">Show some code</button>
-            <div id="showCode" class="collapse">
-              <p class="p-2">Include relevant code snippets.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Success Modal -->
+      <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="successModalLabel">Success</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#nonProgramming">Have a non-programming question?</button>
-            <div id="nonProgramming" class="collapse">
-              <p class="p-2">Please specify your non-programming query.</p>
+            <div class="modal-body">
+              Your question has been posted successfully! You will be redirected to the community page shortly.
             </div>
-            <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#helpfulLinks">More helpful links</button>
-            <div id="helpfulLinks" class="collapse">
-              <p class="p-2">Check out our resources.</p>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button> <!-- Removed (click)="closeSuccessModal()" -->
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Success Modal -->
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="successModalLabel">Success</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <!-- Footer -->
+      <footer class="bg-dark text-white py-4 mt-4">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-3">
+              <h5>Company</h5>
+              <ul class="list-unstyled">
+                <li><a href="#" class="text-white">About</a></li>
+                <li><a href="#" class="text-white">Contact</a></li>
+                <li><a href="#" class="text-white">Careers</a></li>
+                <li><a href="#" class="text-white">Advertising</a></li>
+              </ul>
+            </div>
+            <div class="col-md-3">
+              <h5>Legal Stuff</h5>
+              <ul class="list-unstyled">
+                <li><a href="#" class="text-white">Privacy Policy</a></li>
+                <li><a href="#" class="text-white">Terms of Service</a></li>
+                <li><a href="#" class="text-white">Cookie Policy</a></li>
+              </ul>
+            </div>
+            <div class="col-md-3">
+              <h5>Help</h5>
+              <ul class="list-unstyled">
+                <li><a href="#" class="text-white">Knowledge Base</a></li>
+                <li><a href="#" class="text-white">Support</a></li>
+              </ul>
+            </div>
+            <div class="col-md-3">
+              <h5>Connect with us</h5>
+              <ul class="list-unstyled">
+                <li><a href="#" class="text-white">Facebook</a></li>
+                <li><a href="#" class="text-white">Twitter</a></li>
+                <li><a href="#" class="text-white">LinkedIn</a></li>
+                <li><a href="#" class="text-white">Instagram</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="text-center mt-3">
+            <p class="mb-0">© 2025 AskSphere</p>
+          </div>
         </div>
-        <div class="modal-body">
-          Your question has been posted successfully! You will be redirected to the community page shortly.
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
+      </footer>
     </div>
   </div>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-white py-4">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-3">
-          <h5>Company</h5>
-          <ul class="list-unstyled">
-            <li><a href="#" class="text-white">About</a></li>
-            <li><a href="#" class="text-white">Contact</a></li>
-            <li><a href="#" class="text-white">Careers</a></li>
-            <li><a href="#" class="text-white">Advertising</a></li>
-          </ul>
-        </div>
-        <div class="col-md-3">
-          <h5>Legal Stuff</h5>
-          <ul class="list-unstyled">
-            <li><a href="#" class="text-white">Privacy Policy</a></li>
-            <li><a href="#" class="text-white">Terms of Service</a></li>
-            <li><a href="#" class="text-white">Cookie Policy</a></li>
-          </ul>
-        </div>
-        <div class="col-md-3">
-          <h5>Help</h5>
-          <ul class="list-unstyled">
-            <li><a href="#" class="text-white">Knowledge Base</a></li>
-            <li><a href="#" class="text-white">Support</a></li>
-          </ul>
-        </div>
-        <div class="col-md-3">
-          <h5>Connect with us</h5>
-          <ul class="list-unstyled">
-            <li><a href="#" class="text-white">Facebook</a></li>
-            <li><a href="#" class="text-white">Twitter</a></li>
-            <li><a href="#" class="text-white">LinkedIn</a></li>
-            <li><a href="#" class="text-white">Instagram</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="text-center mt-3">
-        <p class="mb-0">© 2025 AskSphere</p>
-      </div>
-    </div>
-  </footer>
 </div>

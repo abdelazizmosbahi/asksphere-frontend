@@ -1,0 +1,21 @@
+/* .sidebar-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    background-color: #fff;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transform: translateX(-252px);
+  }
+  
+  .sidebar-fixed:not(.collapsed) {
+    transform: translateX(0);
+  }
+  
+  .sidebar-header {
+    padding-top: 56px;
+  } */
