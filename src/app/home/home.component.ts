@@ -19,7 +19,7 @@ interface Question {
   answers: number;
 }
 
-declare const $: any; // Declare jQuery to avoid TypeScript errors
+declare const $: any;
 
 @Component({
   selector: 'app-home',
@@ -29,14 +29,12 @@ declare const $: any; // Declare jQuery to avoid TypeScript errors
 export class HomeComponent implements OnInit, AfterViewInit {
   user: any = null;
   username: string = '';
-  searchQuery: string = '';
   communities: any[] = [];
   joinedCommunities: Set<number> = new Set();
   questions: any[] = [];
   relatedQuestions: any[] = [];
-  userBadges: any[] = [];
-  communityMap: Map<number, string> = new Map();
   userMap: Map<string, string> = new Map();
+  sidebarCollapsed: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -45,23 +43,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private toastr: ToastrService
   ) {}
 
-  sidebarCollapsed = false;
-
-  toggleSidebar() {
-    this.sidebarCollapsed = !this.sidebarCollapsed;
-  }
-
   ngOnInit() {
     this.loadUser();
     this.loadCommunities();
     this.loadQuestions();
-    this.loadBadges();
     this.loadRecommendedQuestions();
   }
 
   ngAfterViewInit() {
-    // Fade in question items
     $('.question-item').hide().fadeIn(500);
+  }
+
+  onSidebarToggled(collapsed: boolean) {
+    this.sidebarCollapsed = collapsed;
   }
 
   loadUser() {
@@ -86,9 +80,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
           description: community.description,
           icon: this.getCommunityIcon(community.name)
         }));
-        response.forEach((community: any) => {
-          this.communityMap.set(community.idCommunity, community.name);
-        });
       },
       error: (err: any) => {
         this.toastr.error('Error fetching communities', 'Error');
@@ -101,7 +92,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.http.get(`${environment.apiUrl}/member_communities`, { withCredentials: true }).subscribe({
       next: (response: any) => {
         this.joinedCommunities = new Set(response.map((mc: any) => mc.communityId));
-        console.log('Joined Communities in Home:', this.joinedCommunities); // Add logging
       },
       error: (err: any) => {
         this.toastr.error('Error fetching joined communities', 'Error');
@@ -200,18 +190,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  loadBadges() {
-    this.http.get(`${environment.apiUrl}/badges`, { withCredentials: true }).subscribe({
-      next: (response: any) => {
-        this.userBadges = response.badges || [];
-      },
-      error: (err: any) => {
-        this.toastr.error('Error fetching badges', 'Error');
-        console.error('Error fetching badges:', err);
-      }
-    });
-  }
-
   voteQuestion(questionId: string, value: number) {
     this.http.post(`${environment.apiUrl}/vote`, { questionId, value }, { withCredentials: true }).subscribe({
       next: (response: any) => {
@@ -259,7 +237,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.http.post(`${environment.apiUrl}/communities/join`, { communityId }, { withCredentials: true }).subscribe({
       next: (response: any) => {
         console.log('Join Community Response:', response);
-        this.loadJoinedCommunities(); // Reload joined communities
+        this.loadJoinedCommunities();
         this.loadQuestions();
         this.toastr.success(`Joined ${this.getCommunityName(communityId)} community`, 'Success');
       },
@@ -273,7 +251,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   leaveCommunity(communityId: number) {
     this.http.post(`${environment.apiUrl}/communities/leave`, { communityId }, { withCredentials: true }).subscribe({
       next: () => {
-        this.loadJoinedCommunities(); // Reload joined communities
+        this.loadJoinedCommunities();
         this.loadQuestions();
         this.toastr.success(`Left ${this.getCommunityName(communityId)} community`, 'Success');
       },
@@ -283,8 +261,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
   getCommunityName(communityId: number): string {
-    return this.communityMap.get(communityId) || 'Unknown';
+    const community = this.communities.find(c => c.id === communityId);
+    return community ? community.name : 'Unknown';
   }
 
   getCommunityIcon(communityName: string): string {
@@ -312,28 +292,5 @@ export class HomeComponent implements OnInit, AfterViewInit {
       return `${diffHours} hours ago`;
     }
     return created.toLocaleDateString();
-  }
-
-  logout() {
-    this.http.get(`${environment.apiUrl}/logout`, { withCredentials: true }).subscribe({
-      next: () => {
-        this.authService.logout();
-        this.user = null;
-        this.username = '';
-        this.toastr.success('Logged out successfully', 'Success');
-        this.router.navigate(['/login']);
-      },
-      error: (err: any) => {
-        this.toastr.error('Error logging out', 'Error');
-        console.error('Error logging out:', err);
-        this.router.navigate(['/login']);
-      }
-    });
-  }
-
-  onSearch() {
-    if (this.searchQuery.trim()) {
-      this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });
-    }
   }
 }

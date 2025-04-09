@@ -181,4 +181,8 @@ export class NotificationsComponent implements OnInit {
   getCommunityName(communityId: number): string {
     return this.communityMap.get(communityId) || 'Unknown';
   }
+
+  onSidebarToggled(event: boolean) {
+    this.sidebarCollapsed = event;
+  }
 }

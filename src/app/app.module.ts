@@ -20,6 +20,8 @@ import { BadgesComponent } from './badges/badges.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { NotificationService } from './notification.service';
 import { CommonModule } from '@angular/common';
+import { NavbarComponent } from './navbar/navbar.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'community/:id', component: CommunityComponent },
@@ -40,7 +42,9 @@ const routes: Routes = [
     CommunityComponent,
     BadgesComponent,
     ProfileComponent,
-    NotificationsComponent],
+    NotificationsComponent,
+    NavbarComponent,
+    SidebarComponent],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule, CommonModule,FormsModule, ReactiveFormsModule, BrowserAnimationsModule, ToastrModule.forRoot({ // Configure Toastr
     timeOut: 3000,
     positionClass: 'toast-top-right',

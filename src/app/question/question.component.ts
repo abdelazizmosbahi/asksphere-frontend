@@ -49,7 +49,9 @@ export class QuestionComponent implements OnInit {
       this.setupContentValidation();
     });
   }
-
+  onSidebarToggled(collapsed: boolean) {
+    this.sidebarCollapsed = collapsed;
+  }
   postQuestion(form: any) {
     if (!this.communityId || !this.title || !this.content) {
       this.toastr.error('Please fill in all required fields', 'Error');

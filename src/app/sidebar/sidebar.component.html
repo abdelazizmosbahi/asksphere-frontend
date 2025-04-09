@@ -1,35 +1,31 @@
-<!-- <p>sidebar works!</p>
-<div class="sidebar-fixed" [ngClass]="{'collapsed': collapsed}">
-    <div class="sidebar-header p-3 border-bottom">
-      <h4 class="fw-bold m-0" style="color: #007bff;">
-        <i class="bi bi-chat-left-text me-2"></i>
-      </h4>
-    </div>
-    <ul class="nav flex-column">
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/']" [ngClass]="{'active text-primary': isActive('/')}"><i class="bi bi-house-door me-2"></i> Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/questions']" [ngClass]="{'active text-primary': isActive('/questions')}"><i class="bi bi-question-circle me-2"></i> Questions</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/communities']" [ngClass]="{'active text-primary': isActive('/communities')}"><i class="bi bi-people me-2"></i> Communities</a>
-        <ul class="nav flex-column ms-3" *ngIf="joinedCommunities.size > 0">
-          <li class="nav-item" *ngFor="let communityId of joinedCommunities">
-            <a class="nav-link small" [routerLink]="['/community', communityId]">
-              {{ getCommunityName(communityId) }}
-            </a>
-          </li>
-        </ul>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/badges']" [ngClass]="{'active text-primary': isActive('/badges')}"><i class="bi bi-award me-2"></i> Badges ({{ userBadges.length }})</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/profile']" [ngClass]="{'active text-primary': isActive('/profile')}"><i class="bi bi-person me-2"></i> Profile</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/notifications']" [ngClass]="{'active text-primary': isActive('/notifications')}"><i class="bi bi-bell me-2"></i> Notifications</a>
-      </li>
-    </ul>
-  </div> -->
+<div class="sidebar-fixed" [ngClass]="{'collapsed': sidebarCollapsed}">
+  <div class="sidebar-header p-3 border-bottom">
+    <h4 class="fw-bold m-0" style="color: #007bff;">
+      <i class="bi bi-chat-left-text me-2"></i>  
+    </h4>
+  </div>
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/']"><i class="bi bi-house-door me-2"></i> Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active text-primary" [routerLink]="['/questions']"><i class="bi bi-question-circle me-2"></i> Questions</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/communities']"><i class="bi bi-people me-2"></i> Communities</a>
+      <ul class="nav flex-column ms-3" *ngIf="joinedCommunities.size > 0">
+        <li class="nav-item" *ngFor="let communityId of joinedCommunities">
+          <a class="nav-link small" [routerLink]="['/community', communityId]">
+            {{ getCommunityName(communityId) }}
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/badges']"><i class="bi bi-award me-2"></i> Badges ({{ userBadges.length }})</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/profile']"><i class="bi bi-person me-2"></i> Profile</a>
+    </li>
+  </ul>
+</div>

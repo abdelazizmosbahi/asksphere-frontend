@@ -339,7 +339,9 @@ export class CommunityComponent implements OnInit, AfterViewInit {
       }
     });
   }
-
+  onSidebarToggled(event: boolean) {
+    this.sidebarCollapsed = event;
+  }
   onSearch() {
     if (this.searchQuery.trim()) {
       this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });

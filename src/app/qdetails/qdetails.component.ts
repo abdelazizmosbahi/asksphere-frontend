@@ -190,7 +190,9 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
       }
     });
   }
-
+  onSidebarToggled(collapsed: boolean) {
+    this.sidebarCollapsed = collapsed;
+  }
   loadQuestion(questionId: string) {
     this.http.get<Question>(`${environment.apiUrl}/questions/${questionId}`).subscribe({
       next: (response: Question) => {

@@ -180,6 +180,9 @@ export class BadgesComponent implements OnInit {
   }
 
 
+  onSidebarToggled(event: boolean) {
+    this.sidebarCollapsed = event;
+  }
   
   getCommunityName(communityId: number): string {
     return this.communityMap.get(communityId) || 'Unknown';

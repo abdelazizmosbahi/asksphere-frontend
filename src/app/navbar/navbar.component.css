@@ -1,18 +1,38 @@
-/* .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1030;
+/* Navbar adjustments */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+  padding-left: 52px; /* Space for toggle button when collapsed */
+  transition: padding-left 0.3s ease;
+}
+
+.main-content.expanded .navbar {
+  padding-left: 252px; /* 250px sidebar + 2px gap */
+}
+
+.sidebar-toggle {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1031; /* Above navbar */
+  margin: 8px 0 0 8px;
+  transition: left 0.3s ease;
+}
+
+.main-content.expanded .sidebar-toggle {
+  left: 250px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .navbar {
     padding-left: 52px;
-    transition: padding-left 0.3s ease;
   }
   
-  .sidebar-toggle {
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 1031;
-    margin: 8px 0 0 8px;
-    transition: left 0.3s ease;
-  } */
+  .main-content.expanded .navbar {
+    padding-left: 252px;
+  }
+}

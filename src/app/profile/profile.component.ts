@@ -75,7 +75,9 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.loadUser();
   }
-
+  onSidebarToggled(collapsed: boolean) {
+    this.sidebarCollapsed = collapsed;
+  }
   loadUser() {
     this.http.get<User>(`${environment.apiUrl}/api/users/me`, { withCredentials: true }).subscribe({
       next: (response: User) => {
