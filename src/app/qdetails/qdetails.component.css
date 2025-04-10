@@ -105,6 +105,20 @@ body {
   transition: opacity 0.5s ease;
 }
 
+/* Avatar Styling to Match HomeComponent */
+.avatar {
+  width: 20px;
+  height: 20px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  opacity: 0.8;
+}
+
 /* Right Fixed Sidebars (Related Questions and Community) */
 .sidebar-fixed-right {
   position: sticky;

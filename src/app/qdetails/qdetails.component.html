@@ -23,17 +23,17 @@
                 <h1>{{ question?.title }}</h1>
                 <div class="d-flex align-items-center mb-3">
                   <div class="vote-section me-3">
-                    <button class="vote-btn vote-up" (click)="voteQuestion(1)">
+                    <button class="vote-btn vote-up" (click)="voteQuestion(1)" [disabled]="isOwner(question?.memberId)">
                       <i class="bi bi-arrow-up"></i>
                     </button>
                     <span class="vote-count">{{ question?.votes }}</span>
-                    <button class="vote-btn vote-down" (click)="voteQuestion(-1)">
+                    <button class="vote-btn vote-down" (click)="voteQuestion(-1)" [disabled]="isOwner(question?.memberId)">
                       <i class="bi bi-arrow-down"></i>
                     </button>
                   </div>
                   <div class="flex-grow-1">
-                    <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="User Avatar">
                     <div class="d-inline-block">
+                    <img [src]="question?.avatar || 'https://via.placeholder.com/20'" class="rounded-circle me-2 clickable" alt="User Avatar" (click)="showUserProfile(question?.memberId)" style="width: 20px; height: 20px;">
                       <strong>{{ question?.user }}</strong><br>
                       <small class="text-muted">Asked {{ question?.time }}</small>
                     </div>
@@ -93,19 +93,19 @@
                     <p>{{ answer.content }}</p>
                     <div class="d-flex align-items-center mt-3">
                       <div class="vote-section me-3">
-                        <button class="vote-btn vote-up" [ngClass]="{'active': answer.userVote === 1}" (click)="voteAnswer(answer.id, 1)" [disabled]="isVotingAnswer.get(answer.id)">
+                        <button class="vote-btn vote-up" [ngClass]="{'active': answer.userVote === 1}" (click)="voteAnswer(answer.id, 1)" [disabled]="isVotingAnswer.get(answer.id) || isOwner(answer.memberId)">
                           <span *ngIf="isVotingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                           <i class="bi bi-arrow-up"></i>
                         </button>
                         <span class="vote-count">{{ answer.votes }}</span>
-                        <button class="vote-btn vote-down" [ngClass]="{'active': answer.userVote === -1}" (click)="voteAnswer(answer.id, -1)" [disabled]="isVotingAnswer.get(answer.id)">
+                        <button class="vote-btn vote-down" [ngClass]="{'active': answer.userVote === -1}" (click)="voteAnswer(answer.id, -1)" [disabled]="isVotingAnswer.get(answer.id) || isOwner(answer.memberId)">
                           <span *ngIf="isVotingAnswer.get(answer.id)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                           <i class="bi bi-arrow-down"></i>
                         </button>
                       </div>
                       <div class="flex-grow-1">
-                        <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="User Avatar">
                         <div class="d-inline-block">
+                          <img [src]="answer.avatar || 'https://via.placeholder.com/20'" class="rounded-circle me-2 clickable" alt="User Avatar" (click)="showUserProfile(answer.memberId)" style="width: 20px; height: 20px;">
                           <strong>{{ answer.user }}</strong><br>
                           <small class="text-muted">
                             {{ getAnswerTimestampLabel(answer) }} {{ getAnswerTimestamp(answer) }}
@@ -185,6 +185,34 @@
               </div>
               <div class="modal-body">
                 Your answer has been posted successfully! The page will refresh shortly.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Profile Modal -->
+        <div class="modal fade" id="userProfileModal" tabindex="-1" aria-labelledby="userProfileModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="userProfileModalLabel">User Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body text-center">
+                <img [src]="selectedUser?.avatar || 'https://via.placeholder.com/50'" alt="User Avatar" class="rounded-circle mb-3" style="width: 50px; height: 50px;">
+                <h6>{{ selectedUser?.username || 'Unknown' }}</h6>
+                <p class="text-muted mb-1">Status: {{ selectedUser?.status || 'N/A' }}</p>
+                <p class="mb-1">Questions: {{ selectedUser?.questionsCount || 0 }}</p>
+                <p class="mb-1">Answers: {{ selectedUser?.answersCount || 0 }}</p>
+                <p class="mb-1">Reputation: {{ selectedUser?.reputation || 0 }}</p>
+                <p class="mb-1">Joined: {{ selectedUser?.dateJoined || 'N/A' }}</p>
+                <div class="mb-1" *ngIf="selectedUser?.badges && selectedUser.badges.length > 0">
+                  <h6>Badges:</h6>
+                  <span class="badge bg-primary me-1" *ngFor="let badge of selectedUser.badges">{{ badge }}</span>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               </div>
             </div>
           </div>

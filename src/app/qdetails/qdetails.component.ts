@@ -1,12 +1,12 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, forkJoin, of, Subject } from 'rxjs';
+import { Observable, forkJoin, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 
-declare const $: any; // Declare jQuery for animations
+declare const $: any;
 
 interface Question {
   _id: string;
@@ -35,12 +35,13 @@ interface Answer {
   templateUrl: './qdetails.component.html',
   styleUrls: ['./qdetails.component.css']
 })
-export class QdetailsComponent implements OnInit, AfterViewInit {
+export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   question: any = null;
   answers: any[] = [];
   relatedQuestions: any[] = [];
   communityName: string = '';
   userMap: Map<string, string> = new Map();
+  userAvatarMap: Map<string, string> = new Map();
   username: string = '';
   userId: string = '';
   newAnswerContent: string = '';
@@ -59,18 +60,10 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
   isVotingAnswer: Map<string, boolean> = new Map();
   highlightedAnswerId: string | null = null;
   viewedAnswers: Set<string> = new Set();
-  loading: boolean = true; // Add loading state
-
-  communityId: number | null = null;
-  user: any = null;
-  searchQuery: string = '';
-  communities: any[] = [];
-  joinedCommunities: Set<number> = new Set();
-  questions: any[] = [];
-  userBadges: any[] = [];
-  communityMap: Map<number, string> = new Map();
-  isMember: boolean = false;
-
+  loading: boolean = true;
+  sidebarCollapsed: boolean = false;
+  selectedUser: any = null;
+  private routeSub: Subscription | null = null; // Subscription to route params
 
   constructor(
     private route: ActivatedRoute,
@@ -95,19 +88,23 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
       }
     });
 
-    const questionId = this.route.snapshot.paramMap.get('id');
-    if (questionId) {
-      this.loadUser();
-      this.loadQuestion(questionId);
-      this.loadAnswers(questionId);
-      this.loadRecommendedQuestions();
-      this.setupContentValidation();
-    } else {
-      console.error('No question ID found in route parameters');
-      this.toastr.error('Invalid question ID', 'Error');
-      this.router.navigate(['/']);
-      this.loading = false;
-    }
+    // Subscribe to route parameter changes
+    this.routeSub = this.route.params.subscribe(params => {
+      const questionId = params['id'];
+      if (questionId) {
+        this.loading = true; // Reset loading state
+        this.loadUser();
+        this.loadQuestion(questionId);
+        this.loadAnswers(questionId);
+        this.loadRecommendedQuestions();
+        this.setupContentValidation();
+      } else {
+        console.error('No question ID found in route parameters');
+        this.toastr.error('Invalid question ID', 'Error');
+        this.router.navigate(['/']);
+        this.loading = false;
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -117,6 +114,13 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+    }
+  }
+
+  ngOnDestroy() {
+    // Unsubscribe to prevent memory leaks
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
     }
   }
 
@@ -190,9 +194,11 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
   onSidebarToggled(collapsed: boolean) {
     this.sidebarCollapsed = collapsed;
   }
+
   loadQuestion(questionId: string) {
     this.http.get<Question>(`${environment.apiUrl}/questions/${questionId}`).subscribe({
       next: (response: Question) => {
@@ -214,13 +220,15 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
                   views: response.views || 0,
                   answers: response.answers || 0,
                   user: this.userMap.get(response.memberId) || 'Unknown',
+                  avatar: this.userAvatarMap.get(response.memberId) || 'https://via.placeholder.com/20',
                   time: this.formatTime(response.dateCreated),
                   communityId: response.communityId,
-                  memberId: response.memberId
+                  memberId: response.memberId,
+                  userVote: 0
                 };
                 this.communityName = communityMap.get(response.communityId) || 'Unknown';
                 console.log('Question loaded successfully:', this.question);
-                this.loading = false; // Set loading to false once critical data is loaded
+                this.loading = false;
               },
               error: (err: HttpErrorResponse) => {
                 console.error('Error fetching usernames in loadQuestion:', err);
@@ -233,9 +241,11 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
                   views: response.views || 0,
                   answers: response.answers || 0,
                   user: 'Unknown',
+                  avatar: 'https://via.placeholder.com/20',
                   time: this.formatTime(response.dateCreated),
                   communityId: response.communityId,
-                  memberId: response.memberId
+                  memberId: response.memberId,
+                  userVote: 0
                 };
                 this.communityName = communityMap.get(response.communityId) || 'Unknown';
                 this.loading = false;
@@ -256,9 +266,11 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
                   views: response.views || 0,
                   answers: response.answers || 0,
                   user: this.userMap.get(response.memberId) || 'Unknown',
+                  avatar: this.userAvatarMap.get(response.memberId) || 'https://via.placeholder.com/20',
                   time: this.formatTime(response.dateCreated),
                   communityId: response.communityId,
-                  memberId: response.memberId
+                  memberId: response.memberId,
+                  userVote: 0
                 };
                 this.communityName = 'Unknown';
                 this.loading = false;
@@ -274,9 +286,11 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
                   views: response.views || 0,
                   answers: response.answers || 0,
                   user: 'Unknown',
+                  avatar: 'https://via.placeholder.com/20',
                   time: this.formatTime(response.dateCreated),
                   communityId: response.communityId,
-                  memberId: response.memberId
+                  memberId: response.memberId,
+                  userVote: 0
                 };
                 this.communityName = 'Unknown';
                 this.loading = false;
@@ -306,18 +320,18 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
               next: (votes: any) => {
                 this.answers = response.map((answer: Answer) => {
                   const userVote = votes[answer._id] || 0;
-                  const mappedAnswer = {
+                  return {
                     id: answer._id,
                     content: answer.content,
                     votes: answer.score || 0,
                     user: this.userMap.get(answer.memberId) || 'Unknown',
+                    avatar: this.userAvatarMap.get(answer.memberId) || 'https://via.placeholder.com/20',
                     time: this.formatTime(answer.dateCreated),
                     dateCreated: answer.dateCreated,
                     dateUpdated: answer.dateUpdated,
                     memberId: answer.memberId,
                     userVote: userVote
                   };
-                  return mappedAnswer;
                 });
                 console.log('Mapped answers:', this.answers);
               },
@@ -325,18 +339,18 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
                 console.error('Error fetching user votes for answers:', err);
                 this.toastr.error('Error fetching user votes for answers. Vote counts may be inaccurate.', 'Error');
                 this.answers = response.map((answer: Answer) => {
-                  const mappedAnswer = {
+                  return {
                     id: answer._id,
                     content: answer.content,
                     votes: answer.score || 0,
                     user: this.userMap.get(answer.memberId) || 'Unknown',
+                    avatar: this.userAvatarMap.get(answer.memberId) || 'https://via.placeholder.com/20',
                     time: this.formatTime(answer.dateCreated),
                     dateCreated: answer.dateCreated,
                     dateUpdated: answer.dateUpdated,
                     memberId: answer.memberId,
                     userVote: 0
                   };
-                  return mappedAnswer;
                 });
               }
             });
@@ -345,18 +359,18 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
             console.error('Error fetching usernames for answers:', err);
             this.toastr.error('Error fetching usernames for answers. Some user information may be missing.', 'Error');
             this.answers = response.map((answer: Answer) => {
-              const mappedAnswer = {
+              return {
                 id: answer._id,
                 content: answer.content,
                 votes: answer.score || 0,
                 user: 'Unknown',
+                avatar: 'https://via.placeholder.com/20',
                 time: this.formatTime(answer.dateCreated),
                 dateCreated: answer.dateCreated,
                 dateUpdated: answer.dateUpdated,
                 memberId: answer.memberId,
                 userVote: 0
               };
-              return mappedAnswer;
             });
           }
         });
@@ -406,7 +420,7 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
         this.http.get(`${environment.apiUrl}/api/users/${id}`, { withCredentials: true }).pipe(
           catchError((err: HttpErrorResponse) => {
             console.error(`Error fetching user ${id}:`, err);
-            return of({ username: 'Unknown' });
+            return of({ username: 'Unknown', avatar: 'https://via.placeholder.com/20' });
           })
         )
       );
@@ -415,6 +429,7 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
           console.log('Usernames fetched:', responses);
           responses.forEach((res, index) => {
             this.userMap.set(memberIds[index], res.username);
+            this.userAvatarMap.set(memberIds[index], res.avatar || 'https://via.placeholder.com/20');
           });
           observer.next();
           observer.complete();
@@ -429,15 +444,20 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
   }
 
   voteQuestion(value: number) {
+    if (this.isOwner(this.question?.memberId)) {
+      this.toastr.info('You cannot vote on your own question', 'Info');
+      return;
+    }
     this.http.post(`${environment.apiUrl}/vote`, { questionId: this.question.id, value }, { withCredentials: true }).subscribe({
       next: (response: any) => {
         const newVote = response.newVote;
+        const previousVote = this.question.userVote || 0;
         if (newVote === 0) {
-          this.question.votes -= this.question.userVote || value;
+          this.question.votes -= previousVote;
           this.question.userVote = 0;
           this.toastr.success('Vote removed', 'Success');
-        } else if (this.question.userVote !== 0) {
-          const scoreChange = -this.question.userVote + value;
+        } else if (previousVote !== 0) {
+          const scoreChange = -previousVote + value;
           this.question.votes += scoreChange;
           this.question.userVote = newVote;
           this.toastr.success(`Question ${value > 0 ? 'upvoted' : 'downvoted'} successfully`, 'Success');
@@ -455,21 +475,26 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
   }
 
   voteAnswer(answerId: string, value: number) {
+    const answer = this.answers.find(a => a.id === answerId);
+    if (answer && this.isOwner(answer.memberId)) {
+      this.toastr.info('You cannot vote on your own answer', 'Info');
+      return;
+    }
     if (this.isVotingAnswer.get(answerId)) {
       return;
     }
     this.isVotingAnswer.set(answerId, true);
     this.http.post(`${environment.apiUrl}/vote`, { answerId, value }, { withCredentials: true }).subscribe({
       next: (response: any) => {
-        const answer = this.answers.find(a => a.id === answerId);
         if (answer) {
           const newVote = response.newVote;
+          const previousVote = answer.userVote || 0;
           if (newVote === 0) {
-            answer.votes -= answer.userVote;
+            answer.votes -= previousVote;
             answer.userVote = 0;
             this.toastr.success('Vote removed', 'Success');
-          } else if (answer.userVote !== 0) {
-            const scoreChange = -answer.userVote + value;
+          } else if (previousVote !== 0) {
+            const scoreChange = -previousVote + value;
             answer.votes += scoreChange;
             answer.userVote = newVote;
             this.toastr.success(`Answer ${value > 0 ? 'upvoted' : 'downvoted'} successfully`, 'Success');
@@ -640,21 +665,42 @@ export class QdetailsComponent implements OnInit, AfterViewInit {
     });
   }
 
-
-  
-  getCommunityName(communityId: number): string {
-    return this.communityMap.get(communityId) || 'Unknown';
+  showUserProfile(memberId: string) {
+    this.http.get(`${environment.apiUrl}/api/users/${memberId}/profile`, { withCredentials: true }).subscribe({
+      next: (response: any) => {
+        this.selectedUser = {
+          username: response.username || 'Unknown',
+          avatar: response.avatar || 'https://via.placeholder.com/50',
+          questionsCount: response.questionsCount || 0,
+          answersCount: response.answersCount || 0,
+          status: response.status || 'N/A',
+          reputation: response.reputation || 0,
+          dateJoined: response.dateJoined || 'N/A',
+          badges: response.badges || []
+        };
+        const modal = new (window as any).bootstrap.Modal(document.getElementById('userProfileModal'));
+        modal.show();
+      },
+      error: (err: any) => {
+        this.toastr.error('Error fetching user profile', 'Error');
+        console.error('Error fetching user profile:', err);
+        this.selectedUser = {
+          username: this.userMap.get(memberId) || 'Unknown',
+          avatar: this.userAvatarMap.get(memberId) || 'https://via.placeholder.com/50',
+          questionsCount: 0,
+          answersCount: 0,
+          status: 'N/A',
+          reputation: 0,
+          dateJoined: 'N/A',
+          badges: []
+        };
+        const modal = new (window as any).bootstrap.Modal(document.getElementById('userProfileModal'));
+        modal.show();
+      }
+    });
   }
-  
-  sidebarCollapsed = false;
 
-  toggleSidebar() {
-    this.sidebarCollapsed = !this.sidebarCollapsed;
-  }
-  
-  onSearch() {
-    if (this.searchQuery.trim()) {
-      this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });
-    }
+  isOwner(memberId: string | undefined): boolean {
+    return this.userId === memberId;
   }
 }

@@ -18,10 +18,10 @@ import { Routes } from '@angular/router';
 import { ProfileComponent } from './profile/profile.component'; // Import ProfileComponent
 import { BadgesComponent } from './badges/badges.component';
 import { NotificationsComponent } from './notifications/notifications.component';
-import { NotificationService } from './notification.service';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { UserVisualComponent } from './uservisual/uservisual.component';
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'community/:id', component: CommunityComponent },
@@ -29,6 +29,7 @@ const routes: Routes = [
   { path: 'questions', component: QuestionComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'notifications', component: NotificationsComponent },
+  { path: 'uservisual', component: UserVisualComponent },
   { path: '**', redirectTo: '' }
 ];
 @NgModule({

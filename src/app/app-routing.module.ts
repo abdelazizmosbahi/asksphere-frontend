@@ -16,6 +16,8 @@ import { RecoverComponent } from './recover/recover.component';
 import { ListComponent } from './list/list.component';
 import { BadgesComponent } from './badges/badges.component';
 import { CommunityComponent } from './community/community.component';
+import { UserVisualComponent } from './uservisual/uservisual.component';
+import { CommunityvisualComponent } from './communityvisual/communityvisual.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -35,7 +37,9 @@ const routes: Routes = [
   {path: 'recover', component:RecoverComponent},
   {path: 'list', component:ListComponent},
   { path: 'badges', component: BadgesComponent },
-  { path: 'community/:id', component: CommunityComponent }, // Add the new route
+  { path: 'community/:id', component: CommunityComponent },
+  { path: 'community/:id/stats', component: CommunityvisualComponent },
+  { path: 'uservisual', component: UserVisualComponent },
   { path: '**', redirectTo: '' }
 
 

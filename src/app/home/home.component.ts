@@ -29,12 +29,15 @@ declare const $: any;
 export class HomeComponent implements OnInit, AfterViewInit {
   user: any = null;
   username: string = '';
+  userId: string = ''; // Added to track current user's ID
   communities: any[] = [];
   joinedCommunities: Set<number> = new Set();
   questions: any[] = [];
   relatedQuestions: any[] = [];
   userMap: Map<string, string> = new Map();
+  userAvatarMap: Map<string, string> = new Map();
   sidebarCollapsed: boolean = false;
+  selectedUser: any = null;
 
   constructor(
     private authService: AuthService,
@@ -63,6 +66,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       next: (response: any) => {
         this.user = response;
         this.username = response.username;
+        this.userId = response._id; // Store current user's ID
         this.loadJoinedCommunities();
       },
       error: () => {
@@ -124,12 +128,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
                     views: question.views || 0,
                     tags: [communityMap.get(question.communityId) || 'Unknown'],
                     user: this.userMap.get(question.memberId) || 'Unknown',
-                    time: this.formatTime(question.dateCreated)
+                    avatar: this.userAvatarMap.get(question.memberId) || 'https://via.placeholder.com/20',
+                    time: this.formatTime(question.dateCreated),
+                    memberId: question.memberId,
+                    userVote: 0 // Initialize userVote to 0
                   }));
               },
               error: (err: any) => {
-                this.toastr.error('Error fetching usernames', 'Error');
-                console.error('Error fetching usernames:', err);
+                this.toastr.error('Error fetching user data', 'Error');
+                console.error('Error fetching user data:', err);
               }
             });
           },
@@ -152,7 +159,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.http.get(`${environment.apiUrl}/api/users/${id}`, { withCredentials: true }).pipe(
           catchError((err: any) => {
             console.error(`Error fetching user ${id}:`, err);
-            return of({ username: 'Unknown' });
+            return of({ username: 'Unknown', avatar: 'https://via.placeholder.com/20' });
           })
         )
       );
@@ -160,12 +167,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
         next: (responses: any[]) => {
           responses.forEach((res, index) => {
             this.userMap.set(memberIds[index], res.username);
+            this.userAvatarMap.set(memberIds[index], res.avatar || 'https://via.placeholder.com/20');
           });
           observer.next();
           observer.complete();
         },
         error: (err: any) => {
-          this.toastr.error('Error fetching usernames', 'Error');
+          this.toastr.error('Error fetching user data', 'Error');
           observer.error(err);
         }
       });
@@ -191,17 +199,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   voteQuestion(questionId: string, value: number) {
+    const question = this.questions.find(q => q.id === questionId);
+    if (question && this.isOwner(question.memberId)) {
+      this.toastr.info('You cannot vote on your own question', 'Info');
+      return;
+    }
     this.http.post(`${environment.apiUrl}/vote`, { questionId, value }, { withCredentials: true }).subscribe({
       next: (response: any) => {
-        const question = this.questions.find(q => q.id === questionId);
         if (question) {
           const newVote = response.newVote;
+          const previousVote = question.userVote || 0;
           if (newVote === 0) {
-            question.votes -= question.userVote || value;
+            question.votes -= previousVote;
             question.userVote = 0;
             this.toastr.success('Vote removed', 'Success');
-          } else if (question.userVote !== 0) {
-            const scoreChange = -question.userVote + value;
+          } else if (previousVote !== 0) {
+            const scoreChange = -previousVote + value;
             question.votes += scoreChange;
             question.userVote = newVote;
             this.toastr.success(`Question ${value > 0 ? 'upvoted' : 'downvoted'} successfully`, 'Success');
@@ -292,5 +305,44 @@ export class HomeComponent implements OnInit, AfterViewInit {
       return `${diffHours} hours ago`;
     }
     return created.toLocaleDateString();
+  }
+
+  showUserProfile(memberId: string) {
+    this.http.get(`${environment.apiUrl}/api/users/${memberId}/profile`, { withCredentials: true }).subscribe({
+      next: (response: any) => {
+        this.selectedUser = {
+          username: response.username || 'Unknown',
+          avatar: response.avatar || 'https://via.placeholder.com/50',
+          questionsCount: response.questionsCount || 0,
+          answersCount: response.answersCount || 0,
+          status: response.status || 'N/A',
+          reputation: response.reputation || 0,
+          dateJoined: response.dateJoined || 'N/A',
+          badges: response.badges || []
+        };
+        const modal = new (window as any).bootstrap.Modal(document.getElementById('userProfileModal'));
+        modal.show();
+      },
+      error: (err: any) => {
+        this.toastr.error('Error fetching user profile', 'Error');
+        console.error('Error fetching user profile:', err);
+        this.selectedUser = {
+          username: this.userMap.get(memberId) || 'Unknown',
+          avatar: this.userAvatarMap.get(memberId) || 'https://via.placeholder.com/50',
+          questionsCount: 0,
+          answersCount: 0,
+          status: 'N/A',
+          reputation: 0,
+          dateJoined: 'N/A',
+          badges: []
+        };
+        const modal = new (window as any).bootstrap.Modal(document.getElementById('userProfileModal'));
+        modal.show();
+      }
+    });
+  }
+
+  isOwner(memberId: string): boolean {
+    return this.userId === memberId;
   }
 }

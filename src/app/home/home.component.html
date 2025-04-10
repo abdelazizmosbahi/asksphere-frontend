@@ -33,6 +33,12 @@
                     *ngIf="joinedCommunities.has(community.id)">
                     Leave
                   </button>
+                  <button 
+                  class="btn btn-sm btn-outline-info" 
+                  [routerLink]="['/community', community.id, 'stats']"
+                  *ngIf="joinedCommunities.has(community.id)">
+                  <i class="bi bi-bar-chart"></i>
+                </button>
                 </div>
               </div>
             </div>
@@ -52,11 +58,11 @@
                 <div class="stats me-3 text-center">
                   <div class="mb-2">
                     <div class="d-flex align-items-center">
-                      <button class="btn btn-sm btn-outline-success me-1" (click)="voteQuestion(question.id, 1); $event.stopPropagation()">
+                      <button class="btn btn-sm btn-outline-success me-1" (click)="voteQuestion(question.id, 1); $event.stopPropagation()" [disabled]="isOwner(question.memberId)">
                         <i class="bi bi-arrow-up"></i>
                       </button>
                       <span class="d-block mx-1">{{ question.votes }}</span>
-                      <button class="btn btn-sm btn-outline-danger ms-1" (click)="voteQuestion(question.id, -1); $event.stopPropagation()">
+                      <button class="btn btn-sm btn-outline-danger ms-1" (click)="voteQuestion(question.id, -1); $event.stopPropagation()" [disabled]="isOwner(question.memberId)">
                         <i class="bi bi-arrow-down"></i>
                       </button>
                     </div>
@@ -86,7 +92,7 @@
                       <span class="badge bg-light text-dark me-1" *ngFor="let tag of question.tags.slice(1)">{{ tag }}</span>
                     </div>
                     <div class="text-muted small">
-                      <img src="https://via.placeholder.com/20" alt="User Avatar" class="rounded-circle me-1" style="width: 20px; height: 20px;">
+                      <img [src]="question.avatar" alt="User Avatar" class="rounded-circle me-1 clickable" style="width: 20px; height: 20px;" (click)="showUserProfile(question.memberId); $event.stopPropagation()">
                       {{ question.user }} • {{ question.time }}
                     </div>
                   </div>
@@ -103,6 +109,34 @@
                 <a [routerLink]="['/question', related.id]" class="text-primary text-decoration-none">{{ related.title }}</a>
                 <p class="text-muted small mb-0">{{ related.time }} • by {{ related.user }}</p>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Profile Modal -->
+      <div class="modal fade" id="userProfileModal" tabindex="-1" aria-labelledby="userProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="userProfileModalLabel">User Profile</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <img [src]="selectedUser?.avatar || 'https://via.placeholder.com/50'" alt="User Avatar" class="rounded-circle mb-3" style="width: 50px; height: 50px;">
+              <h6>{{ selectedUser?.username || 'Unknown' }}</h6>
+              <p class="text-muted mb-1">Status: {{ selectedUser?.status || 'N/A' }}</p>
+              <p class="mb-1">Questions: {{ selectedUser?.questionsCount || 0 }}</p>
+              <p class="mb-1">Answers: {{ selectedUser?.answersCount || 0 }}</p>
+              <p class="mb-1">Reputation: {{ selectedUser?.reputation || 0 }}</p>
+              <p class="mb-1">Joined: {{ selectedUser?.dateJoined || 'N/A' }}</p>
+              <div class="mb-1" *ngIf="selectedUser?.badges && selectedUser.badges.length > 0">
+                <h6>Badges:</h6>
+                <span class="badge bg-primary me-1" *ngFor="let badge of selectedUser.badges">{{ badge }}</span>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
