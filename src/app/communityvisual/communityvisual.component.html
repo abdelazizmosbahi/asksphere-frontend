@@ -1,120 +1,137 @@
 <div class="container py-4">
-    <h2 class="text-center mb-4">{{communityName}} Community Dashboard</h2>
-  
-    <!-- Loading State -->
-    <div *ngIf="loading" class="text-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <p class="text-muted">Fetching community data...</p>
+  <h2 class="text-center mb-4">{{communityName}} Community Dashboard</h2>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
-  
-    <!-- Charts -->
-    <div *ngIf="!loading" class="row">
-      <!-- Summary Cards -->
-      <div class="col-12 mb-4">
-        <div class="summary-cards">
-          <div class="summary-card questions">
-            <h3>Questions</h3>
-            <div class="count">{{summaryData.totalQuestions}}</div>
-            <div class="trend" [class.up]="summaryData.questionTrend > 0" [class.down]="summaryData.questionTrend < 0">
-              <i class="bi" [class.bi-arrow-up]="summaryData.questionTrend > 0" [class.bi-arrow-down]="summaryData.questionTrend < 0"></i>
-              {{summaryData.questionTrend}}% this month
-            </div>
-          </div>
-          <div class="summary-card answers">
-            <h3>Answers</h3>
-            <div class="count">{{summaryData.totalAnswers}}</div>
-            <div class="trend" [class.up]="summaryData.answerTrend > 0" [class.down]="summaryData.answerTrend < 0">
-              <i class="bi" [class.bi-arrow-up]="summaryData.answerTrend > 0" [class.bi-arrow-down]="summaryData.answerTrend < 0"></i>
-              {{summaryData.answerTrend}}% this month
-            </div>
-          </div>
-          <div class="summary-card users">
-            <h3>Active Users</h3>
-            <div class="count">{{summaryData.activeUsers}}</div>
-            <div class="trend" [class.up]="summaryData.userTrend > 0" [class.down]="summaryData.userTrend < 0">
-              <i class="bi" [class.bi-arrow-up]="summaryData.userTrend > 0" [class.bi-arrow-down]="summaryData.userTrend < 0"></i>
-              {{summaryData.userTrend}}% this month
-            </div>
-          </div>
-          <div class="summary-card banned">
-            <h3>Banned Users</h3>
-            <div class="count">{{summaryData.bannedUsers}}</div>
-          </div>
-        </div>
-      </div>
+    <p class="text-muted">Fetching community data...</p>
+  </div>
 
-      <!-- Bar Chart -->
-      <div class="col-md-6 mb-4">
-        <div class="chart-container">
-          <apx-chart
-            [series]="barChartOptions.series"
-            [chart]="barChartOptions.chart"
-            [xaxis]="barChartOptions.xaxis"
-            [title]="barChartOptions.title"
-            [colors]="barChartOptions.colors"
-            [dataLabels]="barChartOptions.dataLabels"
-            [legend]="barChartOptions.legend"
-          ></apx-chart>
-        </div>
-      </div>
-  
-      <!-- Pie Chart -->
-      <div class="col-md-6 mb-4">
-        <div class="chart-container">
-          <apx-chart
-            [series]="pieChartOptions.series"
-            [chart]="pieChartOptions.chart"
-            [labels]="pieChartOptions.labels"
-            [title]="pieChartOptions.title"
-            [colors]="pieChartOptions.colors"
-            [dataLabels]="pieChartOptions.dataLabels"
-            [legend]="pieChartOptions.legend"
-          ></apx-chart>
-        </div>
-      </div>
-  
-      <!-- Line Chart -->
-      <div class="col-md-12 mb-4">
-        <div class="chart-container">
-          <apx-chart
-            [series]="lineChartOptions.series"
-            [chart]="lineChartOptions.chart"
-            [xaxis]="lineChartOptions.xaxis"
-            [title]="lineChartOptions.title"
-            [colors]="lineChartOptions.colors"
-            [dataLabels]="lineChartOptions.dataLabels"
-          ></apx-chart>
-        </div>
-      </div>
-
-      <!-- Heatmap -->
-      <div class="col-md-6 mb-4">
-        <div class="chart-container">
-          <h3>Activity Heatmap</h3>
-          <div class="heatmap-grid">
-            <div *ngFor="let cell of heatmapData" 
-                 class="heatmap-cell" 
-                 [style.background]="'rgba(63, 81, 181, ' + cell.intensity + ')'">
-              <div class="tooltip">{{cell.count}} on {{cell.day}}</div>
-            </div>
+  <!-- Charts and Members -->
+  <div *ngIf="!loading" class="row">
+    <!-- Summary Cards -->
+    <div class="col-12 mb-4">
+      <div class="summary-cards">
+        <div class="summary-card questions">
+          <h3>Questions</h3>
+          <div class="count">{{summaryData.totalQuestions}}</div>
+          <div class="trend" [class.up]="summaryData.questionTrend > 0" [class.down]="summaryData.questionTrend < 0">
+            <i class="bi" [class.bi-arrow-up]="summaryData.questionTrend > 0" [class.bi-arrow-down]="summaryData.questionTrend < 0"></i>
+            {{summaryData.questionTrend}}% this month
           </div>
         </div>
-      </div>
-
-      <!-- Radial Chart -->
-      <div class="col-md-6 mb-4">
-        <div class="chart-container">
-          <apx-chart
-            [series]="radialChartOptions.series"
-            [chart]="radialChartOptions.chart"
-            [labels]="radialChartOptions.labels"
-            [title]="radialChartOptions.title"
-            [colors]="radialChartOptions.colors"
-            [plotOptions]="radialChartOptions.plotOptions"
-          ></apx-chart>
+        <div class="summary-card answers">
+          <h3>Answers</h3>
+          <div class="count">{{summaryData.totalAnswers}}</div>
+          <div class="trend" [class.up]="summaryData.answerTrend > 0" [class.down]="summaryData.answerTrend < 0">
+            <i class="bi" [class.bi-arrow-up]="summaryData.answerTrend > 0" [class.bi-arrow-down]="summaryData.answerTrend < 0"></i>
+            {{summaryData.answerTrend}}% this month
+          </div>
+        </div>
+        <div class="summary-card users">
+          <h3>Active Users</h3>
+          <div class="count">{{summaryData.activeUsers}}</div>
+          <div class="trend" [class.up]="summaryData.userTrend > 0" [class.down]="summaryData.userTrend < 0">
+            <i class="bi" [class.bi-arrow-up]="summaryData.userTrend > 0" [class.bi-arrow-down]="summaryData.userTrend < 0"></i>
+            {{summaryData.userTrend}}% this month
+          </div>
+        </div>
+        <div class="summary-card banned">
+          <h3>Banned Users</h3>
+          <div class="count">{{summaryData.bannedUsers}}</div>
         </div>
       </div>
     </div>
+
+    <!-- Bar Chart -->
+    <div class="col-md-6 mb-4">
+      <div class="chart-container">
+        <apx-chart
+          [series]="barChartOptions.series"
+          [chart]="barChartOptions.chart"
+          [xaxis]="barChartOptions.xaxis"
+          [title]="barChartOptions.title"
+          [colors]="barChartOptions.colors"
+          [dataLabels]="barChartOptions.dataLabels"
+          [legend]="barChartOptions.legend"
+        ></apx-chart>
+      </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="col-md-6 mb-4">
+      <div class="chart-container">
+        <apx-chart
+          [series]="pieChartOptions.series"
+          [chart]="pieChartOptions.chart"
+          [labels]="pieChartOptions.labels"
+          [title]="pieChartOptions.title"
+          [colors]="pieChartOptions.colors"
+          [dataLabels]="pieChartOptions.dataLabels"
+          [legend]="pieChartOptions.legend"
+        ></apx-chart>
+      </div>
+    </div>
+
+    <!-- Line Chart -->
+    <div class="col-md-12 mb-4">
+      <div class="chart-container">
+        <apx-chart
+          [series]="lineChartOptions.series"
+          [chart]="lineChartOptions.chart"
+          [xaxis]="lineChartOptions.xaxis"
+          [title]="lineChartOptions.title"
+          [colors]="lineChartOptions.colors"
+          [dataLabels]="lineChartOptions.dataLabels"
+        ></apx-chart>
+      </div>
+    </div>
+
+    <!-- Active Members List -->
+    <div class="col-md-6 mb-4">
+      <div class="chart-container members-list">
+        <h3>Active Members</h3>
+        <div class="members-scroll">
+          <div *ngIf="membersLoading" class="text-center py-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading members...</span>
+            </div>
+          </div>
+          <div *ngIf="!membersLoading && activeMembers.length === 0" class="text-center py-3">
+            <p class="text-muted">No active members found.</p>
+          </div>
+          <div *ngFor="let member of activeMembers" class="member-item">
+            <img [src]="member.avatar || 'assets/default-avatar.png'" alt="Avatar" class="member-avatar">
+            <div class="member-info">
+              <h4>{{member.username}}</h4>
+              <p>Reputation: {{member.reputation || 0}}</p>
+              <p>Joined: {{member.dateJoined ? (member.dateJoined | date:'mediumDate') : 'N/A'}}</p>
+            </div>
+          </div>
+        </div>
+        <!-- Pagination -->
+        <div class="pagination" *ngIf="totalActive > membersPerPage">
+          <button class="btn btn-outline-primary" [disabled]="currentPage === 1" (click)="prevPage()">Previous</button>
+          <span class="page-info">Page {{currentPage}} of {{totalPages}}</span>
+          <button class="btn btn-outline-primary" [disabled]="currentPage === totalPages" (click)="nextPage()">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Radial Chart -->
+    <div class="col-md-6 mb-4">
+      <div class="chart-container">
+        <apx-chart
+          [series]="radialChartOptions.series"
+          [chart]="radialChartOptions.chart"
+          [labels]="radialChartOptions.labels"
+          [title]="radialChartOptions.title"
+          [colors]="radialChartOptions.colors"
+          [plotOptions]="radialChartOptions.plotOptions"
+        ></apx-chart>
+      </div>
+    </div>
+  </div>
 </div>

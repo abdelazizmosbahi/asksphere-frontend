@@ -63,7 +63,7 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   loading: boolean = true;
   sidebarCollapsed: boolean = false;
   selectedUser: any = null;
-  private routeSub: Subscription | null = null; // Subscription to route params
+  private routeSub: Subscription | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -88,11 +88,10 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    // Subscribe to route parameter changes
     this.routeSub = this.route.params.subscribe(params => {
       const questionId = params['id'];
       if (questionId) {
-        this.loading = true; // Reset loading state
+        this.loading = true;
         this.loadUser();
         this.loadQuestion(questionId);
         this.loadAnswers(questionId);
@@ -118,7 +117,6 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Unsubscribe to prevent memory leaks
     if (this.routeSub) {
       this.routeSub.unsubscribe();
     }
@@ -476,33 +474,36 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   voteAnswer(answerId: string, value: number) {
     const answer = this.answers.find(a => a.id === answerId);
-    if (answer && this.isOwner(answer.memberId)) {
+    if (!answer) {
+      this.toastr.error('Answer not found', 'Error');
+      return;
+    }
+    if (this.isOwner(answer.memberId)) {
       this.toastr.info('You cannot vote on your own answer', 'Info');
       return;
     }
     if (this.isVotingAnswer.get(answerId)) {
+      this.toastr.info('A vote is already in progress', 'Info');
       return;
     }
     this.isVotingAnswer.set(answerId, true);
     this.http.post(`${environment.apiUrl}/vote`, { answerId, value }, { withCredentials: true }).subscribe({
       next: (response: any) => {
-        if (answer) {
-          const newVote = response.newVote;
-          const previousVote = answer.userVote || 0;
-          if (newVote === 0) {
-            answer.votes -= previousVote;
-            answer.userVote = 0;
-            this.toastr.success('Vote removed', 'Success');
-          } else if (previousVote !== 0) {
-            const scoreChange = -previousVote + value;
-            answer.votes += scoreChange;
-            answer.userVote = newVote;
-            this.toastr.success(`Answer ${value > 0 ? 'upvoted' : 'downvoted'} successfully`, 'Success');
-          } else {
-            answer.votes += value;
-            answer.userVote = newVote;
-            this.toastr.success(`Answer ${value > 0 ? 'upvoted' : 'downvoted'} successfully`, 'Success');
-          }
+        const newVote = response.newVote;
+        const previousVote = answer.userVote || 0;
+        if (newVote === 0) {
+          answer.votes -= previousVote;
+          answer.userVote = 0;
+          this.toastr.success('Vote removed', 'Success');
+        } else if (previousVote !== 0) {
+          const scoreChange = -previousVote + value;
+          answer.votes += scoreChange;
+          answer.userVote = newVote;
+          this.toastr.success(`Answer ${value > 0 ? 'upvoted' : 'downvoted'} successfully`, 'Success');
+        } else {
+          answer.votes += value;
+          answer.userVote = newVote;
+          this.toastr.success(`Answer ${value > 0 ? 'upvoted' : 'downvoted'} successfully`, 'Success');
         }
         this.isVotingAnswer.set(answerId, false);
       },
@@ -649,20 +650,6 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   getAnswerTimestamp(answer: any): string {
     const timestamp = answer.dateUpdated || answer.dateCreated;
     return this.formatTime(timestamp);
-  }
-
-  logout() {
-    this.http.get(`${environment.apiUrl}/logout`, { withCredentials: true }).subscribe({
-      next: () => {
-        this.toastr.success('Logged out successfully', 'Success');
-        this.router.navigate(['/login']);
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Error logging out:', err);
-        this.toastr.error('Error logging out', 'Error');
-        this.router.navigate(['/login']);
-      }
-    });
   }
 
   showUserProfile(memberId: string) {

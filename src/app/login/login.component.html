@@ -11,12 +11,10 @@
         <i class="bi bi-chat-left-text"></i> AskSphere
       </a>
       <div class="navbar-nav ms-auto">
-        <a class="nav-link" [routerLink]="['/']">Home</a>
-        <a class="nav-link" href="#">Pages</a>
-        <a class="nav-link" href="#">Blog</a>
-        <button class="btn btn-outline-primary me-2" [routerLink]="['/login']">
+
+        <!-- <button class="btn btn-outline-primary me-2" [routerLink]="['/login']">
           <i class="bi bi-box-arrow-in-left"></i> Login
-        </button>
+        </button> -->
         <button class="btn btn-primary" [routerLink]="['/signup']">
           <i class="bi bi-person-plus"></i> Sign up
         </button>
@@ -85,6 +83,11 @@
           <small class="text-muted">
             Don't have an account? 
             <a [routerLink]="['/signup']" class="text-primary text-decoration-none fw-semibold">Sign up</a>
+          </small>
+          <br>
+          <small class="text-muted">
+            Forgot your password? 
+            <a [routerLink]="['/recover']" class="text-primary text-decoration-none fw-semibold">Recover</a>
           </small>
         </div>
       </div>

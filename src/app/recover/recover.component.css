@@ -1,0 +1,13 @@
+/* Add this to your existing CSS */
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+.alert {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}

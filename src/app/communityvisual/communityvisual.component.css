@@ -1,3 +1,4 @@
+/* Existing styles minus heatmap */
 .container {
     padding: 2rem;
     background: #f8f9fa;
@@ -73,38 +74,6 @@
     color: #444;
 }
 
-/* Heatmap Styles */
-.heatmap-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-}
-
-.heatmap-cell {
-    aspect-ratio: 1;
-    border-radius: 2px;
-    position: relative;
-}
-
-.heatmap-cell:hover .tooltip {
-    display: block;
-}
-
-.tooltip {
-    display: none;
-    position: absolute;
-    background: rgba(0,0,0,0.8);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    z-index: 100;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    font-size: 0.8rem;
-}
-
 .text-center {
     text-align: center;
 }
@@ -120,4 +89,65 @@
 
 .mb-4 {
     margin-bottom: 1.5rem;
+}
+
+/* New styles for Members List */
+.members-list .members-scroll {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.member-item:hover {
+    background: #f8f9fa;
+}
+
+.member-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 1rem;
+    border: 1px solid #ddd;
+}
+
+.member-info {
+    flex: 1;
+}
+
+.member-info h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.member-info p {
+    margin: 0.2rem 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.pagination .btn {
+    margin: 0 0.5rem;
+}
+
+.page-info {
+    margin: 0 1rem;
+    font-size: 0.9rem;
+    color: #666;
 }

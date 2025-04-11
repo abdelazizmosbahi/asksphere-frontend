@@ -10,14 +10,8 @@
         <i class="bi bi-chat-left-text"></i> AskSphere
       </a>
       <div class="navbar-nav ms-auto">
-        <a class="nav-link" [routerLink]="['/']">Home</a>
-        <a class="nav-link" href="#">Pages</a>
-        <a class="nav-link" href="#">Blog</a>
         <button class="btn btn-outline-primary me-2" [routerLink]="['/login']">
           <i class="bi bi-box-arrow-in-left"></i> Login
-        </button>
-        <button class="btn btn-primary" [routerLink]="['/signup']">
-          <i class="bi bi-person-plus"></i> Sign up
         </button>
       </div>
     </div>
@@ -34,7 +28,7 @@
     <div class="col-md-6 d-flex align-items-center justify-content-center bg-white p-5">
       <div class="w-100" style="max-width: 400px;">
         <h2 class="text-center mb-3 fw-bold" style="color: #1e3a8a;">Join the AskSphere Community</h2>
-        <p class="text-center text-muted mb-4">Give us some of your information to get free access to AskSphere.</p>
+        <!-- <p class="text-center text-muted mb-4">Give us some of your information to get free access to AskSphere.</p> -->
         <form (ngSubmit)="onSignup()" [formGroup]="signupForm" id="signupForm">
           <div class="mb-3">
             <label for="username" class="form-label fw-semibold">Username</label>

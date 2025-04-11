@@ -25,7 +25,7 @@ interface BarChartOptions {
   colors: string[];
   dataLabels: ApexDataLabels;
   legend: ApexLegend;
-};
+}
 
 interface PieChartOptions {
   series: ApexNonAxisChartSeries;
@@ -35,7 +35,7 @@ interface PieChartOptions {
   colors: string[];
   dataLabels: ApexDataLabels;
   legend: ApexLegend;
-};
+}
 
 interface LineChartOptions {
   series: ApexAxisChartSeries;
@@ -44,7 +44,7 @@ interface LineChartOptions {
   title: ApexTitleSubtitle;
   colors: string[];
   dataLabels: ApexDataLabels;
-};
+}
 
 interface SummaryData {
   totalQuestions: number;
@@ -56,12 +56,6 @@ interface SummaryData {
   userTrend: number;
 }
 
-interface HeatmapCell {
-  day: string;
-  count: number;
-  intensity: number;
-}
-
 interface RadialChartOptions {
   series: ApexNonAxisChartSeries;
   chart: ApexChart;
@@ -69,6 +63,15 @@ interface RadialChartOptions {
   title: ApexTitleSubtitle;
   colors: string[];
   plotOptions: ApexPlotOptions;
+}
+
+interface Member {
+  _id: string;
+  username: string;
+  avatar: string;
+  reputation: number;
+  dateJoined: string | null;
+  status: string;
 }
 
 @Component({
@@ -80,7 +83,9 @@ interface RadialChartOptions {
 })
 export class CommunityvisualComponent implements OnInit, OnDestroy {
   loading: boolean = true;
+  membersLoading: boolean = true;
   private dataSub: Subscription | null = null;
+  private membersSub: Subscription | null = null;
   communityId: number = 0;
   communityName: string = '';
 
@@ -100,7 +105,13 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
     answerTrend: 0,
     userTrend: 0
   };
-  public heatmapData: HeatmapCell[] = [];
+
+  // Members list properties
+  public activeMembers: Member[] = [];
+  public totalActive: number = 0;
+  public membersPerPage: number = 10;
+  public currentPage: number = 1;
+  public totalPages: number = 1;
 
   constructor(private http: HttpClient, private route: ActivatedRoute) {
     // Initialize charts with empty data
@@ -114,11 +125,15 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
     this.communityId = +this.route.snapshot.params['id'];
     this.loadCommunityStats();
     this.loadCommunityName();
+    this.loadMembers();
   }
 
   ngOnDestroy(): void {
     if (this.dataSub) {
       this.dataSub.unsubscribe();
+    }
+    if (this.membersSub) {
+      this.membersSub.unsubscribe();
     }
   }
 
@@ -228,11 +243,11 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
   loadCommunityStats() {
     this.loading = true;
     const url = `${environment.apiUrl}/api/communities/${this.communityId}/stats`;
-    console.log('Making request to:', url); // Debug URL
+    console.log('Making request to:', url);
     
     this.dataSub = this.http.get(url, { withCredentials: true }).subscribe({
       next: (data: any) => {
-        console.log('API Response:', JSON.stringify(data)); // Debug full response
+        console.log('API Response:', JSON.stringify(data));
         if (data?.success) {
           this.updateChartsWithRealData(data);
         } else {
@@ -250,6 +265,7 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   loadCommunityName() {
     this.http.get(`${environment.apiUrl}/api/communities/${this.communityId}`).subscribe({
       next: (data: any) => {
@@ -259,6 +275,57 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
         console.error('Error fetching community name:', err);
       }
     });
+  }
+
+  loadMembers() {
+    this.membersLoading = true;
+    const url = `${environment.apiUrl}/api/communities/${this.communityId}/members?page=${this.currentPage}&per_page=${this.membersPerPage}`;
+    console.log('Fetching members from:', url);
+
+    this.membersSub = this.http.get(url, { withCredentials: true }).subscribe({
+      next: (data: any) => {
+        console.log('Members API Response:', JSON.stringify(data));
+        if (data?.success) {
+          this.activeMembers = data.activeMembers.map((member: any) => ({
+            _id: member._id,
+            username: member.username,
+            avatar: member.avatar,
+            reputation: member.reputation,
+            dateJoined: member.dateJoined,
+            status: member.status
+          }));
+          this.totalActive = data.totalActive || 0;
+          this.totalPages = Math.ceil(this.totalActive / this.membersPerPage);
+        } else {
+          console.error('Members API returned unsuccessful response');
+          this.activeMembers = [];
+          this.totalActive = 0;
+          this.totalPages = 1;
+        }
+        this.membersLoading = false;
+      },
+      error: (err) => {
+        console.error('Members API Error:', err);
+        this.activeMembers = [];
+        this.totalActive = 0;
+        this.totalPages = 1;
+        this.membersLoading = false;
+      }
+    });
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.loadMembers();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.loadMembers();
+    }
   }
 
   private updateChartsWithRealData(data: any): void {
@@ -277,7 +344,10 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
         { name: 'Questions', data: data.monthlyQuestions || [] },
         { name: 'Answers', data: data.monthlyAnswers || [] },
         { name: 'New Users', data: data.monthlyUsers || [] }
-      ]
+      ],
+      xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      }
     };
   
     // Pie Chart - Content Breakdown
@@ -311,9 +381,6 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
       answerTrend: data.answerTrend || 0,
       userTrend: data.userTrend || 0
     };
-  
-    // Heatmap data
-    this.heatmapData = this.generateHeatmapData(data.weeklyActivity || []);
   
     // Radial chart
     this.radialChartOptions = {
@@ -356,18 +423,7 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
       userTrend: 0
     };
 
-    this.heatmapData = this.generateHeatmapData([]);
     this.radialChartOptions.series = [0, 0, 0];
     this.radialChartOptions.labels = ['Questions', 'Answers', 'Active Users'];
-  }
-
-  private generateHeatmapData(weeklyActivity: number[]): HeatmapCell[] {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const maxValue = Math.max(...weeklyActivity, 1);
-    return weeklyActivity.map((count, index) => ({
-      day: days[index],
-      count,
-      intensity: count / maxValue
-    }));
   }
 }
