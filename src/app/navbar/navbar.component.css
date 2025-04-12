@@ -5,25 +5,39 @@
   left: 0;
   right: 0;
   z-index: 1030;
-  padding-left: 52px; /* Space for toggle button when collapsed */
+  padding-left: 52px;
   transition: padding-left 0.3s ease;
 }
 
 .main-content.expanded .navbar {
-  padding-left: 252px; /* 250px sidebar + 2px gap */
+  padding-left: 252px;
 }
 
 .sidebar-toggle {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 1031; /* Above navbar */
+  z-index: 1031;
   margin: 8px 0 0 8px;
   transition: left 0.3s ease;
 }
 
 .main-content.expanded .sidebar-toggle {
   left: 250px;
+}
+
+/* Notification styles */
+.notification.clickable {
+  cursor: pointer;
+}
+
+.notification.clickable:hover {
+  background-color: #e9ecef;
+}
+
+.btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Responsive adjustments */

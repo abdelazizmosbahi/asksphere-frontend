@@ -19,9 +19,9 @@
                 <div *ngIf="notifications.length === 0" class="text-muted text-center">
                   No notifications yet.
                 </div>
-                <div *ngFor="let notification of notifications" class="notification mb-3 p-3 border rounded" [ngClass]="{'bg-light': notification.isRead}" (click)="onNotificationClick(notification)">
+                <div *ngFor="let notification of notifications" class="notification mb-3 p-3 border rounded" [ngClass]="{'bg-light': notification.isRead}">
                   <div class="d-flex justify-content-between align-items-center">
-                    <div>
+                    <div [ngClass]="{'clickable': notification.type === 'answer' || notification.type === 'vote'}" (click)="notification.type === 'answer' || notification.type === 'vote' ? onNotificationClick(notification) : null">
                       <p [ngClass]="{'fw-bold': !notification.isRead}">{{ notification.message }}</p>
                       <small class="text-muted">{{ notification.createdAt }}</small>
                     </div>
@@ -30,7 +30,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
+            <!-- <div class="col-md-4">
               <div class="sidebar">
                 <h5>Your Badges</h5>
                 <div *ngIf="badges.length === 0" class="text-muted">
@@ -44,10 +44,10 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
-        <footer class="footer">
+        <!-- <footer class="footer">
           <div class="container">
             <div class="row">
               <div class="col-md-3">
@@ -86,7 +86,7 @@
               <small>© 2025 AskSphere Inc.</small>
             </div>
           </div>
-        </footer>
+        </footer> -->
       </div>
     </div>
   </div>

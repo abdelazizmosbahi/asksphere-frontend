@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -26,10 +26,10 @@ declare const $: any;
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   user: any = null;
   username: string = '';
-  userId: string = ''; // Added to track current user's ID
+  userId: string = '';
   communities: any[] = [];
   joinedCommunities: Set<number> = new Set();
   questions: any[] = [];
@@ -57,6 +57,24 @@ export class HomeComponent implements OnInit, AfterViewInit {
     $('.question-item').hide().fadeIn(500);
   }
 
+  ngOnDestroy() {
+    // Close the user profile modal if it's open
+    const modalElement = document.getElementById('userProfileModal');
+    if (modalElement) {
+      const modalInstance = (window as any).bootstrap.Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+    // Remove any lingering modal backdrops
+    const backdrops = document.getElementsByClassName('modal-backdrop');
+    while (backdrops.length > 0) {
+      backdrops[0].parentNode?.removeChild(backdrops[0]);
+    }
+    // Ensure the body doesn't retain modal-open class
+    document.body.classList.remove('modal-open');
+  }
+
   onSidebarToggled(collapsed: boolean) {
     this.sidebarCollapsed = collapsed;
   }
@@ -66,7 +84,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       next: (response: any) => {
         this.user = response;
         this.username = response.username;
-        this.userId = response._id; // Store current user's ID
+        this.userId = response._id;
         this.loadJoinedCommunities();
       },
       error: () => {
@@ -131,7 +149,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
                     avatar: this.userAvatarMap.get(question.memberId) || 'https://via.placeholder.com/20',
                     time: this.formatTime(question.dateCreated),
                     memberId: question.memberId,
-                    userVote: 0 // Initialize userVote to 0
+                    userVote: 0
                   }));
               },
               error: (err: any) => {

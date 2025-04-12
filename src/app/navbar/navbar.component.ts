@@ -1,22 +1,25 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   searchQuery: string = '';
   notifications: any[] = [];
   unreadNotificationsCount: number = 0;
-  sidebarCollapsed: boolean = false; // Shared state with sidebar
+  sidebarCollapsed: boolean = false;
+  isNotificationsPage: boolean = false;
+  private routerSubscription!: Subscription;
 
-  @Output() sidebarToggled = new EventEmitter<boolean>(); // Emit toggle event to parent (home)
+  @Output() sidebarToggled = new EventEmitter<boolean>();
 
   constructor(
     private router: Router,
@@ -27,11 +30,25 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     this.loadNotifications();
+    this.routerSubscription = this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.isNotificationsPage = event.url === '/notifications';
+        if (!this.isNotificationsPage) {
+          this.loadNotifications();
+        }
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 
   toggleSidebar() {
     this.sidebarCollapsed = !this.sidebarCollapsed;
-    this.sidebarToggled.emit(this.sidebarCollapsed); // Notify home component
+    this.sidebarToggled.emit(this.sidebarCollapsed);
   }
 
   loadNotifications() {
@@ -64,21 +81,59 @@ export class NavbarComponent implements OnInit {
   }
 
   onNotificationClick(notification: any) {
+    // Mark the notification as read
     this.markAsRead(notification.id);
-    if (notification.type === 'vote') {
-      if (notification.questionId) {
-        this.router.navigate(['/question', notification.questionId]);
+
+    // Close the modal before navigating
+    const modalElement = document.getElementById('notificationsModal');
+    if (modalElement) {
+      const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      if (bootstrapModal) {
+        // Hide the modal and wait for it to finish closing
+        bootstrapModal.hide();
+        // Listen for the 'hidden.bs.modal' event to ensure the modal is fully closed
+        modalElement.addEventListener('hidden.bs.modal', () => {
+          // Clean up the backdrop and body classes
+          this.cleanupModalBackdrop();
+          // Handle navigation after the modal is fully closed
+          this.navigateAfterModalClose(notification);
+        }, { once: true }); // Ensure the event listener is only called once
       } else {
-        this.toastr.error('Question ID not available for this notification', 'Error');
-      }
-    } else if (notification.type === 'answer' && notification.answerId) {
-      if (notification.questionId) {
-        this.router.navigate(['/question', notification.questionId], { fragment: `answer-${notification.answerId}` });
-      } else {
-        this.toastr.error('Question ID not available for this notification', 'Error');
+        // If the modal instance isn’t found, clean up manually and navigate
+        this.cleanupModalBackdrop();
+        this.navigateAfterModalClose(notification);
       }
     } else {
-      this.toastr.error('Invalid notification type or missing related ID', 'Error');
+      // If the modal element isn’t found, just navigate
+      this.navigateAfterModalClose(notification);
+    }
+  }
+
+  private cleanupModalBackdrop() {
+    // Remove the backdrop manually
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+      backdrop.remove();
+    }
+    // Remove modal-open class and reset body styles
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+
+  private navigateAfterModalClose(notification: any) {
+    // Handle navigation based on notification type
+    if (notification.type === 'answer' || notification.type === 'vote') {
+      if (notification.questionId) {
+        const fragment = notification.type === 'answer' && notification.answerId ? `answer-${notification.answerId}` : undefined;
+        this.router.navigate([`/question/${notification.questionId}`], { fragment });
+      } else {
+        this.toastr.error('The related question or answer has been deleted.', 'Error');
+      }
+    } else {
+      if (notification.type === 'badge') {
+        this.toastr.info('Badge earned! No action required.', 'Info');
+      }
     }
   }
 

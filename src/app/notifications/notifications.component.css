@@ -14,12 +14,12 @@ body {
   border-radius: 5px;
 }
 
-.notification {
+.notification.clickable {
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.notification:hover {
+.notification.clickable:hover {
   background-color: #f8f9fa;
 }
 

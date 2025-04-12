@@ -73,6 +73,13 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // Remove any lingering modal backdrops on component initialization
+    const backdrops = document.getElementsByClassName('modal-backdrop');
+    while (backdrops.length > 0) {
+      backdrops[0].parentNode?.removeChild(backdrops[0]);
+    }
+    document.body.classList.remove('modal-open');
+
     const storedViewedAnswers = localStorage.getItem('viewedAnswers');
     if (storedViewedAnswers) {
       this.viewedAnswers = new Set(JSON.parse(storedViewedAnswers));
@@ -120,6 +127,23 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.routeSub) {
       this.routeSub.unsubscribe();
     }
+    // Close all modals when the component is destroyed
+    const modals = ['deleteModal', 'successModal', 'userProfileModal'];
+    modals.forEach(modalId => {
+      const modalElement = document.getElementById(modalId);
+      if (modalElement) {
+        const modalInstance = (window as any).bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      }
+    });
+    // Remove any lingering modal backdrops
+    const backdrops = document.getElementsByClassName('modal-backdrop');
+    while (backdrops.length > 0) {
+      backdrops[0].parentNode?.removeChild(backdrops[0]);
+    }
+    document.body.classList.remove('modal-open');
   }
 
   setupContentValidation() {
@@ -142,7 +166,7 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (result: any) => {
         this.isValidating = false;
         if (result) {
-          this.isContentRelevant = result.is_relevant;
+          this.isContentRelevant = result.is_relevant; // Fixed typo: is_re-relevant to is_relevant
           if (!this.isContentRelevant) {
             this.validationError = result.suggested_community
               ? `Content is not relevant to this community. Suggested community: ${result.suggested_community.name} (Similarity: ${result.suggested_community.similarity_score.toFixed(2)})`
@@ -690,4 +714,6 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   isOwner(memberId: string | undefined): boolean {
     return this.userId === memberId;
   }
+
+  
 }

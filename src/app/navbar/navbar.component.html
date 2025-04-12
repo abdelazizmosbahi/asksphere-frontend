@@ -20,7 +20,14 @@
         </button>
       </div>
       <!-- Notification Button -->
-      <button class="btn btn-outline-primary me-2 position-relative" type="button" data-bs-toggle="modal" data-bs-target="#notificationsModal" title="Notifications">
+      <button 
+        class="btn btn-outline-primary me-2 position-relative" 
+        type="button" 
+        [attr.data-bs-toggle]="isNotificationsPage ? null : 'modal'" 
+        [attr.data-bs-target]="isNotificationsPage ? null : '#notificationsModal'" 
+        [disabled]="isNotificationsPage" 
+        [ngClass]="{'disabled': isNotificationsPage}" 
+        title="Notifications">
         <i class="bi bi-bell"></i>
         <span *ngIf="unreadNotificationsCount > 0" class="badge bg-danger rounded-pill position-absolute" style="top: -5px; right: -5px;">{{ unreadNotificationsCount }}</span>
       </button>
@@ -43,9 +50,9 @@
         <div *ngIf="notifications.length === 0" class="text-muted text-center">
           No notifications yet.
         </div>
-        <div *ngFor="let notification of notifications.slice(0, 5)" class="notification mb-3 p-2 border rounded" [ngClass]="{'bg-light': notification.isRead}" (click)="onNotificationClick(notification)">
+        <div *ngFor="let notification of notifications.slice(0, 5)" class="notification mb-3 p-2 border rounded" [ngClass]="{'bg-light': notification.isRead}">
           <div class="d-flex justify-content-between align-items-center">
-            <div>
+            <div [ngClass]="{'clickable': notification.type === 'answer' || notification.type === 'vote'}" (click)="notification.type === 'answer' || notification.type === 'vote' ? onNotificationClick(notification) : null">
               <p [ngClass]="{'fw-bold': !notification.isRead}">{{ notification.message }}</p>
               <small class="text-muted">{{ notification.createdAt }}</small>
             </div>
