@@ -38,7 +38,9 @@ export class CommunityComponent implements OnInit, AfterViewInit {
   userBadges: any[] = [];
   communityMap: Map<number, string> = new Map();
   userMap: Map<string, string> = new Map();
+  userAvatarMap: Map<string, string> = new Map();
   isMember: boolean = false;
+  sidebarCollapsed: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,11 +48,6 @@ export class CommunityComponent implements OnInit, AfterViewInit {
     private http: HttpClient,
     private toastr: ToastrService
   ) {}
-  sidebarCollapsed = false;
-
-  toggleSidebar() {
-    this.sidebarCollapsed = !this.sidebarCollapsed;
-  }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -148,7 +145,9 @@ export class CommunityComponent implements OnInit, AfterViewInit {
                     views: question.views || 0,
                     tags: [communityMap.get(question.communityId) || 'Unknown'],
                     user: this.userMap.get(question.memberId) || 'Unknown',
-                    time: this.formatTime(question.dateCreated)
+                    avatar: this.userAvatarMap.get(question.memberId) || 'https://via.placeholder.com/20',
+                    time: this.formatTime(question.dateCreated),
+                    memberId: question.memberId
                   }));
               },
               error: (err: any) => {
@@ -176,7 +175,7 @@ export class CommunityComponent implements OnInit, AfterViewInit {
         this.http.get(`${environment.apiUrl}/api/users/${id}`, { withCredentials: true }).pipe(
           catchError((err: any) => {
             console.error(`Error fetching user ${id}:`, err);
-            return of({ username: 'Unknown' });
+            return of({ username: 'Unknown', avatar: 'https://via.placeholder.com/20' });
           })
         )
       );
@@ -184,6 +183,7 @@ export class CommunityComponent implements OnInit, AfterViewInit {
         next: (responses: any[]) => {
           responses.forEach((res, index) => {
             this.userMap.set(memberIds[index], res.username);
+            this.userAvatarMap.set(memberIds[index], res.avatar || 'https://via.placeholder.com/20');
           });
           observer.next();
           observer.complete();
@@ -339,9 +339,11 @@ export class CommunityComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
   onSidebarToggled(event: boolean) {
     this.sidebarCollapsed = event;
   }
+
   onSearch() {
     if (this.searchQuery.trim()) {
       this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });

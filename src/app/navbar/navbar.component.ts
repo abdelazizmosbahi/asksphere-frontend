@@ -141,7 +141,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.http.post(
       `${environment.apiUrl}/notifications/mark-read`,
       { notificationIds: [notificationId] },
-      { withCredentials: true }
+       { withCredentials: true }
     ).subscribe({
       next: () => {
         const notification = this.notifications.find(n => n.id === notificationId);

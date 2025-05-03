@@ -1,0 +1,15 @@
+.question-item {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.question-item:hover {
+  background-color: #f8f9fa;
+}
+.stats {
+  min-width: 100px;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

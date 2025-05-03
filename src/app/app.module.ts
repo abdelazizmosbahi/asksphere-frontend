@@ -22,6 +22,7 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { UserVisualComponent } from './uservisual/uservisual.component';
+import { SearchResultsComponent } from './search-results/search-results.component';
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'community/:id', component: CommunityComponent },
@@ -45,7 +46,8 @@ const routes: Routes = [
     ProfileComponent,
     NotificationsComponent,
     NavbarComponent,
-    SidebarComponent],
+    SidebarComponent,
+    SearchResultsComponent],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule, CommonModule,FormsModule, ReactiveFormsModule, BrowserAnimationsModule, ToastrModule.forRoot({ // Configure Toastr
     timeOut: 3000,
     positionClass: 'toast-top-right',

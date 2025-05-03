@@ -18,6 +18,7 @@ import { BadgesComponent } from './badges/badges.component';
 import { CommunityComponent } from './community/community.component';
 import { UserVisualComponent } from './uservisual/uservisual.component';
 import { CommunityvisualComponent } from './communityvisual/communityvisual.component';
+import { SearchResultsComponent } from './search-results/search-results.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -40,6 +41,7 @@ const routes: Routes = [
   { path: 'community/:id', component: CommunityComponent },
   { path: 'community/:id/stats', component: CommunityvisualComponent },
   { path: 'uservisual', component: UserVisualComponent },
+  { path: 'search', component: SearchResultsComponent },
   { path: '**', redirectTo: '' }
 
 

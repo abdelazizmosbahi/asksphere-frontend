@@ -69,7 +69,7 @@
                         <span class="badge bg-light text-dark me-1" *ngFor="let tag of question.tags.slice(1)">{{ tag }}</span>
                       </div>
                       <div class="text-muted small">
-                        <img src="https://via.placeholder.com/20" alt="User Avatar" class="rounded-circle me-1" style="width: 20px; height: 20px;">
+                        <img [src]="question.avatar" alt="User Avatar" class="rounded-circle me-1" style="width: 20px; height: 20px;">
                         {{ question.user }} • {{ question.time }}
                       </div>
                     </div>
