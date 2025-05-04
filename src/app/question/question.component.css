@@ -59,3 +59,57 @@ footer a:hover {
     width: calc(100% - 250px);
   }
 }
+
+/* Add to home.component.css */
+body.dark-mode .question-item:hover {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode .stats {
+  color: #e0e0e0;
+}
+
+body.dark-mode .text-primary {
+  color: #4dabf7 !important;
+}
+
+/* Ask Question Page Dark Mode */
+:host-context(body.dark-mode) .ask-question-container {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+:host-context(body.dark-mode) .question-form {
+  background-color: #252525;
+  border: 1px solid #444;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+:host-context(body.dark-mode) .guidelines-box {
+  background-color: #252525;
+  border: 1px solid #444;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+:host-context(body.dark-mode) .guideline-item {
+  color: #b0b0b0;
+}
+
+/* Feedback message styling */
+.feedback-message {
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  border-radius: 3px;
+  background-color: #f8d7da;
+  border: 1px solid #dc3545;
+}
+
+/* Custom Toastr styling for dark mode */
+:host-context(body.dark-mode) .ngx-toastr {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0 !important;
+  border: 2px solid #dc3545 !important;
+}

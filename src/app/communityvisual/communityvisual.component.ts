@@ -76,10 +76,9 @@ interface Member {
 
 @Component({
   selector: 'app-communityvisual',
-  standalone: true,
-  imports: [CommonModule, NgApexchartsModule],
   templateUrl: './communityvisual.component.html',
   styleUrls: ['./communityvisual.component.css']
+  // Remove standalone: true and imports
 })
 export class CommunityvisualComponent implements OnInit, OnDestroy {
   loading: boolean = true;
@@ -88,6 +87,7 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
   private membersSub: Subscription | null = null;
   communityId: number = 0;
   communityName: string = '';
+  sidebarCollapsed: boolean = false;
 
   // Chart options
   public barChartOptions: BarChartOptions;
@@ -425,5 +425,9 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
 
     this.radialChartOptions.series = [0, 0, 0];
     this.radialChartOptions.labels = ['Questions', 'Answers', 'Active Users'];
+  }
+
+  onSidebarToggled(isCollapsed: boolean) {
+    this.sidebarCollapsed = isCollapsed;
   }
 }

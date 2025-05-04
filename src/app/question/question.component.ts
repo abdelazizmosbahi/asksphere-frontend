@@ -19,6 +19,7 @@ export class QuestionComponent implements OnInit {
   isValidating: boolean = false;
   isContentRelevant: boolean = false;
   validationError: string | null = null;
+  lastFeedbackMessage: string | null = null; // Store feedback for display below form
   contentSubject: Subject<string> = new Subject<string>();
 
   user: any = null;
@@ -49,9 +50,11 @@ export class QuestionComponent implements OnInit {
       this.setupContentValidation();
     });
   }
+
   onSidebarToggled(collapsed: boolean) {
     this.sidebarCollapsed = collapsed;
   }
+
   postQuestion(form: any) {
     if (!this.communityId || !this.title || !this.content) {
       this.toastr.error('Please fill in all required fields', 'Error');
@@ -59,6 +62,7 @@ export class QuestionComponent implements OnInit {
     }
 
     this.isPosting = true;
+    this.lastFeedbackMessage = null; // Clear previous feedback
     const questionData = {
       title: this.title,
       content: this.content,
@@ -83,13 +87,12 @@ export class QuestionComponent implements OnInit {
 
         // Hide the modal and navigate after 2 seconds
         setTimeout(() => {
-          successModal.hide(); // Explicitly hide the modal
-          // Remove the backdrop manually if it persists
+          successModal.hide();
           const backdrop = document.querySelector('.modal-backdrop');
           if (backdrop) {
             backdrop.remove();
           }
-          document.body.classList.remove('modal-open'); // Reset body class
+          document.body.classList.remove('modal-open');
           this.router.navigate([`/community/${this.communityId}`]).then(() => {
             console.log('Navigation to community page completed');
           });
@@ -97,10 +100,48 @@ export class QuestionComponent implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.isPosting = false;
-        this.toastr.error(err.error.message || 'Error posting question', 'Error');
-        console.error('Error posting question:', err);
+        console.error('Error posting question:', err); // Enhanced logging
+        if (err.status === 400 && err.error.message === 'Content flagged as inappropriate') {
+          // Handle inappropriate content
+          const feedback = err.error.feedback || 'Your content was flagged as inappropriate.';
+          this.lastFeedbackMessage = feedback; // Store for display
+          this.showInappropriateContentWarning(feedback);
+          // Clear the form to prevent resubmission
+          this.title = '';
+          this.content = '';
+          form.resetForm();
+        } else {
+          // Handle other errors
+          this.toastr.error(err.error.message || 'Error posting question', 'Error');
+        }
       }
     });
+  }
+
+  showInappropriateContentWarning(feedback: string) {
+    let countdown = 5;
+    const toastrRef = this.toastr.error(
+      `${feedback} Reloading in ${countdown} seconds...`,
+      'Inappropriate Content',
+      {
+        timeOut: 6000,
+        extendedTimeOut: 0,
+        closeButton: true,
+        tapToDismiss: false,
+        toastClass: 'ngx-toastr border-danger'
+      }
+    );
+
+    const countdownInterval = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        toastrRef.toastRef.componentInstance.message = `${feedback} Reloading in ${countdown} seconds...`;
+      } else {
+        clearInterval(countdownInterval);
+        console.log('Reloading page...');
+        window.location.reload();
+      }
+    }, 1000);
   }
 
   validateContent(content: string): Observable<any> {

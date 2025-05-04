@@ -2,3 +2,16 @@
   display: block;
   min-height: 100vh;
 }
+
+/* Add to home.component.css */
+body.dark-mode .question-item:hover {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode .stats {
+  color: #e0e0e0;
+}
+
+body.dark-mode .text-primary {
+  color: #4dabf7 !important;
+}

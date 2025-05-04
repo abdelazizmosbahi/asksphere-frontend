@@ -47,6 +47,7 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   newAnswerContent: string = '';
   isContentRelevant: boolean = false;
   validationError: string | null = null;
+  lastFeedbackMessage: string | null = null; // Store feedback for inappropriate content
   private contentSubject = new Subject<string>();
   isValidating: boolean = false;
   isPosting: boolean = false;
@@ -73,7 +74,6 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Remove any lingering modal backdrops on component initialization
     const backdrops = document.getElementsByClassName('modal-backdrop');
     while (backdrops.length > 0) {
       backdrops[0].parentNode?.removeChild(backdrops[0]);
@@ -127,7 +127,6 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.routeSub) {
       this.routeSub.unsubscribe();
     }
-    // Close all modals when the component is destroyed
     const modals = ['deleteModal', 'successModal', 'userProfileModal'];
     modals.forEach(modalId => {
       const modalElement = document.getElementById(modalId);
@@ -138,7 +137,6 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     });
-    // Remove any lingering modal backdrops
     const backdrops = document.getElementsByClassName('modal-backdrop');
     while (backdrops.length > 0) {
       backdrops[0].parentNode?.removeChild(backdrops[0]);
@@ -166,7 +164,7 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (result: any) => {
         this.isValidating = false;
         if (result) {
-          this.isContentRelevant = result.is_relevant; // Fixed typo: is_re-relevant to is_relevant
+          this.isContentRelevant = result.is_relevant;
           if (!this.isContentRelevant) {
             this.validationError = result.suggested_community
               ? `Content is not relevant to this community. Suggested community: ${result.suggested_community.name} (Similarity: ${result.suggested_community.similarity_score.toFixed(2)})`
@@ -540,7 +538,12 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   postAnswer(content: string, answerForm: any) {
+    if (!content.trim()) {
+      this.toastr.error('Answer content cannot be empty', 'Error');
+      return;
+    }
     this.isPosting = true;
+    this.lastFeedbackMessage = null; // Clear previous feedback
     console.log('Posting answer with content:', content);
     this.http.post(`${environment.apiUrl}/questions/${this.question.id}/answers`, { content }, { withCredentials: true }).subscribe({
       next: () => {
@@ -554,15 +557,55 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
         const successModal = new (window as any).bootstrap.Modal(document.getElementById('successModal'));
         successModal.show();
         setTimeout(() => {
+          successModal.hide();
+          const backdrop = document.querySelector('.modal-backdrop');
+          if (backdrop) {
+            backdrop.remove();
+          }
+          document.body.classList.remove('modal-open');
           window.location.reload();
         }, 2000);
       },
       error: (err: HttpErrorResponse) => {
-        console.error('Error posting answer:', err);
         this.isPosting = false;
-        this.toastr.error(err.error.message || 'Error posting answer', 'Error');
+        console.error('Error posting answer:', err);
+        if (err.status === 400 && err.error.message === 'Content flagged as inappropriate') {
+          const feedback = err.error.feedback || 'Your content was flagged as inappropriate.';
+          this.lastFeedbackMessage = feedback; // Store for display
+          this.showInappropriateContentWarning(feedback);
+          this.newAnswerContent = '';
+          answerForm.resetForm();
+        } else {
+          this.toastr.error(err.error.message || 'Error posting answer', 'Error');
+        }
       }
     });
+  }
+
+  showInappropriateContentWarning(feedback: string) {
+    let countdown = 5;
+    const toastrRef = this.toastr.error(
+      `${feedback} Reloading in ${countdown} seconds...`,
+      'Inappropriate Content',
+      {
+        timeOut: 6000,
+        extendedTimeOut: 0,
+        closeButton: true,
+        tapToDismiss: false,
+        toastClass: 'ngx-toastr border-danger'
+      }
+    );
+
+    const countdownInterval = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        toastrRef.toastRef.componentInstance.message = `${feedback} Reloading in ${countdown} seconds...`;
+      } else {
+        clearInterval(countdownInterval);
+        console.log('Reloading page...');
+        window.location.reload();
+      }
+    }, 1000);
   }
 
   openDeleteModal(type: 'question' | 'answer', id: string) {
@@ -714,6 +757,4 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   isOwner(memberId: string | undefined): boolean {
     return this.userId === memberId;
   }
-
-  
 }

@@ -31,12 +31,13 @@
             <p class="text-muted mb-1">{{ result.content }}</p>
             <div class="d-flex justify-content-between">
               <div>
-                <span class="badge bg-light text-dark me-1">{{ result.communityName }}</span>
+                <span class="badge bg-light text-dark me-1">{{ result.communityName }}</span><br><br>
+                <div class="text-muted small">
+                  <img [src]="result.avatar" alt="User Avatar" class="rounded-circle me-1" style="width: 20px; height: 20px;">
+                  {{ result.user }} • {{ result.time }}
+                </div>
               </div>
-              <div class="text-muted small">
-                <img src="https://via.placeholder.com/20" alt="User Avatar" class="rounded-circle me-1" style="width: 20px; height: 20px;">
-                {{ result.user }} • {{ result.time }}
-              </div>
+              
             </div>
           </div>
         </div>

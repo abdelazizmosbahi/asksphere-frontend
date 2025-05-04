@@ -13,3 +13,27 @@
   justify-content: center;
   align-items: center;
 }
+
+
+/* Main content adjustments - same as community.component.css */
+.main-content {
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+  width: 100%;
+}
+
+.main-content.expanded {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+}
+
+/* Container adjustments */
+.container {
+  padding-top: 70px; /* To account for fixed navbar */
+  min-height: calc(100vh - 70px);
+}
+
+/* Ensure the content doesn't get hidden behind navbar */
+.d-flex {
+  padding-top: 56px; /* Navbar height */
+}

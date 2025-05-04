@@ -17,6 +17,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   unreadNotificationsCount: number = 0;
   sidebarCollapsed: boolean = false;
   isNotificationsPage: boolean = false;
+  darkMode: boolean = false;
   private routerSubscription!: Subscription;
 
   @Output() sidebarToggled = new EventEmitter<boolean>();
@@ -38,6 +39,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode) {
+      this.darkMode = savedMode === 'true';
+      document.body.classList.toggle('dark-mode', this.darkMode);
+    }
   }
 
   ngOnDestroy() {
@@ -193,4 +200,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
     return created.toLocaleDateString();
   }
+
+  // Add to navbar.component.ts
+
+
+  toggleDarkMode() {
+    this.darkMode = !this.darkMode;
+    document.body.classList.toggle('dark-mode', this.darkMode);
+    localStorage.setItem('darkMode', this.darkMode.toString());
+  }
+
 }

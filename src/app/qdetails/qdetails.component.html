@@ -79,6 +79,10 @@
                       <small>{{ validationError }}</small>
                     </div>
                   </div>
+                  <!-- Inappropriate Content Feedback -->
+                  <div *ngIf="lastFeedbackMessage" class="mb-3 text-danger feedback-message">
+                    <small>{{ lastFeedbackMessage }}</small>
+                  </div>
                   <button type="submit" class="btn btn-primary" [disabled]="answerForm.invalid || !isContentRelevant || isPosting">
                     <span *ngIf="isPosting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                     Post Answer

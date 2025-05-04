@@ -15,7 +15,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { CommunityComponent } from './community/community.component';
 import { QuestionComponent } from './question/question.component';
 import { Routes } from '@angular/router';
-import { ProfileComponent } from './profile/profile.component'; // Import ProfileComponent
+import { ProfileComponent } from './profile/profile.component';
 import { BadgesComponent } from './badges/badges.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { CommonModule } from '@angular/common';
@@ -23,6 +23,9 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { UserVisualComponent } from './uservisual/uservisual.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
+import { NgApexchartsModule } from 'ng-apexcharts'; // Add this import
+import { CommunityvisualComponent } from './communityvisual/communityvisual.component';
+
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'community/:id', component: CommunityComponent },
@@ -33,8 +36,10 @@ const routes: Routes = [
   { path: 'uservisual', component: UserVisualComponent },
   { path: '**', redirectTo: '' }
 ];
+
 @NgModule({
-  declarations: [AppComponent,
+  declarations: [
+    AppComponent,
     LoginComponent,
     SignupComponent,
     HomeComponent,
@@ -47,13 +52,26 @@ const routes: Routes = [
     NotificationsComponent,
     NavbarComponent,
     SidebarComponent,
-    SearchResultsComponent],
-  imports: [BrowserModule, HttpClientModule, AppRoutingModule, CommonModule,FormsModule, ReactiveFormsModule, BrowserAnimationsModule, ToastrModule.forRoot({ // Configure Toastr
-    timeOut: 3000,
-    positionClass: 'toast-top-right',
-    preventDuplicates: true,
-  })
-],
+    SearchResultsComponent,
+    UserVisualComponent,
+    CommunityvisualComponent
+
+  ],
+  imports: [
+    BrowserModule, 
+    HttpClientModule, 
+    AppRoutingModule, 
+    CommonModule,
+    FormsModule, 
+    ReactiveFormsModule, 
+    BrowserAnimationsModule, 
+    NgApexchartsModule, // Add this for the charts
+    ToastrModule.forRoot({ 
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    })
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

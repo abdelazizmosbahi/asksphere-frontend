@@ -149,3 +149,61 @@ body {
     padding-left: 252px;
   }
 }
+/* Add to home.component.css */
+body.dark-mode .question-item:hover {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode .stats {
+  color: #e0e0e0;
+}
+
+body.dark-mode .text-primary {
+  color: #4dabf7 !important;
+}
+
+/* Add to badges.component.css */
+:host-context(body.dark-mode) .badge-container {
+  background-color: #1e1e1e;
+}
+
+:host-context(body.dark-mode) .badge-item {
+  background-color: #252525;
+  border: 1px solid #444;
+}
+
+/* Badges Page Dark Mode */
+:host-context(body.dark-mode) .badges-container {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+:host-context(body.dark-mode) .badge-filter {
+  background-color: #252525;
+  border: 1px solid #444;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+:host-context(body.dark-mode) .badge-item {
+  background-color: #252525;
+  border: 1px solid #444;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+}
+
+:host-context(body.dark-mode) .badge-item h5 {
+  color: #4dabf7;
+}
+
+:host-context(body.dark-mode) .badge-item p {
+  color: #b0b0b0;
+}
+
+:host-context(body.dark-mode) .pagination-controls {
+  background-color: #252525;
+  border: 1px solid #444;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}

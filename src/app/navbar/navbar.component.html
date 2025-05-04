@@ -13,6 +13,9 @@
       <i class="bi bi-chat-left-text me-2"></i> AskSphere
     </h4>
     <div class="navbar-nav ms-auto">
+      <button class="btn btn-outline-secondary me-2" (click)="toggleDarkMode()" title="Toggle Dark Mode">
+        <i class="bi" [ngClass]="{'bi-moon-fill': !darkMode, 'bi-sun-fill': darkMode}"></i>
+      </button>
       <div class="input-group me-2" style="width: 300px;">
         <input type="text" class="form-control" placeholder="Type your search words..." [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
         <button class="btn btn-outline-secondary" type="button" (click)="onSearch()">

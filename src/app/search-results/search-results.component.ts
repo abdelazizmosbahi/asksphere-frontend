@@ -43,6 +43,7 @@ interface SearchResult {
   views: number;
   answersCount?: number;
   questionId?: string;
+  avatar: string;
 }
 
 @Component({
@@ -60,9 +61,9 @@ export class SearchResultsComponent implements OnInit {
   pageSize: number = 10;
   communityMap: Map<number, string> = new Map();
   userMap: Map<string, string> = new Map();
+  userAvatarMap: Map<string, string> = new Map();
   sidebarCollapsed: boolean = false;
   
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -96,25 +97,20 @@ export class SearchResultsComponent implements OnInit {
   }
 
   search() {
-    // First, fetch the user's joined communities
     this.http.get<MemberCommunity[]>(`${environment.apiUrl}/member_communities`, { withCredentials: true }).pipe(
       switchMap(memberCommunities => {
         const joinedCommunityIds = memberCommunities.map(mc => mc.communityId);
         if (joinedCommunityIds.length === 0) {
-          // If user is not a member of any community, return empty results
           return of([]);
         }
-        // Fetch all questions and filter by joined communities
         return this.http.get<Question[]>(`${environment.apiUrl}/questions`).pipe(
           switchMap(questions => {
-            // Filter questions to only those in joined communities
             const filteredQuestions = questions.filter(question =>
               joinedCommunityIds.includes(question.communityId)
             );
-            // Fetch answers only for filtered questions
             const answerRequests = filteredQuestions.map(question =>
               this.http.get<Answer[]>(`${environment.apiUrl}/questions/${question._id}/answers`).pipe(
-                catchError(() => of([])) // Handle cases where answers fetch fails
+                catchError(() => of([]))
               )
             );
             return forkJoin([of(filteredQuestions), ...answerRequests]);
@@ -123,7 +119,6 @@ export class SearchResultsComponent implements OnInit {
       })
     ).subscribe({
       next: (result: any) => {
-        // Handle case where user has no communities
         if (!Array.isArray(result)) {
           this.searchResults = [];
           this.applyFilters();
@@ -136,7 +131,7 @@ export class SearchResultsComponent implements OnInit {
             ...answerResponses.flat().map((a: Answer) => a.memberId)
           ])
         ];
-        this.fetchUsernames(memberIds).subscribe({
+        this.fetchUserDetails(memberIds).subscribe({
           next: () => {
             this.searchResults = [];
             questions.forEach((question: Question, index: number) => {
@@ -147,6 +142,7 @@ export class SearchResultsComponent implements OnInit {
                 content: question.content,
                 communityName: this.communityMap.get(question.communityId) || 'Unknown',
                 user: this.userMap.get(question.memberId) || 'Unknown',
+                avatar: this.userAvatarMap.get(question.memberId) || 'https://via.placeholder.com/20',
                 time: this.formatTime(question.dateCreated),
                 votes: question.score || 0,
                 views: question.views || 0,
@@ -160,6 +156,7 @@ export class SearchResultsComponent implements OnInit {
                   content: answer.content,
                   communityName: this.communityMap.get(question.communityId) || 'Unknown',
                   user: this.userMap.get(answer.memberId) || 'Unknown',
+                  avatar: this.userAvatarMap.get(answer.memberId) || 'https://via.placeholder.com/20',
                   time: this.formatTime(answer.dateCreated),
                   votes: answer.score || 0,
                   views: 0,
@@ -170,8 +167,8 @@ export class SearchResultsComponent implements OnInit {
             this.applyFilters();
           },
           error: (err) => {
-            this.toastr.error('Error fetching usernames', 'Error');
-            console.error('Error fetching usernames:', err);
+            this.toastr.error('Error fetching user details', 'Error');
+            console.error('Error fetching user details:', err);
             this.applyFilters();
           }
         });
@@ -185,13 +182,13 @@ export class SearchResultsComponent implements OnInit {
     });
   }
 
-  fetchUsernames(memberIds: string[]): Observable<void> {
+  fetchUserDetails(memberIds: string[]): Observable<void> {
     return new Observable<void>((observer) => {
       const requests = memberIds.map(id =>
-        this.http.get<{ username: string }>(`${environment.apiUrl}/api/users/${id}`, { withCredentials: true }).pipe(
+        this.http.get<any>(`${environment.apiUrl}/api/users/${id}`, { withCredentials: true }).pipe(
           catchError((err) => {
             console.error(`Error fetching user ${id}:`, err);
-            return of({ username: 'Unknown' });
+            return of({ username: 'Unknown', avatar: 'https://via.placeholder.com/20' });
           })
         )
       );
@@ -199,12 +196,13 @@ export class SearchResultsComponent implements OnInit {
         next: (responses) => {
           responses.forEach((res, index) => {
             this.userMap.set(memberIds[index], res.username);
+            this.userAvatarMap.set(memberIds[index], res.avatar || 'https://via.placeholder.com/20');
           });
           observer.next();
           observer.complete();
         },
         error: (err) => {
-          this.toastr.error('Error fetching usernames', 'Error');
+          this.toastr.error('Error fetching user details', 'Error');
           observer.error(err);
         }
       });
@@ -214,13 +212,11 @@ export class SearchResultsComponent implements OnInit {
   applyFilters() {
     let filtered = this.searchResults;
     if (this.searchQuery.trim()) {
-      // Split the search query into individual keywords
       const keywords = this.searchQuery.toLowerCase().split(/\s+/).filter(keyword => keyword.length > 0);
       if (keywords.length > 0) {
         filtered = filtered.filter(result => {
           const title = result.title?.toLowerCase() || '';
           const content = result.content.toLowerCase();
-          // Return true if any keyword is found in title or content
           return keywords.some(keyword => title.includes(keyword) || content.includes(keyword));
         });
       }

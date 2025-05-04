@@ -1,136 +1,140 @@
-<div class="container py-4">
-  <h2 class="text-center mb-4">Your Activity Dashboard</h2>
+<app-navbar (sidebarToggled)="onSidebarToggled($event)"></app-navbar>
+<div class="d-flex">
+  <app-sidebar [sidebarCollapsed]="sidebarCollapsed"></app-sidebar>
+  <div class="container py-4"><br>
+    <h2 class="text-center mb-4">Your Activity Dashboard</h2>
 
-  <!-- Loading State -->
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-    <p class="text-muted">Fetching your data...</p>
-  </div>
-
-  <!-- Charts -->
-  <div *ngIf="!loading" class="row">
-    <!-- Summary Cards -->
-    <div class="col-12 mb-4">
-      <div class="summary-cards">
-        <div class="summary-card questions">
-          <h3>Questions</h3>
-          <div class="count">{{summaryData.totalQuestions}}</div>
-          <div class="trend" [class.up]="summaryData.questionTrend > 0" [class.down]="summaryData.questionTrend < 0">
-            <i class="bi" [class.bi-arrow-up]="summaryData.questionTrend > 0" [class.bi-arrow-down]="summaryData.questionTrend < 0"></i>
-            {{summaryData.questionTrend}}% this month
-          </div>
-        </div>
-        <div class="summary-card answers">
-          <h3>Answers</h3>
-          <div class="count">{{summaryData.totalAnswers}}</div>
-          <div class="trend" [class.up]="summaryData.answerTrend > 0" [class.down]="summaryData.answerTrend < 0">
-            <i class="bi" [class.bi-arrow-up]="summaryData.answerTrend > 0" [class.bi-arrow-down]="summaryData.answerTrend < 0"></i>
-            {{summaryData.answerTrend}}% this month
-          </div>
-        </div>
-        <div class="summary-card votes">
-          <h3>Votes</h3>
-          <div class="count">{{summaryData.totalVotes}}</div>
-          <div class="trend" [class.up]="summaryData.voteTrend > 0" [class.down]="summaryData.voteTrend < 0">
-            <i class="bi" [class.bi-arrow-up]="summaryData.voteTrend > 0" [class.bi-arrow-down]="summaryData.voteTrend < 0"></i>
-            {{summaryData.voteTrend}}% this month
-          </div>
-        </div>
-        <div class="summary-card views">
-          <h3>Views</h3>
-          <div class="count">{{summaryData.totalViews}}</div>
-          <div class="trend" [class.up]="summaryData.viewTrend > 0" [class.down]="summaryData.viewTrend < 0">
-            <i class="bi" [class.bi-arrow-up]="summaryData.viewTrend > 0" [class.bi-arrow-down]="summaryData.viewTrend < 0"></i>
-            {{summaryData.viewTrend}}% this month
-          </div>
-        </div>
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
+      <p class="text-muted">Fetching your data...</p>
     </div>
 
-    <!-- Bar Chart -->
-    <div class="col-md-6 mb-4">
-      <div class="chart-container">
-        <apx-chart
-          [series]="barChartOptions.series"
-          [chart]="barChartOptions.chart"
-          [xaxis]="barChartOptions.xaxis"
-          [title]="barChartOptions.title"
-          [colors]="barChartOptions.colors"
-          [dataLabels]="barChartOptions.dataLabels"
-          [legend]="barChartOptions.legend"
-        ></apx-chart>
-      </div>
-    </div>
-
-    <!-- Pie Chart -->
-    <div class="col-md-6 mb-4">
-      <div class="chart-container">
-        <apx-chart
-          [series]="pieChartOptions.series"
-          [chart]="pieChartOptions.chart"
-          [labels]="pieChartOptions.labels"
-          [title]="pieChartOptions.title"
-          [colors]="pieChartOptions.colors"
-          [dataLabels]="pieChartOptions.dataLabels"
-          [legend]="pieChartOptions.legend"
-        ></apx-chart>
-      </div>
-    </div>
-
-    <!-- Line Chart -->
-    <div class="col-md-12 mb-4">
-      <div class="chart-container">
-        <apx-chart
-          [series]="lineChartOptions.series"
-          [chart]="lineChartOptions.chart"
-          [xaxis]="lineChartOptions.xaxis"
-          [title]="lineChartOptions.title"
-          [colors]="lineChartOptions.colors"
-          [dataLabels]="lineChartOptions.dataLabels"
-        ></apx-chart>
-      </div>
-    </div>
-
-    <!-- Heatmap -->
-    <div class="col-md-6 mb-4">
-      <div class="chart-container">
-        <h3>Activity Heatmap</h3>
-        <div class="heatmap-grid">
-          <div *ngFor="let cell of heatmapData" 
-               class="heatmap-cell" 
-               [style.background]="'rgba(63, 81, 181, ' + cell.intensity + ')'">
-            <div class="tooltip">{{cell.count}} on {{cell.day}}</div>
+    <!-- Charts -->
+    <div *ngIf="!loading" class="row">
+      <!-- Summary Cards -->
+      <div class="col-12 mb-4">
+        <div class="summary-cards">
+          <div class="summary-card questions">
+            <h3>Questions</h3>
+            <div class="count">{{summaryData.totalQuestions}}</div>
+            <div class="trend" [class.up]="summaryData.questionTrend > 0" [class.down]="summaryData.questionTrend < 0">
+              <i class="bi" [class.bi-arrow-up]="summaryData.questionTrend > 0" [class.bi-arrow-down]="summaryData.questionTrend < 0"></i>
+              {{summaryData.questionTrend}}% this month
+            </div>
+          </div>
+          <div class="summary-card answers">
+            <h3>Answers</h3>
+            <div class="count">{{summaryData.totalAnswers}}</div>
+            <div class="trend" [class.up]="summaryData.answerTrend > 0" [class.down]="summaryData.answerTrend < 0">
+              <i class="bi" [class.bi-arrow-up]="summaryData.answerTrend > 0" [class.bi-arrow-down]="summaryData.answerTrend < 0"></i>
+              {{summaryData.answerTrend}}% this month
+            </div>
+          </div>
+          <div class="summary-card votes">
+            <h3>Votes</h3>
+            <div class="count">{{summaryData.totalVotes}}</div>
+            <div class="trend" [class.up]="summaryData.voteTrend > 0" [class.down]="summaryData.voteTrend < 0">
+              <i class="bi" [class.bi-arrow-up]="summaryData.voteTrend > 0" [class.bi-arrow-down]="summaryData.voteTrend < 0"></i>
+              {{summaryData.voteTrend}}% this month
+            </div>
+          </div>
+          <div class="summary-card views">
+            <h3>Views</h3>
+            <div class="count">{{summaryData.totalViews}}</div>
+            <div class="trend" [class.up]="summaryData.viewTrend > 0" [class.down]="summaryData.viewTrend < 0">
+              <i class="bi" [class.bi-arrow-up]="summaryData.viewTrend > 0" [class.bi-arrow-down]="summaryData.viewTrend < 0"></i>
+              {{summaryData.viewTrend}}% this month
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Radial Chart -->
-    <div class="col-md-6 mb-4">
-      <div class="chart-container">
-        <apx-chart
-          [series]="radialChartOptions.series"
-          [chart]="radialChartOptions.chart"
-          [labels]="radialChartOptions.labels"
-          [title]="radialChartOptions.title"
-          [colors]="radialChartOptions.colors"
-          [plotOptions]="radialChartOptions.plotOptions"
-        ></apx-chart>
+      <!-- Bar Chart -->
+      <div class="col-md-6 mb-4">
+        <div class="chart-container">
+          <apx-chart
+            [series]="barChartOptions.series"
+            [chart]="barChartOptions.chart"
+            [xaxis]="barChartOptions.xaxis"
+            [title]="barChartOptions.title"
+            [colors]="barChartOptions.colors"
+            [dataLabels]="barChartOptions.dataLabels"
+            [legend]="barChartOptions.legend"
+          ></apx-chart>
+        </div>
       </div>
-    </div>
 
-    <!-- Timeline -->
-    <div class="col-md-12 mb-4">
-      <div class="chart-container">
-        <h3>Recent Activity Timeline</h3>
-        <div class="timeline-items">
-          <div *ngFor="let event of recentActivity" class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-              <strong>{{event.type}}</strong>: {{event.description}}
-              <small>{{event.date | date:'medium'}}</small>
+      <!-- Pie Chart -->
+      <div class="col-md-6 mb-4">
+        <div class="chart-container">
+          <apx-chart
+            [series]="pieChartOptions.series"
+            [chart]="pieChartOptions.chart"
+            [labels]="pieChartOptions.labels"
+            [title]="pieChartOptions.title"
+            [colors]="pieChartOptions.colors"
+            [dataLabels]="pieChartOptions.dataLabels"
+            [legend]="pieChartOptions.legend"
+          ></apx-chart>
+        </div>
+      </div>
+
+      <!-- Line Chart -->
+      <div class="col-md-12 mb-4">
+        <div class="chart-container">
+          <apx-chart
+            [series]="lineChartOptions.series"
+            [chart]="lineChartOptions.chart"
+            [xaxis]="lineChartOptions.xaxis"
+            [title]="lineChartOptions.title"
+            [colors]="lineChartOptions.colors"
+            [dataLabels]="lineChartOptions.dataLabels"
+          ></apx-chart>
+        </div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="col-md-6 mb-4">
+        <div class="chart-container">
+          <h3>Activity Heatmap</h3>
+          <div class="heatmap-grid">
+            <div *ngFor="let cell of heatmapData" 
+                 class="heatmap-cell" 
+                 [style.background]="'rgba(63, 81, 181, ' + cell.intensity + ')'">
+              <div class="tooltip">{{cell.count}} on {{cell.day}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Radial Chart -->
+      <div class="col-md-6 mb-4">
+        <div class="chart-container">
+          <apx-chart
+            [series]="radialChartOptions.series"
+            [chart]="radialChartOptions.chart"
+            [labels]="radialChartOptions.labels"
+            [title]="radialChartOptions.title"
+            [colors]="radialChartOptions.colors"
+            [plotOptions]="radialChartOptions.plotOptions"
+          ></apx-chart>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="col-md-12 mb-4">
+        <div class="chart-container">
+          <h3>Recent Activity Timeline</h3>
+          <div class="timeline-items">
+            <div *ngFor="let event of recentActivity" class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <strong>{{event.type}}</strong>: {{event.description}}
+                <small>{{event.date | date:'medium'}}</small>
+              </div>
             </div>
           </div>
         </div>

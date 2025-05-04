@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { environment } from '../../environments/environment';
 import { Subscription } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
 import {
   ApexAxisChartSeries,
@@ -15,6 +16,8 @@ import {
   ApexLegend,
   ApexPlotOptions
 } from 'ng-apexcharts';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 
 interface BarChartOptions {
   series: ApexAxisChartSeries;
@@ -79,14 +82,14 @@ interface RadialChartOptions {
 
 @Component({
   selector: 'app-uservisual',
-  standalone: true,
-  imports: [CommonModule, NgApexchartsModule],
   templateUrl: './uservisual.component.html',
   styleUrls: ['./uservisual.component.css']
+  // No standalone property here
 })
 export class UserVisualComponent implements OnInit, OnDestroy {
   loading: boolean = true;
   private dataSub: Subscription | null = null;
+  sidebarCollapsed: boolean = false;
 
   // Chart options
   public barChartOptions: BarChartOptions;
@@ -347,5 +350,9 @@ export class UserVisualComponent implements OnInit, OnDestroy {
       count,
       intensity: count / maxValue
     }));
+  }
+
+  onSidebarToggled(isCollapsed: boolean) {
+    this.sidebarCollapsed = isCollapsed;
   }
 }

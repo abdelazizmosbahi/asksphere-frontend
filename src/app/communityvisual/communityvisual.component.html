@@ -1,5 +1,10 @@
-<div class="container py-4">
-  <h2 class="text-center mb-4">{{communityName}} Community Dashboard</h2>
+<!-- Add navbar and sidebar at the top -->
+<app-navbar (sidebarToggled)="onSidebarToggled($event)"></app-navbar>
+<div class="d-flex">
+  <app-sidebar [sidebarCollapsed]="sidebarCollapsed"></app-sidebar>
+  <div class="container py-4">
+    <!-- Your existing dashboard content -->
+    <h2 class="text-center mb-4">{{communityName}} Community Dashboard</h2>
 
   <!-- Loading State -->
   <div *ngIf="loading" class="text-center py-5">

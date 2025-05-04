@@ -143,3 +143,50 @@ body {
     padding-left: 252px;
   }
 }
+
+/* Add to home.component.css */
+body.dark-mode .question-item:hover {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode .stats {
+  color: #e0e0e0;
+}
+
+body.dark-mode .text-primary {
+  color: #4dabf7 !important;
+}
+/* Add to notifications.component.css */
+:host-context(body.dark-mode) .notifications-container {
+  background-color: #1e1e1e;
+}
+
+:host-context(body.dark-mode) .notification-item {
+  background-color: #252525;
+  border: 1px solid #444;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+}
+
+/* Notifications Page Dark Mode */
+:host-context(body.dark-mode) .notifications-container {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+:host-context(body.dark-mode) .notification-item {
+  background-color: #252525;
+  border: 1px solid #444;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+}
+
+:host-context(body.dark-mode) .notification-message {
+  color: #e0e0e0;
+}
+
+:host-context(body.dark-mode) .notification-time {
+  color: #9e9e9e;
+}

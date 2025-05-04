@@ -54,6 +54,11 @@
                   </div>
                 </div>
 
+                <!-- Inappropriate Content Feedback -->
+                <div *ngIf="lastFeedbackMessage" class="mb-3 text-danger">
+                  <small>{{ lastFeedbackMessage }}</small>
+                </div>
+
                 <!-- Privacy Policy Checkbox -->
                 <div class="form-check mb-3">
                   <input type="checkbox" class="form-check-input" id="privacyPolicy" name="privacyPolicy" ngModel required>
@@ -125,7 +130,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>

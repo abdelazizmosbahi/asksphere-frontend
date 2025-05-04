@@ -1,1 +1,165 @@
 /* You can add global styles to this file, and also import other style files */
+
+
+/* Dark mode styles */
+body.dark-mode {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+  }
+
+  body.dark-mode .sidebar-fixed {
+    background-color: #1e1e1e;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+  }
+  
+  body.dark-mode .nav-link {
+    color: #b0b0b0;
+  }
+  
+  body.dark-mode .nav-link:hover {
+    color: #4dabf7;
+  }
+  
+  body.dark-mode .nav-link.active {
+    color: #4dabf7;
+  }
+  
+  body.dark-mode .question-item:hover {
+    background-color: #2d2d2d;
+  }
+  
+/* Card and Container Styles */
+body.dark-mode .card,
+body.dark-mode .container,
+body.dark-mode .modal-content,
+body.dark-mode .dropdown-menu {
+  background-color: #1e1e1e !important;
+  border-color: #333 !important;
+  color: #e0e0e0 !important;
+}
+  
+  
+  body.dark-mode .dropdown-item {
+    color: #e0e0e0;
+  }
+  
+  body.dark-mode .dropdown-item:hover {
+    background-color: #3d3d3d;
+    color: #fff;
+  }
+  
+  body.dark-mode .bg-light {
+    background-color: #2d2d2d !important;
+  }
+
+  body.dark-mode a {
+    color: #4dabf7 !important;
+  }
+
+  body.dark-mode a:hover {
+    color: #6cb2ff !important;
+  }
+  
+/* Text and Link Colors */
+body.dark-mode .text-dark,
+body.dark-mode .text-muted,
+body.dark-mode .text-secondary {
+  color: #b0b0b0 !important;
+}
+  
+  body.dark-mode .border-bottom,
+  body.dark-mode .border {
+    border-color: #333 !important;
+  }
+  
+  body.dark-mode .badge.bg-light {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+  }
+  
+  body.dark-mode .text-primary {
+    color: #4dabf7 !important;
+  }
+  
+  body.dark-mode .stats {
+    color: #e0e0e0;
+  }
+
+  /* Form Elements */
+body.dark-mode .form-control,
+body.dark-mode .form-select,
+body.dark-mode .input-group-text {
+  background-color: #2d2d2d !important;
+  border-color: #444 !important;
+  color: #e0e0e0 !important;
+}
+
+/* Buttons */
+body.dark-mode .btn-outline-primary {
+    color: #4dabf7 !important;
+    border-color: #4dabf7 !important;
+  }
+
+  body.dark-mode .btn-outline-primary:hover {
+    background-color: rgba(77, 171, 247, 0.1) !important;
+  }
+  
+  /* Badges */
+  body.dark-mode .badge.bg-light {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+  }
+  
+  /* Tables */
+  body.dark-mode table {
+    color: #e0e0e0 !important;
+  }
+  
+  body.dark-mode table td,
+  body.dark-mode table th {
+    border-color: #444 !important;
+  }
+  
+  /* Question Detail Page Specific */
+  body.dark-mode .question-detail {
+    background-color: #1e1e1e !important;
+    border-color: #333 !important;
+  }
+  
+  body.dark-mode .answer-card {
+    background-color: #252525 !important;
+    border-color: #444 !important;
+  }
+  
+  /* Profile Page Specific */
+  body.dark-mode .profile-header {
+    background-color: #1e1e1e !important;
+  }
+  
+  body.dark-mode .profile-stats {
+    background-color: #252525 !important;
+  }
+  
+  /* Badges Page Specific */
+  body.dark-mode .badge-card {
+    background-color: #252525 !important;
+  }
+  
+  body.dark-mode .badge-filter {
+    background-color: #2d2d2d !important;
+  }
+  
+  /* Notifications Page Specific */
+  body.dark-mode .notification-item {
+    background-color: #252525 !important;
+    border-color: #444 !important;
+  }
+  
+  /* Fix for white backgrounds in specific components */
+  body.dark-mode .bg-white {
+    background-color: #1e1e1e !important;
+  }
+  
+  body.dark-mode .bg-light {
+    background-color: #252525 !important;
+  }
