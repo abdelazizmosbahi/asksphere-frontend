@@ -113,3 +113,8 @@ body.dark-mode .text-primary {
   color: #e0e0e0 !important;
   border: 2px solid #dc3545 !important;
 }
+
+/* Update placeholder color in dark mode */
+:host-context(body.dark-mode) .form-control::placeholder {
+  color: #ffffff;
+}

@@ -149,6 +149,7 @@ body {
     padding-left: 252px;
   }
 }
+
 /* Add to home.component.css */
 body.dark-mode .question-item:hover {
   background-color: #2d2d2d;
@@ -162,48 +163,109 @@ body.dark-mode .text-primary {
   color: #4dabf7 !important;
 }
 
-/* Add to badges.component.css */
-:host-context(body.dark-mode) .badge-container {
-  background-color: #1e1e1e;
-}
+/* Updated Dark Mode Styles for Badges Page */
+:host-context(body.dark-mode) {
+  /* Background for the entire page */
+  body {
+    background-color: #1a1a1a;
+  }
 
-:host-context(body.dark-mode) .badge-item {
-  background-color: #252525;
-  border: 1px solid #444;
-}
+  /* Badge Section */
+  .badge-section {
+    background-color: #252525;
+    border: 1px solid #444;
+    border-radius: 5px;
+  }
 
-/* Badges Page Dark Mode */
-:host-context(body.dark-mode) .badges-container {
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-}
+  .badge-section h4 {
+    color: #e0e0e0;
+  }
 
-:host-context(body.dark-mode) .badge-filter {
-  background-color: #252525;
-  border: 1px solid #444;
-  padding: 1rem;
-  border-radius: 0.5rem;
-}
+  .badge-section .text-muted {
+    color: #a0a0a0;
+  }
 
-:host-context(body.dark-mode) .badge-item {
-  background-color: #252525;
-  border: 1px solid #444;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 0.5rem;
-}
+  /* Badge Card */
+  .badge-card {
+    background-color: #333;
+    border-bottom: 1px solid #444;
+  }
 
-:host-context(body.dark-mode) .badge-item h5 {
-  color: #4dabf7;
-}
+  .badge-card h6 {
+    color: #e0e0e0;
+  }
 
-:host-context(body.dark-mode) .badge-item p {
-  color: #b0b0b0;
-}
+  .badge-card p {
+    color: #b0b0b0;
+  }
 
-:host-context(body.dark-mode) .pagination-controls {
-  background-color: #252525;
-  border: 1px solid #444;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+  .badge.bg-light {
+    background-color: #444 !important;
+    color: #e0e0e0 !important;
+  }
+
+  .badge.bg-success {
+    background-color: #28a745 !important;
+    color: #fff !important;
+  }
+
+  /* Input Group for Filtering */
+  .input-group .form-control {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+  }
+
+  .input-group .form-control::placeholder {
+    color: #888;
+  }
+
+  .input-group .btn-outline-secondary {
+    background-color: #252525;
+    color: #e0e0e0;
+    border: 1px solid #555;
+  }
+
+  /* Filter Buttons */
+  .btn-group .btn {
+    background-color: #252525;
+    color: #e0e0e0;
+    border: 1px solid #555;
+  }
+
+  .btn-group .btn.active {
+    background-color: #4dabf7;
+    color: #fff;
+    border: 1px solid #4dabf7;
+  }
+
+  /* Pagination Controls */
+  .pagination {
+    background-color: #252525;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+  }
+
+  .page-item .page-link {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+  }
+
+  .page-item.active .page-link {
+    background-color: #4dabf7;
+    color: #fff;
+    border: 1px solid #4dabf7;
+  }
+
+  .page-item.disabled .page-link {
+    background-color: #252525;
+    color: #a0a0a0;
+    border: 1px solid #555;
+  }
+
+  /* Pagination Info Text */
+  .text-muted {
+    color: #a0a0a0 !important;
+  }
 }

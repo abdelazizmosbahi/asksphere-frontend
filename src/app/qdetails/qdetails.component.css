@@ -191,19 +191,144 @@ body.dark-mode .text-primary {
   color: #4dabf7 !important;
 }
 
-/* Add to question-detail.component.css */
-:host-context(body.dark-mode) .question-content {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  padding: 1rem;
-  border-radius: 0.5rem;
+/* Updated Dark Mode Styles for Question Details */
+:host-context(body.dark-mode) {
+  /* Background for the entire page */
+  body {
+    background-color: #1a1a1a;
+  }
+
+  /* Question Section */
+  .question-section {
+    background-color: #252525;
+    border: 1px solid #444;
+    border-radius: 5px;
+  }
+
+  .question-section h1 {
+    color: #e0e0e0;
+  }
+
+  .question-meta {
+    color: #a0a0a0;
+  }
+
+  /* Answer Section */
+  .answer-section {
+    background-color: #252525;
+    border: 1px solid #444;
+    border-radius: 5px;
+  }
+
+  .answer-section h3 {
+    color: #e0e0e0;
+  }
+
+  .answer-meta {
+    color: #a0a0a0;
+  }
+
+  /* Textarea for Answer Input */
+  .form-control {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+  }
+
+  .form-control::placeholder {
+    color: #888;
+  }
+
+  /* Answer Content */
+  .answer p {
+    color: #e0e0e0;
+  }
+
+  /* Right Sidebar (Related Questions and Community) */
+  .sidebar-fixed-right {
+    background-color: #252525;
+    border: 1px solid #444;
+  }
+
+  .sidebar-fixed-right h6 {
+    color: #e0e0e0;
+  }
+
+  .related-question p {
+    color: #a0a0a0;
+  }
+
+  /* Community Badge */
+  .badge.bg-light {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+  }
+
+  /* Modal Dialogs */
+  .modal-content {
+    background-color: #252525;
+    color: #e0e0e0;
+    border: 1px solid #444;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid #444;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #444;
+  }
+
+  .modal-title {
+    color: #e0e0e0;
+  }
+
+  .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+  }
+
+  /* Text Colors for Modal Body */
+  .modal-body p {
+    color: #e0e0e0;
+  }
+
+  .modal-body .text-muted {
+    color: #a0a0a0 !important;
+  }
+
+  /* Vote Count */
+  .vote-count {
+    color: #e0e0e0;
+  }
+
+  /* Feedback Message in Dark Mode */
+  .feedback-message {
+    background-color: #4a1e1e;
+    border: 1px solid #dc3545;
+    color: #e0e0e0;
+  }
+
+  /* General Text Colors */
+  p, span, small {
+    color: #e0e0e0;
+  }
+
+  .text-muted {
+    color: #a0a0a0 !important;
+  }
+
+  /* Code Block in Dark Mode */
+  .code-block {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+  }
 }
 
-:host-context(body.dark-mode) .answer-section {
-  background-color: #252525;
-  border: 1px solid #444;
-  border-radius: 0.5rem;
-  padding: 1rem;
+/* Custom Toastr styling for dark mode */
+:host-context(body.dark-mode) .ngx-toastr {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0 !important;
+  border: 2px solid #dc3545 !important;
 }
 
 /* Feedback message styling */
@@ -213,11 +338,4 @@ body.dark-mode .text-primary {
   border-radius: 3px;
   background-color: #f8d7da;
   border: 1px solid #dc3545;
-}
-
-/* Custom Toastr styling for dark mode */
-:host-context(body.dark-mode) .ngx-toastr {
-  background-color: #1e1e1e !important;
-  color: #e0e0e0 !important;
-  border: 2px solid #dc3545 !important;
 }

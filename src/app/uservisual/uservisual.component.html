@@ -83,7 +83,7 @@
       </div>
 
       <!-- Line Chart -->
-      <div class="col-md-12 mb-4">
+      <div class="col-md-6 mb-4">
         <div class="chart-container">
           <apx-chart
             [series]="lineChartOptions.series"
@@ -96,47 +96,39 @@
         </div>
       </div>
 
-      <!-- Heatmap -->
+      <!-- Top Communities Table -->
       <div class="col-md-6 mb-4">
         <div class="chart-container">
-          <h3>Activity Heatmap</h3>
-          <div class="heatmap-grid">
-            <div *ngFor="let cell of heatmapData" 
-                 class="heatmap-cell" 
-                 [style.background]="'rgba(63, 81, 181, ' + cell.intensity + ')'">
-              <div class="tooltip">{{cell.count}} on {{cell.day}}</div>
-            </div>
-          </div>
+          <h3>Top Communities</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Community</th>
+                <th>Activity Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let community of topCommunities">
+                <td>{{community.name}}</td>
+                <td>{{community.score}}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- Radial Chart -->
+      <!-- Question Performance Bar Chart -->
       <div class="col-md-6 mb-4">
         <div class="chart-container">
           <apx-chart
-            [series]="radialChartOptions.series"
-            [chart]="radialChartOptions.chart"
-            [labels]="radialChartOptions.labels"
-            [title]="radialChartOptions.title"
-            [colors]="radialChartOptions.colors"
-            [plotOptions]="radialChartOptions.plotOptions"
+            [series]="questionPerformanceOptions.series"
+            [chart]="questionPerformanceOptions.chart"
+            [xaxis]="questionPerformanceOptions.xaxis"
+            [title]="questionPerformanceOptions.title"
+            [colors]="questionPerformanceOptions.colors"
+            [dataLabels]="questionPerformanceOptions.dataLabels"
+            [legend]="questionPerformanceOptions.legend"
           ></apx-chart>
-        </div>
-      </div>
-
-      <!-- Timeline -->
-      <div class="col-md-12 mb-4">
-        <div class="chart-container">
-          <h3>Recent Activity Timeline</h3>
-          <div class="timeline-items">
-            <div *ngFor="let event of recentActivity" class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content">
-                <strong>{{event.type}}</strong>: {{event.description}}
-                <small>{{event.date | date:'medium'}}</small>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

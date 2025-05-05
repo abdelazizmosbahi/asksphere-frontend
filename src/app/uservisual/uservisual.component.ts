@@ -27,7 +27,7 @@ interface BarChartOptions {
   colors: string[];
   dataLabels: ApexDataLabels;
   legend: ApexLegend;
-};
+}
 
 interface PieChartOptions {
   series: ApexNonAxisChartSeries;
@@ -37,7 +37,7 @@ interface PieChartOptions {
   colors: string[];
   dataLabels: ApexDataLabels;
   legend: ApexLegend;
-};
+}
 
 interface LineChartOptions {
   series: ApexAxisChartSeries;
@@ -46,7 +46,17 @@ interface LineChartOptions {
   title: ApexTitleSubtitle;
   colors: string[];
   dataLabels: ApexDataLabels;
-};
+}
+
+interface QuestionPerformanceOptions {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  xaxis: ApexXAxis;
+  title: ApexTitleSubtitle;
+  colors: string[];
+  dataLabels: ApexDataLabels;
+  legend: ApexLegend;
+}
 
 interface SummaryData {
   totalQuestions: number;
@@ -59,32 +69,15 @@ interface SummaryData {
   viewTrend: number;
 }
 
-interface HeatmapCell {
-  day: string;
-  count: number;
-  intensity: number;
-}
-
-interface TimelineEvent {
-  type: string;
-  description: string;
-  date: Date;
-}
-
-interface RadialChartOptions {
-  series: ApexNonAxisChartSeries;
-  chart: ApexChart;
-  labels: string[];
-  title: ApexTitleSubtitle;
-  colors: string[];
-  plotOptions: ApexPlotOptions;
+interface CommunityData {
+  name: string;
+  score: number;
 }
 
 @Component({
   selector: 'app-uservisual',
   templateUrl: './uservisual.component.html',
   styleUrls: ['./uservisual.component.css']
-  // No standalone property here
 })
 export class UserVisualComponent implements OnInit, OnDestroy {
   loading: boolean = true;
@@ -95,7 +88,7 @@ export class UserVisualComponent implements OnInit, OnDestroy {
   public barChartOptions: BarChartOptions;
   public pieChartOptions: PieChartOptions;
   public lineChartOptions: LineChartOptions;
-  public radialChartOptions: RadialChartOptions;
+  public questionPerformanceOptions: QuestionPerformanceOptions;
 
   // Data properties
   public summaryData: SummaryData = {
@@ -108,15 +101,14 @@ export class UserVisualComponent implements OnInit, OnDestroy {
     voteTrend: 0,
     viewTrend: 0
   };
-  public heatmapData: HeatmapCell[] = [];
-  public recentActivity: TimelineEvent[] = [];
+  public topCommunities: CommunityData[] = [];
 
   constructor(private http: HttpClient) {
     // Initialize charts with empty data
     this.barChartOptions = this.createEmptyBarChart();
     this.pieChartOptions = this.createEmptyPieChart();
     this.lineChartOptions = this.createEmptyLineChart();
-    this.radialChartOptions = this.createEmptyRadialChart();
+    this.questionPerformanceOptions = this.createEmptyQuestionPerformanceChart();
   }
 
   ngOnInit(): void {
@@ -146,7 +138,7 @@ export class UserVisualComponent implements OnInit, OnDestroy {
         text: 'Monthly Activity Overview',
         align: 'center'
       },
-      colors: ['#007bff', '#28a745', '#ffc107', '#dc3545'],
+      colors: ['#007bff', '#28a745', '#ffc107'],
       dataLabels: {
         enabled: false
       },
@@ -204,30 +196,29 @@ export class UserVisualComponent implements OnInit, OnDestroy {
     };
   }
 
-  private createEmptyRadialChart(): RadialChartOptions {
+  private createEmptyQuestionPerformanceChart(): QuestionPerformanceOptions {
     return {
       series: [],
       chart: {
-        type: 'radialBar',
-        height: 350
+        type: 'bar',
+        height: 350,
+        stacked: false,
+        toolbar: { show: true },
+        zoom: { enabled: true }
       },
-      labels: [],
+      xaxis: {
+        categories: []
+      },
       title: {
-        text: 'Engagement Rate',
+        text: 'Question Performance',
         align: 'center'
       },
-      colors: ['#4CAF50', '#2196F3', '#FFC107', '#9C27B0'],
-      plotOptions: {
-        radialBar: {
-          dataLabels: {
-            name: { fontSize: '14px' },
-            value: { fontSize: '16px' },
-            total: {
-              show: true,
-              label: 'Total'
-            }
-          }
-        }
+      colors: ['#28a745', '#dc3545'],
+      dataLabels: {
+        enabled: true
+      },
+      legend: {
+        position: 'top'
       }
     };
   }
@@ -281,6 +272,13 @@ export class UserVisualComponent implements OnInit, OnDestroy {
       data: data.weeklyActivity || []
     }];
 
+    // Question Performance
+    this.questionPerformanceOptions.series = [
+      { name: 'Upvotes', data: data.questionUpvotes || [] },
+      { name: 'Downvotes', data: data.questionDownvotes || [] }
+    ];
+    this.questionPerformanceOptions.xaxis.categories = data.questionTitles || [];
+
     // Summary data
     this.summaryData = {
       totalQuestions: data.totalQuestions || 0,
@@ -293,20 +291,11 @@ export class UserVisualComponent implements OnInit, OnDestroy {
       viewTrend: data.viewTrend || 0
     };
 
-    // Heatmap data
-    this.heatmapData = this.generateHeatmapData(data.weeklyActivity || []);
-
-    // Radial chart
-    this.radialChartOptions.series = [
-      Math.min(100, ((data.totalQuestions || 0) / 50) * 100),
-      Math.min(100, ((data.totalAnswers || 0) / 100) * 100),
-      Math.min(100, ((data.totalVotes || 0) / 200) * 100)
-    ];
-    this.radialChartOptions.labels = ['Questions', 'Answers', 'Votes'];
+    // Top Communities
+    this.topCommunities = data.topCommunities || [];
   }
 
   private setEmptyData(): void {
-    // Initialize all with empty data
     this.barChartOptions.series = [
       { name: 'Questions', data: [] },
       { name: 'Answers', data: [] },
@@ -325,6 +314,12 @@ export class UserVisualComponent implements OnInit, OnDestroy {
       data: []
     }];
 
+    this.questionPerformanceOptions.series = [
+      { name: 'Upvotes', data: [] },
+      { name: 'Downvotes', data: [] }
+    ];
+    this.questionPerformanceOptions.xaxis.categories = [];
+
     this.summaryData = {
       totalQuestions: 0,
       totalAnswers: 0,
@@ -336,20 +331,7 @@ export class UserVisualComponent implements OnInit, OnDestroy {
       viewTrend: 0
     };
 
-    this.heatmapData = this.generateHeatmapData([]);
-    this.recentActivity = [];
-    this.radialChartOptions.series = [0, 0, 0];
-    this.radialChartOptions.labels = ['Questions', 'Answers', 'Votes'];
-  }
-
-  private generateHeatmapData(weeklyActivity: number[]): HeatmapCell[] {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const maxValue = Math.max(...weeklyActivity, 1); // Avoid division by zero
-    return weeklyActivity.map((count, index) => ({
-      day: days[index],
-      count,
-      intensity: count / maxValue
-    }));
+    this.topCommunities = [];
   }
 
   onSidebarToggled(isCollapsed: boolean) {

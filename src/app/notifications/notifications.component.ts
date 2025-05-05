@@ -16,6 +16,10 @@ export class NotificationsComponent implements OnInit {
   notifications: any[] = [];
   badges: any[] = [];
   loading: boolean = true;
+  displayedNotifications: any[] = [];
+  currentIndex: number = 0;
+  pageSize: number = 5;
+  communityMap: Map<number, string> = new Map();
 
   communityId: number | null = null;
   communityName: string = '';
@@ -25,10 +29,8 @@ export class NotificationsComponent implements OnInit {
   questions: any[] = [];
   relatedQuestions: any[] = [];
   userBadges: any[] = [];
-  communityMap: Map<number, string> = new Map();
   userMap: Map<string, string> = new Map();
   isMember: boolean = false;
-
 
   constructor(
     private router: Router,
@@ -42,11 +44,13 @@ export class NotificationsComponent implements OnInit {
   toggleSidebar() {
     this.sidebarCollapsed = !this.sidebarCollapsed;
   }
+
   ngOnInit(): void {
     this.authService.isLoggedIn().subscribe({
       next: (response: any) => {
         this.user = response;
         this.username = response.username;
+        this.loadCommunities(); // Load communities to map IDs to names
         this.loadNotifications();
         this.loadBadges();
       },
@@ -58,10 +62,23 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
+  loadCommunities() {
+    this.http.get(`${environment.apiUrl}/communities`, { withCredentials: true }).subscribe({
+      next: (response: any) => {
+        response.forEach((community: any) => {
+          this.communityMap.set(community.idCommunity, community.name);
+        });
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Error fetching communities:', err);
+        this.toastr.error('Error fetching communities', 'Error');
+      }
+    });
+  }
+
   loadNotifications() {
     this.http.get(`${environment.apiUrl}/notifications`, { withCredentials: true }).subscribe({
       next: (response: any) => {
-        // Ensure response is an array
         if (!Array.isArray(response)) {
           console.error('Expected an array of notifications, but got:', response);
           this.toastr.error('Invalid notifications data received', 'Error');
@@ -70,16 +87,29 @@ export class NotificationsComponent implements OnInit {
           return;
         }
 
-        this.notifications = response.map((notification: any) => ({
-          id: notification._id,
-          type: notification.type,
-          questionId: notification.questionId || null,
-          answerId: notification.type === 'answer' ? notification.relatedId : null,
-          message: notification.message,
-          isRead: notification.read,
-          createdAt: this.formatTime(notification.dateCreated)
-        }));
+        this.notifications = response.map((notification: any) => {
+          let message = notification.message;
+          // Replace community ID with community name for flagged content notifications
+          if (notification.message.includes('community')) {
+            const match = notification.message.match(/community (\d+)/);
+            if (match && match[1]) {
+              const communityId = parseInt(match[1], 10);
+              const communityName = this.communityMap.get(communityId) || `Community ${communityId}`;
+              message = notification.message.replace(`community ${communityId}`, communityName);
+            }
+          }
+          return {
+            id: notification._id,
+            type: notification.type,
+            questionId: notification.questionId || null,
+            answerId: notification.type === 'answer' ? notification.relatedId : null,
+            message: message,
+            isRead: notification.read,
+            createdAt: this.formatTime(notification.dateCreated)
+          };
+        });
         console.log('Notifications loaded:', this.notifications);
+        this.updateDisplayedNotifications();
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -172,6 +202,7 @@ export class NotificationsComponent implements OnInit {
       }
     });
   }
+
   onSearch() {
     if (this.searchQuery.trim()) {
       this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });
@@ -179,10 +210,26 @@ export class NotificationsComponent implements OnInit {
   }
   
   getCommunityName(communityId: number): string {
-    return this.communityMap.get(communityId) || 'Unknown';
+    return this.communityMap.get(communityId) || `Community ${communityId}`;
   }
 
   onSidebarToggled(event: boolean) {
     this.sidebarCollapsed = event;
+  }
+
+  updateDisplayedNotifications() {
+    const start = this.currentIndex;
+    const end = Math.min(start + this.pageSize, this.notifications.length);
+    this.displayedNotifications = this.notifications.slice(start, end);
+  }
+
+  showMore() {
+    this.currentIndex += this.pageSize;
+    this.updateDisplayedNotifications();
+  }
+
+  showLess() {
+    this.currentIndex = Math.max(0, this.currentIndex - this.pageSize);
+    this.updateDisplayedNotifications();
   }
 }

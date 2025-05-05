@@ -19,74 +19,25 @@
                 <div *ngIf="notifications.length === 0" class="text-muted text-center">
                   No notifications yet.
                 </div>
-                <div *ngFor="let notification of notifications" class="notification mb-3 p-3 border rounded" [ngClass]="{'bg-light': notification.isRead}">
+                <div *ngFor="let notification of displayedNotifications" class="notification mb-3 p-3 border rounded" [ngClass]="{'bg-light': notification.isRead}">
                   <div class="d-flex justify-content-between align-items-center">
                     <div [ngClass]="{'clickable': notification.type === 'answer' || notification.type === 'vote'}" (click)="notification.type === 'answer' || notification.type === 'vote' ? onNotificationClick(notification) : null">
-                      <p [ngClass]="{'fw-bold': !notification.isRead}">{{ notification.message }}</p>
-                      <small class="text-muted">{{ notification.createdAt }}</small>
+                      <p [ngClass]="{'fw-bold': !notification.isRead}" class="notification-message">{{ notification.message }}</p>
+                      <small class="notification-time text-muted">{{ notification.createdAt }}</small>
                     </div>
                     <span *ngIf="!notification.isRead" class="badge bg-primary">New</span>
                   </div>
                 </div>
-              </div>
-            </div>
-            <!-- <div class="col-md-4">
-              <div class="sidebar">
-                <h5>Your Badges</h5>
-                <div *ngIf="badges.length === 0" class="text-muted">
-                  No badges earned yet.
-                </div>
-                <div *ngFor="let badge of badges" class="badge-item mb-3">
-                  <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="Badge Icon">
-                  <div class="d-inline-block">
-                    <strong>{{ badge.name }}</strong><br>
-                    <small class="text-muted">{{ badge.description }}</small>
-                  </div>
+                <div *ngIf="notifications.length > 5" class="text-center">
+                  <button *ngIf="currentIndex > 0" class="btn btn-secondary me-2" (click)="showLess()">
+                    <i class="bi bi-arrow-up"></i> Back
+                  </button>
+                  <button *ngIf="displayedNotifications.length < notifications.length" class="btn btn-primary" (click)="showMore()">
+                    Show More <i class="bi bi-arrow-down"></i>
+                  </button>
                 </div>
               </div>
-            </div> -->
-          </div>
-        </div>
-        <!-- <footer class="footer">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-3">
-                <h5>Company</h5>
-                <ul class="list-unstyled">
-                  <li><a href="#">About</a></li>
-                  <li><a href="#">Contact</a></li>
-                  <li><a href="#">Advertising</a></li>
-                </ul>
-              </div>
-              <div class="col-md-3">
-                <h5>Legal</h5>
-                <ul class="list-unstyled">
-                  <li><a href="#">Privacy Policy</a></li>
-                  <li><a href="#">Terms of Service</a></li>
-                  <li><a href="#">Cookie Policy</a></li>
-                </ul>
-              </div>
-              <div class="col-md-3">
-                <h5>Help</h5>
-                <ul class="list-unstyled">
-                  <li><a href="#">Knowledge Base</a></li>
-                  <li><a href="#">Support</a></li>
-                </ul>
-              </div>
-              <div class="col-md-3">
-                <h5>Connect with Us</h5>
-                <ul class="list-unstyled">
-                  <li><a href="#">Facebook</a></li>
-                  <li><a href="#">Twitter</a></li>
-                  <li><a href="#">Instagram</a></li>
-                </ul>
-              </div>
             </div>
-            <div class="text-center mt-4">
-              <small>© 2025 AskSphere Inc.</small>
-            </div>
-          </div>
-        </footer> -->
       </div>
     </div>
   </div>
