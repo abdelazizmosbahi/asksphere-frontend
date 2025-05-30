@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
@@ -48,6 +50,7 @@ export class SignupComponent implements OnInit {
   loading: boolean = false;
   buttonState: string = 'default';
   pulseTrigger: string = '';
+  serverErrors: { [key: string]: string } = { username: '', email: '' };
 
   constructor(
     private fb: FormBuilder,
@@ -65,14 +68,52 @@ export class SignupComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Real-time validation for username
+    this.signupForm.get('username')?.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(value => {
+        if (value && this.signupForm.get('username')?.valid) {
+          return this.authService.validateField('username', value);
+        }
+        return of({ valid: true });
+      })
+    ).subscribe({
+      next: (response: any) => {
+        this.serverErrors['username'] = response.valid ? '' : response.message;
+      },
+      error: () => {
+        this.serverErrors['username'] = 'Error validating username';
+      }
+    });
+
+    // Real-time validation for email
+    this.signupForm.get('email')?.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(value => {
+        if (value && this.signupForm.get('email')?.valid) {
+          return this.authService.validateField('email', value);
+        }
+        return of({ valid: true });
+      })
+    ).subscribe({
+      next: (response: any) => {
+        this.serverErrors['email'] = response.valid ? '' : response.message;
+      },
+      error: () => {
+        this.serverErrors['email'] = 'Error validating email';
+      }
+    });
+  }
 
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
 
   onSignup() {
-    if (this.signupForm.invalid) {
+    if (this.signupForm.invalid || this.serverErrors['username'] || this.serverErrors['email']) {
       this.signupForm.markAllAsTouched();
       return;
     }

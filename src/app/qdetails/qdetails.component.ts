@@ -719,40 +719,56 @@ export class QdetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.formatTime(timestamp);
   }
 
-  showUserProfile(memberId: string) {
-    this.http.get(`${environment.apiUrl}/api/users/${memberId}/profile`, { withCredentials: true }).subscribe({
-      next: (response: any) => {
-        this.selectedUser = {
-          username: response.username || 'Unknown',
-          avatar: response.avatar || 'https://via.placeholder.com/50',
-          questionsCount: response.questionsCount || 0,
-          answersCount: response.answersCount || 0,
-          status: response.status || 'N/A',
-          reputation: response.reputation || 0,
-          dateJoined: response.dateJoined || 'N/A',
-          badges: response.badges || []
-        };
-        const modal = new (window as any).bootstrap.Modal(document.getElementById('userProfileModal'));
-        modal.show();
-      },
-      error: (err: any) => {
-        this.toastr.error('Error fetching user profile', 'Error');
-        console.error('Error fetching user profile:', err);
-        this.selectedUser = {
-          username: this.userMap.get(memberId) || 'Unknown',
-          avatar: this.userAvatarMap.get(memberId) || 'https://via.placeholder.com/50',
-          questionsCount: 0,
-          answersCount: 0,
-          status: 'N/A',
-          reputation: 0,
-          dateJoined: 'N/A',
-          badges: []
-        };
-        const modal = new (window as any).bootstrap.Modal(document.getElementById('userProfileModal'));
-        modal.show();
-      }
-    });
-  }
+showUserProfile(memberId: string) {
+  this.http.get(`${environment.apiUrl}/api/users/${memberId}/profile`, { withCredentials: true }).subscribe({
+    next: (response: any) => {
+      // Format the date here
+      const formattedDate = response.dateJoined ? 
+        this.formatJoinedDate(response.dateJoined) : 'N/A';
+      
+      this.selectedUser = {
+        username: response.username || 'Unknown',
+        avatar: response.avatar || 'https://via.placeholder.com/50',
+        questionsCount: response.questionsCount || 0,
+        answersCount: response.answersCount || 0,
+        status: response.status || 'N/A',
+        reputation: response.reputation || 0,
+        dateJoined: formattedDate,
+        badges: response.badges || []
+      };
+      const modal = new (window as any).bootstrap.Modal(document.getElementById('userProfileModal'));
+      modal.show();
+    },
+    error: (err: any) => {
+      this.toastr.error('Error fetching user profile', 'Error');
+      console.error('Error fetching user profile:', err);
+      this.selectedUser = {
+        username: this.userMap.get(memberId) || 'Unknown',
+        avatar: this.userAvatarMap.get(memberId) || 'https://via.placeholder.com/50',
+        questionsCount: 0,
+        answersCount: 0,
+        status: 'N/A',
+        reputation: 0,
+        dateJoined: 'N/A',
+        badges: []
+      };
+      const modal = new (window as any).bootstrap.Modal(document.getElementById('userProfileModal'));
+      modal.show();
+    }
+  });
+}
+
+// Add this new method to format the date
+formatJoinedDate(dateString: string): string {
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  
+  return `${day}-${month}-${year} at ${hours}:${minutes}`;
+}
 
   isOwner(memberId: string | undefined): boolean {
     return this.userId === memberId;

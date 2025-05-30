@@ -28,7 +28,6 @@
     <div class="col-md-6 d-flex align-items-center justify-content-center bg-white p-5">
       <div class="w-100" style="max-width: 400px;">
         <h2 class="text-center mb-3 fw-bold" style="color: #1e3a8a;">Join the AskSphere Community</h2>
-        <!-- <p class="text-center text-muted mb-4">Give us some of your information to get free access to AskSphere.</p> -->
         <form (ngSubmit)="onSignup()" [formGroup]="signupForm" id="signupForm">
           <div class="mb-3">
             <label for="username" class="form-label fw-semibold">Username</label>
@@ -40,9 +39,12 @@
                 id="username" 
                 formControlName="username" 
                 placeholder="Enter username"
-                [ngClass]="{'is-invalid': signupForm.get('username')?.invalid && signupForm.get('username')?.touched}">
-              <div *ngIf="signupForm.get('username')?.invalid && signupForm.get('username')?.touched" class="invalid-feedback">
-                Username is required.
+                [ngClass]="{'is-invalid': signupForm.controls['username'].touched && (signupForm.controls['username'].invalid || serverErrors['username'])}">
+              <div *ngIf="signupForm.controls['username'].touched && signupForm.controls['username'].errors" class="invalid-feedback">
+                <div *ngIf="signupForm.controls['username'].errors['required']">Username is required.</div>
+              </div>
+              <div *ngIf="serverErrors['username']" class="invalid-feedback d-block">
+                {{ serverErrors['username'] }}
               </div>
             </div>
           </div>
@@ -56,9 +58,13 @@
                 id="email" 
                 formControlName="email" 
                 placeholder="Enter email"
-                [ngClass]="{'is-invalid': signupForm.get('email')?.invalid && signupForm.get('email')?.touched}">
-              <div *ngIf="signupForm.get('email')?.invalid && signupForm.get('email')?.touched" class="invalid-feedback">
-                Please enter a valid email address.
+                [ngClass]="{'is-invalid': signupForm.controls['email'].touched && (signupForm.controls['email'].invalid || serverErrors['email'])}">
+              <div *ngIf="signupForm.controls['email'].touched && signupForm.controls['email'].errors" class="invalid-feedback">
+                <div *ngIf="signupForm.controls['email'].errors['required']">Email is required.</div>
+                <div *ngIf="signupForm.controls['email'].errors['email']">Please enter a valid email address.</div>
+              </div>
+              <div *ngIf="serverErrors['email']" class="invalid-feedback d-block">
+                {{ serverErrors['email'] }}
               </div>
             </div>
           </div>
@@ -72,7 +78,7 @@
                 id="password" 
                 formControlName="password" 
                 placeholder="Password"
-                [ngClass]="{'is-invalid': signupForm.get('password')?.invalid && signupForm.get('password')?.touched}">
+                [ngClass]="{'is-invalid': signupForm.controls['password'].touched && signupForm.controls['password'].invalid}">
               <button 
                 type="button" 
                 class="btn btn-outline-secondary" 
@@ -80,15 +86,18 @@
                 <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
               </button>
             </div>
-            <div *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched" class="invalid-feedback">
-              Password must be at least 8 characters long and include at least 1 letter and 1 number.
+            <div *ngIf="signupForm.controls['password'].touched && signupForm.controls['password'].errors" class="invalid-feedback">
+              <div *ngIf="signupForm.controls['password'].errors['required']">Password is required.</div>
+              <div *ngIf="signupForm.controls['password'].errors['minlength'] || signupForm.controls['password'].errors['pattern']">
+                Password must be at least 8 characters long and include at least 1 letter and 1 number.
+              </div>
             </div>
             <small class="text-muted">Passwords must contain at least eight characters, including at least 1 letter and 1 number.</small>
           </div>
           <button 
             type="submit" 
             class="btn btn-primary w-100 py-2 fw-semibold animate__button" 
-            [disabled]="signupForm.invalid || loading"
+            [disabled]="signupForm.invalid || loading || serverErrors['username'] || serverErrors['email']"
             style="background-color: #007bff; border: none;">
             <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
             Sign up <i class="bi bi-arrow-right"></i>

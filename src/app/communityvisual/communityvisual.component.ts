@@ -70,7 +70,7 @@ interface Member {
   username: string;
   avatar: string;
   reputation: number;
-  dateJoined: string | null;
+  dateJoined: string;
   status: string;
 }
 
@@ -78,7 +78,6 @@ interface Member {
   selector: 'app-communityvisual',
   templateUrl: './communityvisual.component.html',
   styleUrls: ['./communityvisual.component.css']
-  // Remove standalone: true and imports
 })
 export class CommunityvisualComponent implements OnInit, OnDestroy {
   loading: boolean = true;
@@ -89,13 +88,11 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
   communityName: string = '';
   sidebarCollapsed: boolean = false;
 
-  // Chart options
   public barChartOptions: BarChartOptions;
   public pieChartOptions: PieChartOptions;
   public lineChartOptions: LineChartOptions;
   public radialChartOptions: RadialChartOptions;
 
-  // Data properties
   public summaryData: SummaryData = {
     totalQuestions: 0,
     totalAnswers: 0,
@@ -106,7 +103,6 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
     userTrend: 0
   };
 
-  // Members list properties
   public activeMembers: Member[] = [];
   public totalActive: number = 0;
   public membersPerPage: number = 10;
@@ -114,7 +110,6 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
   public totalPages: number = 1;
 
   constructor(private http: HttpClient, private route: ActivatedRoute) {
-    // Initialize charts with empty data
     this.barChartOptions = this.createEmptyBarChart();
     this.pieChartOptions = this.createEmptyPieChart();
     this.lineChartOptions = this.createEmptyLineChart();
@@ -277,42 +272,45 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadMembers() {
-    this.membersLoading = true;
-    const url = `${environment.apiUrl}/api/communities/${this.communityId}/members?page=${this.currentPage}&per_page=${this.membersPerPage}`;
-    console.log('Fetching members from:', url);
-
-    this.membersSub = this.http.get(url, { withCredentials: true }).subscribe({
-      next: (data: any) => {
-        console.log('Members API Response:', JSON.stringify(data));
-        if (data?.success) {
-          this.activeMembers = data.activeMembers.map((member: any) => ({
+loadMembers() {
+  this.membersLoading = true;
+  const url = `${environment.apiUrl}/api/communities/${this.communityId}/members?page=${this.currentPage}&per_page=${this.membersPerPage}`;
+  this.membersSub = this.http.get(url, { withCredentials: true }).subscribe({
+    next: (data: any) => {
+      if (data?.success) {
+        this.activeMembers = (data.activeMembers || [])
+          .filter((member: any) => member.status === 'active' && member.dateJoined)
+          .map((member: any) => ({
             _id: member._id,
             username: member.username,
-            avatar: member.avatar,
-            reputation: member.reputation,
-            dateJoined: member.dateJoined,
-            status: member.status
+            avatar: member.avatar || 'assets/default-avatar.png',
+            reputation: member.reputation || 0,
+            dateJoined: this.formatJoinedDate(member.dateJoined),
+            status: member.status || 'active'
           }));
-          this.totalActive = data.totalActive || 0;
-          this.totalPages = Math.ceil(this.totalActive / this.membersPerPage);
-        } else {
-          console.error('Members API returned unsuccessful response');
-          this.activeMembers = [];
-          this.totalActive = 0;
-          this.totalPages = 1;
+        this.totalActive = data.totalActive || 0;
+        this.totalPages = Math.ceil(this.totalActive / this.membersPerPage);
+        // Reset scroll to top of members list
+        const membersScroll = document.querySelector('.members-scroll');
+        if (membersScroll) {
+          membersScroll.scrollTop = 0;
         }
-        this.membersLoading = false;
-      },
-      error: (err) => {
-        console.error('Members API Error:', err);
+      } else {
         this.activeMembers = [];
         this.totalActive = 0;
         this.totalPages = 1;
-        this.membersLoading = false;
       }
-    });
-  }
+      this.membersLoading = false;
+    },
+    error: (err) => {
+      console.error('Error loading members:', err);
+      this.activeMembers = [];
+      this.totalActive = 0;
+      this.totalPages = 1;
+      this.membersLoading = false;
+    }
+  });
+}
 
   prevPage() {
     if (this.currentPage > 1) {
@@ -337,7 +335,6 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
   
     console.log('Processing data for charts:', data);
   
-    // Bar Chart - Monthly Activity
     this.barChartOptions = {
       ...this.barChartOptions,
       series: [
@@ -350,7 +347,6 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
       }
     };
   
-    // Pie Chart - Content Breakdown
     this.pieChartOptions = {
       ...this.pieChartOptions,
       series: [
@@ -362,7 +358,6 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
       labels: ['Questions', 'Answers', 'Active Users', 'Banned Users']
     };
   
-    // Line Chart - Weekly Activity
     this.lineChartOptions = {
       ...this.lineChartOptions,
       series: [{
@@ -371,7 +366,6 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
       }]
     };
   
-    // Summary data
     this.summaryData = {
       totalQuestions: data.totalQuestions || 0,
       totalAnswers: data.totalAnswers || 0,
@@ -382,7 +376,6 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
       userTrend: data.userTrend || 0
     };
   
-    // Radial chart
     this.radialChartOptions = {
       ...this.radialChartOptions,
       series: [
@@ -429,5 +422,28 @@ export class CommunityvisualComponent implements OnInit, OnDestroy {
 
   onSidebarToggled(isCollapsed: boolean) {
     this.sidebarCollapsed = isCollapsed;
+  }
+
+  formatJoinedDate(dateString: string): string {
+    if (!dateString || dateString === 'null' || dateString === 'undefined') {
+      console.warn('Invalid date string received:', dateString);
+      return 'N/A';
+    }
+
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date parsed:', dateString);
+        return 'N/A';
+      }
+
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    } catch (e) {
+      console.error('Date formatting error:', e, 'Input:', dateString);
+      return 'N/A';
+    }
   }
 }
