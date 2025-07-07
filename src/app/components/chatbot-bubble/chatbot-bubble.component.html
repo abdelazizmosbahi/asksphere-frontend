@@ -1,0 +1,27 @@
+<div class="chatbot-container">
+  <button class="chatbot-bubble" (click)="toggleChat()" title="Chat with AI">
+    <span class="bubble-icon">💬</span>
+  </button>
+  <div class="chat-window" *ngIf="isChatOpen">
+    <div class="chat-header">
+      <h3>AskSphere AI Chatbot</h3>
+      <button class="close-btn" (click)="toggleChat()">×</button>
+    </div>
+    <div class="chat-messages" #chatMessagesContainer>
+      <div *ngFor="let message of chatMessages" [class.user-message]="message.isUser" [class.bot-message]="!message.isUser">
+        <p>{{ message.text }}</p>
+      </div>
+      <div *ngIf="chatLoading" class="loading">Processing...</div>
+      <div *ngIf="chatError" class="error">{{ chatError }}</div>
+    </div>
+    <form class="chat-input" (submit)="submitChatQuery()">
+      <input
+        [(ngModel)]="chatQuery"
+        name="chatQuery"
+        placeholder="Ask about AskSphere..."
+        [disabled]="chatLoading"
+      />
+      <button type="submit" [disabled]="chatLoading">Send</button>
+    </form>
+  </div>
+</div>

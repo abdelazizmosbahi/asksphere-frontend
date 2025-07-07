@@ -25,6 +25,8 @@ import { UserVisualComponent } from './uservisual/uservisual.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { NgApexchartsModule } from 'ng-apexcharts'; // Add this import
 import { CommunityvisualComponent } from './communityvisual/communityvisual.component';
+import { AiService } from './services/ai.service';
+import { ChatbotBubbleComponent } from './components/chatbot-bubble/chatbot-bubble.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -54,7 +56,9 @@ const routes: Routes = [
     SidebarComponent,
     SearchResultsComponent,
     UserVisualComponent,
-    CommunityvisualComponent
+    CommunityvisualComponent,
+    ChatbotBubbleComponent
+
 
   ],
   imports: [
@@ -72,7 +76,7 @@ const routes: Routes = [
       preventDuplicates: true,
     })
   ],
-  providers: [],
+  providers: [AiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
