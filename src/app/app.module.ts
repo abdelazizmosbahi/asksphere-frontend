@@ -27,6 +27,8 @@ import { NgApexchartsModule } from 'ng-apexcharts'; // Add this import
 import { CommunityvisualComponent } from './communityvisual/communityvisual.component';
 import { AiService } from './services/ai.service';
 import { ChatbotBubbleComponent } from './components/chatbot-bubble/chatbot-bubble.component';
+import { NotificationPopupComponent } from './components/notification-popup/notification-popup.component';
+import { InteractionStateService } from './services/interaction-state.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -57,7 +59,9 @@ const routes: Routes = [
     SearchResultsComponent,
     UserVisualComponent,
     CommunityvisualComponent,
-    ChatbotBubbleComponent
+    ChatbotBubbleComponent,
+    NotificationPopupComponent
+
 
 
   ],
@@ -76,7 +80,7 @@ const routes: Routes = [
       preventDuplicates: true,
     })
   ],
-  providers: [AiService],
+  providers: [AiService, InteractionStateService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

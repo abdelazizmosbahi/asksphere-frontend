@@ -1,0 +1,25 @@
+<div class="notification-container">
+  <button class="notification-bell" (click)="togglePopup()" [disabled]="isChatbotOpen">
+    <span class="bell-icon" [ngClass]="{ 'loading-spinner': loading }">🔔</span>
+    <span class="unread-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+  </button>
+
+  <div class="notification-window" *ngIf="isPopupOpen" @fadeInOut>
+    <div class="notification-header">
+      <h3>Notifications</h3>
+      <button class="close-btn" (click)="togglePopup()">×</button>
+    </div>
+    <div class="notification-list">
+      <div *ngIf="loading" class="loading">Loading...</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
+      <div *ngIf="!loading && !error && notifications.length === 0" class="no-notifications">
+        No new notifications
+      </div>
+      <div *ngFor="let notification of notifications" class="notification-item" [ngClass]="{ 'read': notification.read }" [ngStyle]="{'border-left': '4px solid ' + getPriorityColor(notification.priority)}" (click)="navigateToContent(notification)">
+        <p>{{ notification.content }}</p>
+        <small>{{ notification.timestamp | date:'short' }}</small>
+        <button class="mark-read-btn" *ngIf="!notification.read" (click)="markAsRead(notification.id); $event.stopPropagation()">Mark as Read</button>
+      </div>
+    </div>
+  </div>
+</div>

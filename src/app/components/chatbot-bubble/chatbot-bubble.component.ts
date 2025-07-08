@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth.service';
 import { AiService } from '../../services/ai.service';
+import { InteractionStateService } from '../../services/interaction-state.service';
 import { ToastrService } from 'ngx-toastr';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
@@ -17,12 +18,15 @@ export class ChatbotBubbleComponent implements OnInit, OnDestroy {
   chatMessages: { text: string; isUser: boolean }[] = [];
   chatLoading: boolean = false;
   chatError: string | null = null;
+  isNotificationPopupOpen: boolean = false;
   private userId: string | null = null;
   private authSubscription: Subscription | null = null;
+  private notificationSubscription: Subscription | null = null;
 
   constructor(
     private authService: AuthService,
     private aiService: AiService,
+    private interactionStateService: InteractionStateService,
     private toastr: ToastrService,
     private router: Router
   ) {}
@@ -37,16 +41,25 @@ export class ChatbotBubbleComponent implements OnInit, OnDestroy {
         this.userId = null;
       }
     });
+    this.notificationSubscription = this.interactionStateService.getNotificationPopupState().subscribe(isOpen => {
+      this.isNotificationPopupOpen = isOpen;
+    });
   }
 
   ngOnDestroy() {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
+    if (this.notificationSubscription) {
+      this.notificationSubscription.unsubscribe();
+    }
   }
 
   toggleChat(): void {
-    this.isChatOpen = !this.isChatOpen;
+    if (!this.isNotificationPopupOpen) {
+      this.isChatOpen = !this.isChatOpen;
+      this.interactionStateService.setChatbotState(this.isChatOpen);
+    }
   }
 
   submitChatQuery(): void {

@@ -12,12 +12,34 @@ export class AiService {
 
   constructor(private http: HttpClient) {}
 
-  // Call the chatbot endpoint
   askChatbot(userId: string, query: string): Observable<{ user_id: string; query: string; response: string }> {
     return this.http
       .post<{ user_id: string; query: string; response: string }>(
         `${this.aiApiUrl}/chatbot`,
         { user_id: userId, query }
+      )
+      .pipe(
+        map((res) => res),
+        catchError(this.handleError)
+      );
+  }
+
+  getNotifications(userId: string, limit: number = 10): Observable<{ id: string; type: string; content: string; priority: string; timestamp: string; read: boolean }[]> {
+    return this.http
+      .get<{ id: string; type: string; content: string; priority: string; timestamp: string; read: boolean }[]>(
+        `${this.aiApiUrl}/notifications/${userId}?limit=${limit}`
+      )
+      .pipe(
+        map((res) => res),
+        catchError(this.handleError)
+      );
+  }
+
+  markNotificationAsRead(notificationId: string): Observable<{ message: string }> {
+    return this.http
+      .put<{ message: string }>(
+        `${this.aiApiUrl}/notifications/${notificationId}/read`,
+        {}
       )
       .pipe(
         map((res) => res),
