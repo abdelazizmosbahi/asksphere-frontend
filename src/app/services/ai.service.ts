@@ -47,6 +47,18 @@ export class AiService {
       );
   }
 
+  moderateContent(userId: string, content: string): Observable<{ user_id: string; content: string; toxicity_score: number; action: string; violation_count?: number }> {
+    return this.http
+      .post<{ user_id: string; content: string; toxicity_score: number; action: string; violation_count?: number }>(
+        `${this.aiApiUrl}/moderate`,
+        { user_id: userId, content }
+      )
+      .pipe(
+        map((res) => res),
+        catchError(this.handleError)
+      );
+  }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.error('AI Service Error:', error);
     let errorMessage = 'An error occurred while contacting the AI service.';

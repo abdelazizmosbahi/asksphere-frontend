@@ -117,6 +117,8 @@ export class NotificationPopupComponent implements OnInit, OnDestroy {
       if (questionId) {
         this.router.navigate([`/question/${questionId}`]);
       }
+    } else if (notification.type === 'ban') {
+      this.router.navigate(['/support/appeal']);
     }
   }
 
@@ -124,12 +126,9 @@ export class NotificationPopupComponent implements OnInit, OnDestroy {
     this.unreadCount = this.notifications.filter(n => !n.read).length;
   }
 
-  getPriorityColor(priority: string): string {
-    switch (priority) {
-      case 'high': return 'red';
-      case 'medium': return 'blue';
-      case 'low': return 'green';
-      default: return 'blue';
-    }
+  getPriorityColor(type: string): string {
+    if (type === 'chatbot_response') return 'blue';
+    if (type === 'ban') return 'red';
+    return 'green';
   }
 }

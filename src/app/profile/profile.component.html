@@ -1,6 +1,8 @@
 <div class="container-fluid p-0">
   <app-navbar (sidebarToggled)="onSidebarToggled($event)"></app-navbar>
   <app-chatbot-bubble></app-chatbot-bubble>
+    <app-notification-popup></app-notification-popup>
+
   <div class="d-flex">
     <app-sidebar [sidebarCollapsed]="sidebarCollapsed"></app-sidebar>
     <!-- Main Content Area -->
