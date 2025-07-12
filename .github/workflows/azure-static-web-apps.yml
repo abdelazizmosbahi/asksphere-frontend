@@ -22,12 +22,12 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Build and Deploy
-        uses: azure/static-web-apps-deploy@v2
+        uses: azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: '/'  # Root of the frontend code
-          output_location: 'dist'  # Adjust based on your build output (e.g., 'build' for React, 'dist' for Angular/Vue)
+          output_location: 'dist'  # Adjust based on your build output
           skip_app_build: false
           skip_api_build: true
