@@ -16,6 +16,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'  # Adjust to match your local Node.js version
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -27,7 +39,7 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
-          app_location: '/'  # Root of the frontend code
-          output_location: 'dist/stud-portal'  # Matches the app artifact location
+          app_location: '/'
+          output_location: 'dist/stud-portal'
           skip_app_build: false
           skip_api_build: true

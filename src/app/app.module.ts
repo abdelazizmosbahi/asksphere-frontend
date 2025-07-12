@@ -22,7 +22,6 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { UserVisualComponent } from './uservisual/uservisual.component';
-import { SearchResultsComponent } from './search-results/search-results.component';
 import { NgApexchartsModule } from 'ng-apexcharts'; // Add this import
 import { CommunityvisualComponent } from './communityvisual/communityvisual.component';
 import { AiService } from './services/ai.service';
@@ -56,7 +55,6 @@ const routes: Routes = [
     NotificationsComponent,
     NavbarComponent,
     SidebarComponent,
-    SearchResultsComponent,
     UserVisualComponent,
     CommunityvisualComponent,
     ChatbotBubbleComponent,
