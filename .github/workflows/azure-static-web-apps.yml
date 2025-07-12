@@ -28,6 +28,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: '/'  # Root of the frontend code
-          output_location: 'dist'  # Adjust based on your build output
+          output_location: 'dist/stud-portal'  # Updated to match build output
           skip_app_build: false
           skip_api_build: true
