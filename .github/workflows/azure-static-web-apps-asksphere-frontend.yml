@@ -28,3 +28,4 @@ jobs:
           app_location: "dist/stud-portal"
           api_location: ""
           output_location: "dist/stud-portal"
+          
