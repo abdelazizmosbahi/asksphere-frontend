@@ -30,7 +30,7 @@ jobs:
           action: "upload"
           app_location: "/"
           api_location: ""
-          output_location: "dist/rotsvas-portal"  # Should match Azure and angular.json
+          output_location: "dist/stud-portal"  # Updated to match Azure and angular.json
           app_build_command: "npm install --legacy-peer-deps && npm run build"
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
