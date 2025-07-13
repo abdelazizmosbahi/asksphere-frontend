@@ -26,8 +26,14 @@ jobs:
           if [ -f .env ]; then
             echo "Debug: .env file found"
             cat .env
-            echo "AZURE_STATIC_WEB_APPS_API_TOKEN=$(grep AZURE_STATIC_WEB_APPS_API_TOKEN .env | cut -d'=' -f2)" >> $GITHUB_ENV
-            echo "Debug: Token loaded from .env: ${AZURE_STATIC_WEB_APPS_API_TOKEN}"
+            # Use awk to safely extract the token, handling quotes and spaces
+            TOKEN=$(awk -F'=' '/^AZURE_STATIC_WEB_APPS_API_TOKEN=/ {print $2}' .env | tr -d '"')
+            if [ -z "$TOKEN" ]; then
+              echo "Debug: Failed to extract token"
+              exit 1
+            fi
+            echo "AZURE_STATIC_WEB_APPS_API_TOKEN=$TOKEN" >> $GITHUB_ENV
+            echo "Debug: Token loaded from .env: $TOKEN"
           else
             echo "Debug: .env file not found"
             exit 1
