@@ -2,75 +2,28 @@ name: Azure Static Web Apps CI/CD
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+  deploy:
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: true
       
-      # Debug: Show directory structure
-      - name: Debug - Show workspace structure
-        run: ls -la
-      
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
       
       - name: Install dependencies
-        run: |
-          npm install --legacy-peer-deps
-          npm list --depth=0
+        run: npm install --legacy-peer-deps
       
-      # Debug: Verify Angular CLI version
-      - name: Debug - Check Angular version
-        run: npx ng version
+      - name: Build
+        run: npm run build -- --configuration=production
       
-      - name: Build application
-        run: npm run build
-      
-      # Debug: Verify build output
-      - name: Debug - Check build output
-        run: |
-          ls -la dist/
-          ls -la dist/stud-portal/
-          du -sh dist/stud-portal/
-      
-      - name: Deploy to Azure Static Web Apps
-        env:
-          NODE_OPTIONS: "--openssl-legacy-provider"
-          CI: false
-          DEBUG: "true"  # Enable verbose logging
-        id: builddeploy
+      - name: Deploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_MUD_090A7891E }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
           app_location: "/"
-          api_location: ""
           output_location: "dist/stud-portal"
-          verbose: true  # Additional verbose output
-
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_MUD_090A7891E }}
-          action: "close"
