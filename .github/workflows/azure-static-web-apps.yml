@@ -39,3 +39,5 @@ close_pull_request_job:
       with:
         azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
         action: "close"
+
+
