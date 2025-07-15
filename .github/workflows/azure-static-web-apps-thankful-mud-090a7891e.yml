@@ -68,8 +68,8 @@ jobs:
         run: |
           echo "Debug: Current working directory: $(pwd)"
           echo "Debug: GitHub workspace: $GITHUB_WORKSPACE"
-          echo "Debug: Repository secret name: AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_MUD_090A7891E"
-          echo "Debug: Token status: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_MUD_090A7891E != '' && 'Set' || 'Not Set' }}"
+          echo "Debug: Repository secret name: DEPLOYMENT_TOKEN"
+          echo "Debug: Token status: ${{ secrets.DEPLOYMENT_TOKEN != '' && 'Set' || 'Not Set' }}"
           echo "Debug: Action runner OS: $RUNNER_OS"
           echo "Debug: Git status"
           git status
@@ -85,7 +85,7 @@ jobs:
         id: deploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_MUD_090A7891E }}
+          azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/"
@@ -103,7 +103,7 @@ jobs:
           npm install -g @azure/static-web-apps-cli
           swa --version
           echo "Debug: Attempting to validate token (non-intrusive check)"
-          echo "Debug: Token length: ${#AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_MUD_090A7891E}"
+          echo "Debug: Token length: ${#DEPLOYMENT_TOKEN}"
           echo "Debug: Listing files in output location for verification"
           ls -la dist/stud-portal/browser/
 
@@ -114,5 +114,5 @@ jobs:
       - name: Close Pull Request
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_MUD_090A7891E }}
+          azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
           action: "close"
