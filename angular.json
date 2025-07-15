@@ -100,8 +100,5 @@
       }
     }
   },
-  "defaultProject": "asksphere-frontend",
-  "cli": {
-    "analytics": "68001c5f-6066-40d8-9cf8-a10addcfaac6"
-  }
+  "defaultProject": "asksphere-frontend"
 }
