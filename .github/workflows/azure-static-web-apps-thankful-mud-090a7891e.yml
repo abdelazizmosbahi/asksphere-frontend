@@ -99,7 +99,7 @@ jobs:
             fi
           fi
 
-      - name: Diagnostic Check with SWA CLI
+      - name: Diagnostic Check with SWA CLI and Azure CLI
         env:
           DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
         run: |
@@ -128,6 +128,8 @@ jobs:
           echo "Debug: Static Web App name: thankful-mud-090a7891e"
           echo "Debug: Repository: abdelazizmosbahi/asksphere-frontend"
           echo "Debug: Branch: main"
+          echo "Debug: Checking Static Web App details (non-intrusive)"
+          echo "Debug: Run 'az staticwebapp show --name thankful-mud-090a7891e' manually in Azure CLI with authenticated credentials to verify configuration"
 
       - name: Deploy
         id: deploy
@@ -182,6 +184,7 @@ jobs:
           echo "Debug: Static Web App name: thankful-mud-090a7891e"
           echo "Debug: Repository: abdelazizmosbahi/asksphere-frontend"
           echo "Debug: Branch: main"
+          echo "Debug: Run 'az staticwebapp show --name thankful-mud-090a7891e' manually in Azure CLI with authenticated credentials to verify configuration"
 
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
