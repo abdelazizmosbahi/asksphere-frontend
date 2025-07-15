@@ -98,6 +98,23 @@ jobs:
             fi
           fi
 
+      - name: Diagnostic Check with SWA CLI
+        env:
+          DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
+        run: |
+          echo "Debug: Installing Azure Static Web Apps CLI"
+          npm install -g @azure/static-web-apps-cli
+          swa --version
+          echo "Debug: Checking SWA CLI configuration"
+          swa deploy --version || echo "Debug: SWA deploy command failed, likely due to token or configuration mismatch"
+          echo "Debug: Checking for swa-db-connections directory"
+          if [ -d "swa-db-connections" ]; then
+            echo "Debug: Contents of swa-db-connections"
+            ls -la swa-db-connections/
+          else
+            echo "Debug: swa-db-connections directory not found"
+          fi
+
       - name: Deploy
         id: deploy
         uses: Azure/static-web-apps-deploy@v1
@@ -135,6 +152,8 @@ jobs:
           else
             echo "Debug: swa-db-connections directory not found"
           fi
+          echo "Debug: Attempting SWA CLI diagnostic deploy (dry run)"
+          swa deploy --dry-run --app-location "/" --output-location "dist/stud-portal/browser" || echo "Debug: SWA deploy dry run failed, likely due to token or configuration mismatch"
 
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
