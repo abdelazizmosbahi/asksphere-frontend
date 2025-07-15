@@ -28,6 +28,7 @@ jobs:
           app_location: "/"
           output_location: "dist/rotsvas-portal"
           app_build_command: "ng build --configuration production"
+          routes_location: "routes.json"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
