@@ -124,6 +124,7 @@ jobs:
           action: "upload"
           app_location: "/"
           output_location: "dist/stud-portal/browser"
+          data_api_location: ""
           skip_app_build: true
         env:
           DEBUG: "true"
@@ -145,6 +146,7 @@ jobs:
           echo "Debug: Checking Azure Static Web Apps configuration"
           echo "Debug: App location: /"
           echo "Debug: Output location: dist/stud-portal/browser"
+          echo "Debug: Data API location: (empty)"
           echo "Debug: Checking for swa-db-connections (if applicable)"
           if [ -d "swa-db-connections" ]; then
             echo "Debug: Contents of swa-db-connections"
@@ -153,7 +155,7 @@ jobs:
             echo "Debug: swa-db-connections directory not found"
           fi
           echo "Debug: Attempting SWA CLI diagnostic deploy (dry run)"
-          swa deploy --dry-run --app-location "/" --output-location "dist/stud-portal/browser" || echo "Debug: SWA deploy dry run failed, likely due to token or configuration mismatch"
+          swa deploy --dry-run --app-location "/" --output-location "dist/stud-portal/browser" --data-api-location "" || echo "Debug: SWA deploy dry run failed, likely due to token or configuration mismatch"
 
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
