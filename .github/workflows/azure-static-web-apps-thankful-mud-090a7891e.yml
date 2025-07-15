@@ -82,9 +82,11 @@ jobs:
           echo "Debug: Output location: dist/stud-portal/browser"
 
       - name: Test DEPLOYMENT_TOKEN Availability
+        env:
+          DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
         run: |
           echo "Debug: Testing DEPLOYMENT_TOKEN availability"
-          if [ -z "${{ secrets.DEPLOYMENT_TOKEN }}" ]; then
+          if [ -z "$DEPLOYMENT_TOKEN" ]; then
             echo "Error: DEPLOYMENT_TOKEN is empty or not set"
             exit 1
           else
@@ -111,6 +113,8 @@ jobs:
 
       - name: Debug Deployment Failure
         if: failure()
+        env:
+          DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
         run: |
           echo "Debug: Deployment failed, checking for additional details"
           echo "Debug: Deployment ID: ${{ steps.deploy.outputs.deployment_id }}"
