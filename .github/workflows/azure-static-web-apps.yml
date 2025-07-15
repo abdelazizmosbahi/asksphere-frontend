@@ -31,7 +31,7 @@ jobs:
           action: "upload"
           app_location: "/"
           output_location: "dist/rotsvas-portal"
-          app_build_command: "npm install && ng build --configuration production"
+          app_build_command: "npm install && npx ng build --configuration production"
           routes_location: ".github/workflows/workspace/routes.json"
 
   close_pull_request_job:
