@@ -22,8 +22,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli@18
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -33,7 +31,7 @@ jobs:
           action: "upload"
           app_location: "/"
           output_location: "dist/rotsvas-portal"
-          app_build_command: "ng build --configuration production"
+          app_build_command: "npm install && ng build --configuration production"
           routes_location: ".github/workflows/workspace/routes.json"
 
   close_pull_request_job:
