@@ -46,21 +46,21 @@ jobs:
           echo "Debug: Starting build"
           npm run build -- --configuration=production
           echo "Debug: Build completed, verifying output"
-          if [ -d "dist/stud-portal" ]; then
-            echo "Debug: Contents of dist/stud-portal"
-            ls -la dist/stud-portal/
-            echo "Debug: Size of dist/stud-portal"
-            du -sh dist/stud-portal/
+          if [ -d "dist/stud-portal/browser" ]; then
+            echo "Debug: Contents of dist/stud-portal/browser"
+            ls -la dist/stud-portal/browser/
+            echo "Debug: Size of dist/stud-portal/browser"
+            du -sh dist/stud-portal/browser/
             echo "Debug: Checking for index.html"
-            if [ -f "dist/stud-portal/index.html" ]; then
+            if [ -f "dist/stud-portal/browser/index.html" ]; then
               echo "Debug: index.html found"
-              cat dist/stud-portal/index.html
+              cat dist/stud-portal/browser/index.html
             else
-              echo "Error: index.html not found in dist/stud-portal"
+              echo "Error: index.html not found in dist/stud-portal/browser"
               exit 1
             fi
           else
-            echo "Error: dist/stud-portal directory not found"
+            echo "Error: dist/stud-portal/browser directory not found"
             exit 1
           fi
 
@@ -86,7 +86,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/"
-          output_location: "dist/stud-portal"
+          output_location: "dist/stud-portal/browser"
         env:
           DEBUG: "true"
 
