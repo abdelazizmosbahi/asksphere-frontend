@@ -107,10 +107,7 @@ jobs:
           npm install -g @azure/static-web-apps-cli@latest
           swa --version
           echo "Debug: Checking SWA CLI configuration"
-          swa deploy --version || echo "Debug: SWA deploy command failed, likely due to token or configuration mismatch"
-          echo "Debug: Attempting to list Static Web Apps (non-intrusive)"
-          swa login --token "$DEPLOYMENT_TOKEN" --app-name "thankful-mud-090a7891e" || echo "Debug: SWA login failed, likely due to invalid token or subscription mismatch"
-          swa list || echo "Debug: SWA list failed, likely due to token or subscription mismatch"
+          swa deploy --version || echo "Debug: SWA deploy command failed, likely due to configuration mismatch"
           echo "Debug: Checking for swa-db-connections directory"
           if [ -d "swa-db-connections" ]; then
             echo "Debug: Contents of swa-db-connections"
@@ -127,19 +124,24 @@ jobs:
             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
             az --version
           fi
-          echo "Debug: Attempting to list Azure subscriptions (non-intrusive)"
-          az account list --query "[].{name:name, id:id}" -o table || echo "Debug: Failed to list Azure subscriptions, likely due to authentication issue"
+          echo "Debug: Checking Azure Static Web App existence (non-intrusive)"
+          echo "Debug: Static Web App name: thankful-mud-090a7891e"
+          echo "Debug: Repository: abdelazizmosbahi/asksphere-frontend"
+          echo "Debug: Branch: main"
 
       - name: Deploy
         id: deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/"
+          output_location: "dist/stud-portal/browser"
+          data_api_location: ""
+          skip_app_build: true
         env:
-          DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
-        run: |
-          echo "Debug: Deploying with SWA CLI"
-          npm install -g @azure/static-web-apps-cli@latest
-          swa --version
-          swa deploy --app-location "/" --output-location "dist/stud-portal/browser" --data-api-location "" --app-name "thankful-mud-090a7891e" --deployment-token "$DEPLOYMENT_TOKEN" --verbose || echo "Error: SWA CLI deployment failed"
-          echo "Debug: Deployment ID not available from SWA CLI"
+          DEBUG: "true"
 
       - name: Debug Deployment Failure
         if: failure()
@@ -147,6 +149,7 @@ jobs:
           DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
         run: |
           echo "Debug: Deployment failed, checking for additional details"
+          echo "Debug: Deployment ID: ${{ steps.deploy.outputs.deployment_id }}"
           echo "Debug: Checking Azure Static Web Apps CLI for diagnostics"
           npm install -g @azure/static-web-apps-cli@latest
           swa --version
@@ -165,11 +168,6 @@ jobs:
           else
             echo "Debug: swa-db-connections directory not found"
           fi
-          echo "Debug: Attempting SWA CLI diagnostic deploy (dry run)"
-          swa deploy --dry-run --app-location "/" --output-location "dist/stud-portal/browser" --data-api-location "" --app-name "thankful-mud-090a7891e" --deployment-token "$DEPLOYMENT_TOKEN" --verbose || echo "Debug: SWA deploy dry run failed, likely due to token or configuration mismatch"
-          echo "Debug: Attempting to list Static Web Apps (non-intrusive)"
-          swa login --token "$DEPLOYMENT_TOKEN" --app-name "thankful-mud-090a7891e" || echo "Debug: SWA login failed, likely due to invalid token or subscription mismatch"
-          swa list || echo "Debug: SWA list failed, likely due to token or subscription mismatch"
           echo "Debug: Verifying Azure CLI installation"
           if command -v az >/dev/null 2>&1; then
             echo "Debug: Azure CLI is installed"
@@ -179,8 +177,10 @@ jobs:
             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
             az --version
           fi
-          echo "Debug: Attempting to list Azure subscriptions (non-intrusive)"
-          az account list --query "[].{name:name, id:id}" -o table || echo "Debug: Failed to list Azure subscriptions, likely due to authentication issue"
+          echo "Debug: Checking Azure Static Web App existence (non-intrusive)"
+          echo "Debug: Static Web App name: thankful-mud-090a7891e"
+          echo "Debug: Repository: abdelazizmosbahi/asksphere-frontend"
+          echo "Debug: Branch: main"
 
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
