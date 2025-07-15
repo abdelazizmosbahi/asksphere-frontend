@@ -39,17 +39,17 @@ jobs:
           echo "Debug: Starting build"
           npm run build -- --configuration=production
           echo "Debug: Build completed, verifying output"
-          if [ -d "dist/rotsvas-portal/browser" ]; then
-            echo "Debug: Contents of dist/rotsvas-portal/browser"
-            ls -la dist/rotsvas-portal/browser/
-            if [ -f "dist/rotsvas-portal/browser/index.html" ]; then
+          if [ -d "dist/rotsvas-portal" ]; then
+            echo "Debug: Contents of dist/rotsvas-portal"
+            ls -la dist/rotsvas-portal/
+            if [ -f "dist/rotsvas-portal/index.html" ]; then
               echo "Debug: index.html found"
             else
-              echo "Error: index.html not found in dist/rotsvas-portal/browser"
+              echo "Error: index.html not found in dist/rotsvas-portal"
               exit 1
             fi
           else
-            echo "Error: dist/rotsvas-portal/browser directory not found"
+            echo "Error: dist/rotsvas-portal directory not found"
             exit 1
           fi
 
@@ -59,13 +59,13 @@ jobs:
         run: |
           echo "Debug: Deploying with SWA CLI"
           npm install -g @azure/static-web-apps-cli@latest
-          swa deploy --app-location "/" --output-location "dist/rotsvas-portal/browser" --data-api-location "" --app-name "asksphere-frontend" --deployment-token "$DEPLOYMENT_TOKEN" --verbose
+          swa deploy --app-location "/" --output-location "dist/rotsvas-portal" --data-api-location "" --app-name "asksphere-frontend" --deployment-token "$DEPLOYMENT_TOKEN" --verbose
 
       - name: Debug Deployment Failure
         if: failure()
         run: |
           echo "Debug: Deployment failed, checking output"
-          ls -la dist/rotsvas-portal/browser/
+          ls -la dist/rotsvas-portal/
           echo "Debug: Verifying token"
           echo "Token set: ${{ secrets.DEPLOYMENT_TOKEN != '' && 'Yes' || 'No' }}"
 
