@@ -1,4 +1,3 @@
-
 name: Azure Static Web Apps CI/CD
 
 on:
@@ -35,33 +34,36 @@ jobs:
           node --version
           echo "Debug: NPM version"
           npm --version
+
       - name: Verify Angular CLI
         run: |
           echo "Debug: Verifying Angular CLI installation"
           npm install -g @angular/cli
           ng version
+
       - name: Build
         run: |
           echo "Debug: Starting build"
           npm run build -- --configuration=production
           echo "Debug: Build completed, verifying output"
-          if [ -d "dist/stud-portal/browser" ]; then
-            echo "Debug: Contents of dist/stud-portal/browser"
-            ls -la dist/stud-portal/browser/
-            echo "Debug: Size of dist/stud-portal/browser"
-            du -sh dist/stud-portal/browser/
+          if [ -d "dist/rotsvas-portal" ]; then
+            echo "Debug: Contents of dist/rotsvas-portal"
+            ls -la dist/rotsvas-portal/
+            echo "Debug: Size of dist/rotsvas-portal"
+            du -sh dist/rotsvas-portal/
             echo "Debug: Checking for index.html"
-            if [ -f "dist/stud-portal/browser/index.html" ]; then
+            if [ -f "dist/rotsvas-portal/index.html" ]; then
               echo "Debug: index.html found"
-              cat dist/stud-portal/browser/index.html
+              cat dist/rotsvas-portal/index.html
             else
-              echo "Error: index.html not found in dist/stud-portal/browser"
+              echo "Error: index.html not found in dist/rotsvas-portal"
               exit 1
             fi
           else
-            echo "Error: dist/stud-portal/browser directory not found"
+            echo "Error: dist/rotsvas-portal directory not found"
             exit 1
           fi
+
       - name: Debug Environment
         run: |
           echo "Debug: Current working directory: $(pwd)"
@@ -77,8 +79,9 @@ jobs:
           env | sort
           echo "Debug: Checking Azure Static Web Apps configuration"
           echo "Debug: App location: /"
-          echo "Debug: Output location: dist/stud-portal/browser"
+          echo "Debug: Output location: dist/rotsvas-portal"
           echo "Debug: Data API location: (empty)"
+
       - name: Test DEPLOYMENT_TOKEN Availability
         env:
           DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
@@ -95,6 +98,7 @@ jobs:
               echo "Debug: DEPLOYMENT_TOKEN length appears valid"
             fi
           fi
+
       - name: Diagnostic Check with SWA CLI
         env:
           DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
@@ -105,7 +109,7 @@ jobs:
           echo "Debug: Checking SWA CLI configuration"
           swa deploy --version || echo "Debug: SWA deploy command failed, likely due to token or configuration mismatch"
           echo "Debug: Attempting to list Static Web Apps (non-intrusive)"
-          swa login --token "$DEPLOYMENT_TOKEN" --app-name "thankful-mud-090a7891e" || echo "Debug: SWA login failed, likely due to invalid token or subscription mismatch"
+          swa login --token "$DEPLOYMENT_TOKEN" --app-name "asksphere-frontend" || echo "Debug: SWA login failed, likely due to invalid token or subscription mismatch"
           swa list || echo "Debug: SWA list failed, likely due to token or subscription mismatch"
           echo "Debug: Checking for swa-db-connections directory"
           if [ -d "swa-db-connections" ]; then
@@ -125,6 +129,7 @@ jobs:
           fi
           echo "Debug: Attempting to list Azure subscriptions (non-intrusive)"
           az account list --query "[].{name:name, id:id}" -o table || echo "Debug: Failed to list Azure subscriptions, likely due to authentication issue"
+
       - name: Deploy
         id: deploy
         env:
@@ -133,8 +138,9 @@ jobs:
           echo "Debug: Deploying with SWA CLI"
           npm install -g @azure/static-web-apps-cli@latest
           swa --version
-          swa deploy --app-location "/" --output-location "dist/stud-portal/browser" --data-api-location "" --app-name "thankful-mud-090a7891e" --deployment-token "$DEPLOYMENT_TOKEN" --verbose || echo "Error: SWA CLI deployment failed"
+          swa deploy --app-location "/" --output-location "dist/rotsvas-portal" --data-api-location "" --app-name "asksphere-frontend" --deployment-token "$DEPLOYMENT_TOKEN" --verbose || echo "Error: SWA CLI deployment failed"
           echo "Debug: Deployment ID not available from SWA CLI"
+
       - name: Debug Deployment Failure
         if: failure()
         env:
@@ -147,10 +153,10 @@ jobs:
           echo "Debug: Attempting to validate token (non-intrusive check)"
           echo "Debug: Token length: ${#DEPLOYMENT_TOKEN}"
           echo "Debug: Listing files in output location for verification"
-          ls -la dist/stud-portal/browser/
+          ls -la dist/rotsvas-portal/
           echo "Debug: Checking Azure Static Web Apps configuration"
           echo "Debug: App location: /"
-          echo "Debug: Output location: dist/stud-portal/browser"
+          echo "Debug: Output location: dist/rotsvas-portal"
           echo "Debug: Data API location: (empty)"
           echo "Debug: Checking for swa-db-connections (if applicable)"
           if [ -d "swa-db-connections" ]; then
@@ -160,9 +166,9 @@ jobs:
             echo "Debug: swa-db-connections directory not found"
           fi
           echo "Debug: Attempting SWA CLI diagnostic deploy (dry run)"
-          swa deploy --dry-run --app-location "/" --output-location "dist/stud-portal/browser" --data-api-location "" --app-name "thankful-mud-090a7891e" --deployment-token "$DEPLOYMENT_TOKEN" --verbose || echo "Debug: SWA deploy dry run failed, likely due to token or configuration mismatch"
+          swa deploy --dry-run --app-location "/" --output-location "dist/rotsvas-portal" --data-api-location "" --app-name "asksphere-frontend" --deployment-token "$DEPLOYMENT_TOKEN" --verbose || echo "Debug: SWA deploy dry run failed, likely due to token or configuration mismatch"
           echo "Debug: Attempting to list Static Web Apps (non-intrusive)"
-          swa login --token "$DEPLOYMENT_TOKEN" --app-name "thankful-mud-090a7891e" || echo "Debug: SWA login failed, likely due to invalid token or subscription mismatch"
+          swa login --token "$DEPLOYMENT_TOKEN" --app-name "asksphere-frontend" || echo "Debug: SWA login failed, likely due to invalid token or subscription mismatch"
           swa list || echo "Debug: SWA list failed, likely due to token or subscription mismatch"
           echo "Debug: Verifying Azure CLI installation"
           if command -v az >/dev/null 2>&1; then
@@ -175,6 +181,7 @@ jobs:
           fi
           echo "Debug: Attempting to list Azure subscriptions (non-intrusive)"
           az account list --query "[].{name:name, id:id}" -o table || echo "Debug: Failed to list Azure subscriptions, likely due to authentication issue"
+
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
