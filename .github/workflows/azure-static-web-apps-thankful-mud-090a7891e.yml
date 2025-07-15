@@ -38,7 +38,7 @@ jobs:
       - name: Verify Angular CLI
         run: |
           echo "Debug: Verifying Angular CLI installation"
-          npm install -g @angular/cli@18.2.20
+          npm install -g @angular/cli
           ng version
 
       - name: Build
@@ -46,21 +46,21 @@ jobs:
           echo "Debug: Starting build"
           npm run build -- --configuration=production
           echo "Debug: Build completed, verifying output"
-          if [ -d "dist/rotsvas-portal/browser" ]; then
-            echo "Debug: Contents of dist/rotsvas-portal/browser"
-            ls -la dist/rotsvas-portal/browser/
-            echo "Debug: Size of dist/rotsvas-portal/browser"
-            du -sh dist/rotsvas-portal/browser/
+          if [ -d "dist/rotsvas-portal" ]; then
+            echo "Debug: Contents of dist/rotsvas-portal"
+            ls -la dist/rotsvas-portal/
+            echo "Debug: Size of dist/rotsvas-portal"
+            du -sh dist/rotsvas-portal/
             echo "Debug: Checking for index.html"
-            if [ -f "dist/rotsvas-portal/browser/index.html" ]; then
+            if [ -f "dist/rotsvas-portal/index.html" ]; then
               echo "Debug: index.html found"
-              cat dist/rotsvas-portal/browser/index.html
+              cat dist/rotsvas-portal/index.html
             else
-              echo "Error: index.html not found in dist/rotsvas-portal/browser"
+              echo "Error: index.html not found in dist/rotsvas-portal"
               exit 1
             fi
           else
-            echo "Error: dist/rotsvas-portal/browser directory not found"
+            echo "Error: dist/rotsvas-portal directory not found"
             exit 1
           fi
 
@@ -156,7 +156,7 @@ jobs:
           echo "Debug: Attempting to validate token (non-intrusive check)"
           echo "Debug: Token length: ${#DEPLOYMENT_TOKEN}"
           echo "Debug: Listing files in output location for verification"
-          ls -la dist/rotsvas-portal/browser/
+          ls -la dist/rotsvas-portal/
           echo "Debug: Checking Azure Static Web Apps configuration"
           echo "Debug: App location: /"
           echo "Debug: Output location: dist/rotsvas-portal"
