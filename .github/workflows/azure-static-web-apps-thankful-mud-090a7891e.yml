@@ -78,7 +78,7 @@ jobs:
           echo "Debug: Environment variables"
           env | sort
           echo "Debug: Checking Azure Static Web Apps configuration"
-          echo "Debug: App location: /"
+          echo "Debug: App location: dist/stud-portal"
           echo "Debug: Output location: dist/stud-portal/browser"
           echo "Debug: Data API location: (empty)"
 
@@ -136,7 +136,7 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/"
+          app_location: "dist/stud-portal"
           output_location: "dist/stud-portal/browser"
           data_api_location: ""
           skip_app_build: true
@@ -158,7 +158,7 @@ jobs:
           echo "Debug: Listing files in output location for verification"
           ls -la dist/stud-portal/browser/
           echo "Debug: Checking Azure Static Web Apps configuration"
-          echo "Debug: App location: /"
+          echo "Debug: App location: dist/stud-portal"
           echo "Debug: Output location: dist/stud-portal/browser"
           echo "Debug: Data API location: (empty)"
           echo "Debug: Checking for swa-db-connections (if applicable)"
