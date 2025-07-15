@@ -81,11 +81,26 @@ jobs:
           echo "Debug: App location: /"
           echo "Debug: Output location: dist/stud-portal/browser"
 
+      - name: Test DEPLOYMENT_TOKEN Availability
+        run: |
+          echo "Debug: Testing DEPLOYMENT_TOKEN availability"
+          if [ -z "${{ secrets.DEPLOYMENT_TOKEN }}" ]; then
+            echo "Error: DEPLOYMENT_TOKEN is empty or not set"
+            exit 1
+          else
+            echo "Debug: DEPLOYMENT_TOKEN is set, length: ${#DEPLOYMENT_TOKEN}"
+            if [ ${#DEPLOYMENT_TOKEN} -lt 30 ]; then
+              echo "Warning: DEPLOYMENT_TOKEN length is unusually short, may be invalid"
+            else
+              echo "Debug: DEPLOYMENT_TOKEN length appears valid"
+            fi
+          fi
+
       - name: Deploy
         id: deploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{secrets.DEPLOYMENT_TOKEN}}
+          azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/"
@@ -106,6 +121,16 @@ jobs:
           echo "Debug: Token length: ${#DEPLOYMENT_TOKEN}"
           echo "Debug: Listing files in output location for verification"
           ls -la dist/stud-portal/browser/
+          echo "Debug: Checking Azure Static Web Apps configuration"
+          echo "Debug: App location: /"
+          echo "Debug: Output location: dist/stud-portal/browser"
+          echo "Debug: Checking for swa-db-connections (if applicable)"
+          if [ -d "swa-db-connections" ]; then
+            echo "Debug: Contents of swa-db-connections"
+            ls -la swa-db-connections/
+          else
+            echo "Debug: swa-db-connections directory not found"
+          fi
 
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -114,5 +139,5 @@ jobs:
       - name: Close Pull Request
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{secrets.DEPLOYMENT_TOKEN}}
+          azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
           action: "close"
