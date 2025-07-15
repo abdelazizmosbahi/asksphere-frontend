@@ -77,6 +77,9 @@ jobs:
           git branch --show-current
           echo "Debug: Environment variables"
           env | sort
+          echo "Debug: Checking Azure Static Web Apps configuration"
+          echo "Debug: App location: /"
+          echo "Debug: Output location: dist/stud-portal/browser"
 
       - name: Deploy
         id: deploy
@@ -87,8 +90,22 @@ jobs:
           action: "upload"
           app_location: "/"
           output_location: "dist/stud-portal/browser"
+          skip_app_build: true
         env:
           DEBUG: "true"
+
+      - name: Debug Deployment Failure
+        if: failure()
+        run: |
+          echo "Debug: Deployment failed, checking for additional details"
+          echo "Debug: Deployment ID: ${{ steps.deploy.outputs.deployment_id }}"
+          echo "Debug: Checking Azure Static Web Apps CLI for diagnostics"
+          npm install -g @azure/static-web-apps-cli
+          swa --version
+          echo "Debug: Attempting to validate token (non-intrusive check)"
+          echo "Debug: Token length: ${#AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_MUD_090A7891E}"
+          echo "Debug: Listing files in output location for verification"
+          ls -la dist/stud-portal/browser/
 
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
