@@ -29,14 +29,15 @@ jobs:
           output_location: "dist/rotsvas-portal"
           app_build_command: "ng build --configuration production"
           routes_location: "./routes.json"
-close_pull_request_job:
-  if: github.event_name == 'pull_request' && github.event.action == 'closed'
-  runs-on: ubuntu-latest
-  name: Close Pull Request Job
-  steps:
-    - name: Close Pull Request
-      id: closepull
-      uses: Azure/static-web-apps-deploy@v1
-      with:
-        azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
-        action: "close"
+
+  close_pull_request_job:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request Job
+    steps:
+      - name: Close Pull Request
+        id: closepull
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
+          action: "close"
