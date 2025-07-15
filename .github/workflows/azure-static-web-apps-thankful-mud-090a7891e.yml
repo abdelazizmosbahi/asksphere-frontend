@@ -53,13 +53,16 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy
-        env:
-          DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
-        run: |
-          echo "Debug: Deploying with SWA CLI"
-          npm install -g @azure/static-web-apps-cli@latest
-          swa deploy --app-location "/" --output-location "dist/rotsvas-portal" --data-api-location "" --app-name "asksphere-frontend" --deployment-token "$DEPLOYMENT_TOKEN" --verbose
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.DEPLOYMENT_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/"
+          output_location: "dist/rotsvas-portal"
+          skip_app_build: true
+          verbose: true
 
       - name: Debug Deployment Failure
         if: failure()
